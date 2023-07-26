@@ -12,7 +12,7 @@ import { Document, model, Schema, Types } from "mongoose";
  */
 
 
-export interface ICart extends Document {
+export interface Cart extends Document {
     productName: string;
     productPrice: number;
     productImage: string;
@@ -53,7 +53,7 @@ const cartSchema: Schema = new Schema({
     }
 });
 
-export default model<ICart>('Cart', cartSchema);
+export default model<Cart>('Cart', cartSchema);
 
 
 

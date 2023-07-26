@@ -16,7 +16,7 @@ import { Document, model, Schema, Types } from "mongoose";
  */
 
 
-export interface IOrder extends Document {
+export interface Order extends Document {
     shippingInfo: string | number [];
     orderItems: string | number [];
     user: Types.ObjectId;
@@ -130,7 +130,7 @@ const orderSchema: Schema = new Schema({
     },
 });
 
-export default model<IOrder>('Order', orderSchema);
+export default model<Order>('Order', orderSchema);
 
 
 

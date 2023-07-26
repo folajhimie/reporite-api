@@ -5,7 +5,7 @@ import { Document, model, Schema } from "mongoose";
  * @param name:string
  * @param code:string
  */
-export interface IRole extends Document {
+export interface Role extends Document {
     name: string;
     code: string;
 }
@@ -33,6 +33,6 @@ const roleSchema: Schema = new Schema({
     },
 });
 
-export default model<IRole>('Role', roleSchema);
+export default model<Role>('Role', roleSchema);
 
 

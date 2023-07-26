@@ -109,7 +109,7 @@
   "include": [
     "./*.js",
     "src/**/*.ts",
-    "test/**/*.ts", "src/models/user.js",
+    "test/**/*.ts", "src/models/user.js", "server.ts",
   ],
   "exclude": ["node_modules"]
 }

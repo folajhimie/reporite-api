@@ -16,7 +16,7 @@ import { Document, model, Schema, Types } from "mongoose";
  */
 
 
-export interface IProduct extends Document {
+export interface Product extends Document {
     _id: Types.ObjectId;
     name: string;
     description: string;
@@ -126,7 +126,7 @@ const productSchema: Schema = new Schema({
     }
 });
 
-export default model<IProduct>('Product', productSchema);
+export default model<Product>('Product', productSchema);
 
 
 

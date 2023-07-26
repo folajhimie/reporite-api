@@ -1,5 +1,8 @@
 import { Document, model, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
+import dotenv from "dotenv";
+import jwt from 'jsonwebtoken';
+dotenv.config();
 
 /**
  * Interface to model the User Schema for TypeScript.
@@ -10,16 +13,27 @@ import bcrypt from "bcryptjs";
  * @param phone:string
  * @param role:string
  */
-export interface IUser extends Document {
+export interface User extends Document {
     username: string;
     password: string;
     email: string;
     phone: String;
+    // tokens: { token: string }[];
     role: String;
     businessName: String;
     avatar: string;
-    savePassword: (password: string) => Promise<void>;
+    isAdmin: Boolean;
+    active: Boolean;
+    resetPasswordToken?: string;
+    resetPasswordExpires?: Date;
+    getJwtToken: () => string;
+    // savePassword: (password: string) => Promise<void>;
+    comparePassword: (enteredPassword: string) => Promise<void>;
 }
+
+// interface UserModel extends Model<User> {
+//     findByCredentials: (email: string, password: string) => Promise<User | null>;
+// }
 
 const userSchema: Schema = new Schema({
     username: {
@@ -76,13 +90,68 @@ const userSchema: Schema = new Schema({
         type: Date,
         default: Date.now(),
     },
+    isAdmin: { 
+        type: Boolean, 
+        default: false 
+    },
+    active: {
+        type: Boolean,
+        default: true
+    },
+    // tokens: [
+    //     {
+    //         token: {
+    //             type: String,
+    //             required: true,
+    //         },
+    //     },
+    // ],
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
+},
+    {
+        timestamps: true,
+    }
+);
+
+
+// Hash Password
+userSchema.pre<User>('save', async function (next) {
+    if (this.isModified('password')) {
+        this.password = await bcrypt.hash(this.password, 8);
+    }
+    next();
 });
 
-userSchema.methods.savePassword = async function (password: string) {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    this.password = hashedPassword;
+// userSchema.statics.findByCredentials = async (email, password) => {
+//     const user = await User.findOne({ email });
+//     if (!user) {
+//         throw new Error('Invalid login credentials');
+//     }
+//     const isMatch = await bcrypt.compare(password, user.password);
+//     if (!isMatch) {
+//         throw new Error('Invalid login credentials');
+//     }
+//     return user;
+// };
+
+
+// jwt token
+userSchema.methods.getJwtToken = function () {
+    const token = jwt.sign({ _id: this._id.toHexString()}, process.env.ACCESS_TOKEN_SECRET!, {
+        expiresIn: process.env.ACCESS_TOKEN_SECRET,
+    });
+    return token;
 };
 
-export default model<IUser>("User", userSchema);
+// compare password
+userSchema.methods.comparePassword = async function (enteredPassword: string) {
+    return await bcrypt.compare(enteredPassword, this.password);
+};
+
+export default model<User>("User", userSchema);
+
+
+
 
 
