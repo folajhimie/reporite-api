@@ -1,16 +1,17 @@
 import { Document, model, Schema } from "mongoose";
+import { IRole } from "../../interfaces /People/roleInterface";
 
 /**
  * Interface to model the Role Schema for TypeScript.
  * @param name:string
  * @param code:string
  */
-export interface Role extends Document {
-    name: string;
-    code: string;
-}
 
-const roleSchema: Schema = new Schema({
+
+//EXPORT INTERFACE WITH MONGOOSE DOCUMENT
+export interface IRoleModel extends IRole, Document {}
+
+const roleSchema: Schema = new Schema<IRole>({
     name: {
         type: String,
         required: [true, 'Please provide name'],
@@ -33,6 +34,7 @@ const roleSchema: Schema = new Schema({
     },
 });
 
-export default model<Role>('Role', roleSchema);
+
+export default model<IRoleModel>("Role", roleSchema);
 
 
