@@ -14,7 +14,7 @@ export interface IRoleModel extends IRole, Document {}
 const roleSchema: Schema = new Schema<IRole>({
     name: {
         type: String,
-        required: [true, 'Please provide name'],
+        required: [true, 'Role is required'],
         maxlength: 50,
         minlength: 3,
         trim: true
@@ -32,7 +32,9 @@ const roleSchema: Schema = new Schema<IRole>({
         type: Date,
         default: Date.now(),
     },
-});
+},
+    { timestamps: true }
+);
 
 
 export default model<IRoleModel>("Role", roleSchema);

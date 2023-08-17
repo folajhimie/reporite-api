@@ -1,8 +1,8 @@
-import { Document, model, Schema, Model } from "mongoose";
+import { Document, model, Schema, Types } from "mongoose";
 import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
-import { IUser } from "../../interfaces /People/userInterface";
+import { UserInterface } from "../../interfaces /People/userInterface";
 dotenv.config();
 
 /**
@@ -16,14 +16,16 @@ dotenv.config();
  */
 
 //EXPORT INTERFACE WITH MONGOOSE DOCUMENT
-export interface IUserModel extends IUser, Document { }
+export interface IUserModel<T> extends UserInterface<T>, Document { 
+    id: T & Types.ObjectId;
+}
 
 // export interface IUserDocument extends Model<IUserModel> {
 //     comparePassword(password: string, hash: string): Promise<boolean>;
 // }
 
 // 2. Create a Schema corresponding to the document interface.
-const userSchema: Schema = new Schema<IUserModel>(
+const userSchema: Schema = new Schema<UserInterface<Types.ObjectId>>(
     {
         username: {
             type: String,
@@ -59,7 +61,7 @@ const userSchema: Schema = new Schema<IUserModel>(
             },
         },
         role: {
-            type: String,
+            type: Schema.Types.ObjectId,
             ref: "Role",
             required: true,
             default: ["vendor"],
@@ -104,7 +106,7 @@ const userSchema: Schema = new Schema<IUserModel>(
 );
 
 // Hash Password
-userSchema.pre<IUserModel>("save", async function (next) {
+userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) {
         return next();
     }
@@ -137,4 +139,4 @@ userSchema.methods.comparePassword = async function (
     return await bcrypt.compare(password, hash);
 };
 
-export default model<IUserModel>("User", userSchema);
+export default model<IUserModel<Types.ObjectId>>("User", userSchema);

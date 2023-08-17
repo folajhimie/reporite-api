@@ -1,12 +1,12 @@
-// import { IRole } from "./roleInterface";
+import { IRole } from "./roleInterface";
 
-export interface IUser{
+export interface UserInterface<T>{
     username: string;
     password: string;
     email: string;
     phone: String;
     // tokens: { token: string }[];
-    role: string[] | string;
+    role: T | IRole;
     businessName: String;
     avatar?: number;
     createdAt?: Date;

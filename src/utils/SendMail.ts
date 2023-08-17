@@ -7,7 +7,7 @@
 
 import nodemailer from 'nodemailer';
 
-import Logging from '../library/Logging';
+import Logging from '../Library/Logging';
 
 export interface MailInterface {
     from?: string;
