@@ -17,10 +17,10 @@ export class UserRepository implements IUserRepository {
         return user
     }
 
-    async getAllUsers(pageQuery: number, limitQuery: number):  Promise<object>{
+    async getAllUsers(requestQuery: any):  Promise<any>{
         let pageOptions: { page: number; limit: number } = {
-            page: Number(pageQuery) || 1,
-            limit: Number(limitQuery) || 10
+            page: Number(requestQuery.query.page) || 1,
+            limit: Number(requestQuery.query.limit) || 10
         }
 
         const count = await User.countDocuments({});

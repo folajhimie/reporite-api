@@ -15,6 +15,7 @@ import generateResetPasswordTemplate from "../../../templates/resetPasswordTempl
 import { generateHashPassword } from "../../../utils/password-manager";
 import Otp from "../../../models/People/otp";
 // import { AuthRepository } from "./authService";
+import IAuthRepository from "../../../repositories/People/authRepositories";
 
 // type TodoPreview = Pick<UserInterface, "email" | "password">;
 
@@ -25,7 +26,7 @@ export class AuthController {
             // const { username, email, phone, password, confirmPassword } = req.body;
 
             //CREATE USER  
-            const authRepository: AuthRepository = new AuthRepository();
+            const authRepository: IAuthRepository = new AuthRepository();
             let resultAuth = await authRepository.createUser(
                 req.body
             )
@@ -56,7 +57,7 @@ export class AuthController {
     async login(req: Request, res: Response, next: NextFunction) {
         // const { email, password } = req.body;
         try {
-            const authRepository: AuthRepository = new AuthRepository();
+            const authRepository: IAuthRepository = new AuthRepository();
             let resultAuth = await authRepository.loginUser(
                 req.body
             )
@@ -82,7 +83,7 @@ export class AuthController {
             const { email } = req.body;
 
             //VERIFYING EMAIL
-            const authRepository: AuthRepository = new AuthRepository();
+            const authRepository: IAuthRepository = new AuthRepository();
             let resultAuth = await authRepository.forgotPassword(email)
 
             //GENERATE TOKEN EXPIRATION 
@@ -121,7 +122,7 @@ export class AuthController {
             const { email, otp } = req.body
 
             //VERIFYING EMAIL AND OTP
-            const authRepository: AuthRepository = new AuthRepository();
+            const authRepository: IAuthRepository = new AuthRepository();
             let resultAuth = await authRepository.verifyPassword(email, otp)
 
             //CHECK FOR OTP
@@ -146,7 +147,7 @@ export class AuthController {
             const { email, otp, password } = req.body;
 
             // VERIFYING IF USER EXIST
-            const authRepository: AuthRepository = new AuthRepository();
+            const authRepository: IAuthRepository = new AuthRepository();
             let resultAuth = await authRepository.resetPassword(email, otp, password);
 
             const { user } = resultAuth
