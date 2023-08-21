@@ -5,25 +5,23 @@
 // SMTP_PASSWORD=xxxxxxxxxxxxxxxxxxxxxx
 // SMTP_SENDER=somnium_nostri@snproweb.com
 
-import nodemailer from 'nodemailer';
+import nodemailer, { Transporter } from 'nodemailer';
 
 import Logging from '../Library/Logging';
+import { MailInterface } from '../models/Utility/mailInterface';
+import dotenv from 'dotenv';
 
-export interface MailInterface {
-    from?: string;
-    to: string | string[];
-    cc?: string | string[];
-    bcc?: string | string[];
-    subject: string;
-    text?: string;
-    html: string;
-}
+dotenv.config();
 
-export default class SendMail {
+
+export default class MailService {
     private static instance: MailService;
-    private transporter: nodemailer.Transporter;
+    private static transporter: Transporter;
 
-    private constructor() {}
+    // private constructor() {}
+    // private constructor(transporter: any) {
+    //     this.transporter = transporter;
+    // }
     //INSTANCE CREATE FOR MAIL
     static getInstance() {
         if (!MailService.instance) {
@@ -34,7 +32,7 @@ export default class SendMail {
     //CREATE CONNECTION FOR LOCAL
     async createLocalConnection() {
         let account = await nodemailer.createTestAccount();
-        this.transporter = nodemailer.createTransport({
+        MailService.transporter = nodemailer.createTransport({
             host: account.smtp.host,
             port: account.smtp.port,
             secure: account.smtp.secure,
@@ -44,26 +42,27 @@ export default class SendMail {
             },
         });
     }
+
     //CREATE A CONNECTION FOR LIVE
     async createConnection() {
-        this.transporter = nodemailer.createTransport({
+        MailService.transporter = nodemailer.createTransport({
             host: process.env.SMTP_HOST,
-            port: process.env.SMTP_PORT,
+            port: Number(process.env.SMTP_PORT), // Parse the port as a number
             secure: process.env.SMTP_TLS === 'yes' ? true : false,
             auth: {
-                user: process.env.SMTP_USERNAME,
-                pass: process.env.SMTP_PASSWORD,
+                user: process.env.MAIL_USERNAME,
+                pass: process.env.MAIL_PASSWORD,
             },
         });
     }
     //SEND MAIL
     async sendMail(
-        requestId: string | number | string[],
+        requestId: string | number | string[] | object = {},
         options: MailInterface
     ) {
-        return await this.transporter
-            .sendMail({ 
-                from: `"chiragmehta900" ${process.env.SMTP_SENDER || options.from}`,
+        return await MailService.transporter
+            .sendMail({
+                from: `"carTtel" ${process.env.SMTP_SENDER || options.from}`,
                 to: options.to,
                 cc: options.cc,
                 bcc: options.bcc,
@@ -84,10 +83,10 @@ export default class SendMail {
     }
     //VERIFY CONNECTION
     async verifyConnection() {
-        return this.transporter.verify();
+        return MailService.transporter.verify();
     }
     //CREATE TRANSPORTER
     getTransporter() {
-        return this.transporter;
+        return MailService.transporter;
     }
 }

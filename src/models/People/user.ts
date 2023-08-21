@@ -1,9 +1,9 @@
 import { Document, model, Schema, Types } from "mongoose";
-import bcrypt from "bcryptjs";
-import dotenv from "dotenv";
-import jwt from "jsonwebtoken";
+// import bcrypt from "bcryptjs";
+// import dotenv from "dotenv";
+// import jwt from "jsonwebtoken";
 import { UserInterface } from "../../interfaces /People/userInterface";
-dotenv.config();
+// dotenv.config();
 
 /**
  * Interface to model the User Schema for TypeScript.
@@ -16,17 +16,16 @@ dotenv.config();
  */
 
 //EXPORT INTERFACE WITH MONGOOSE DOCUMENT
-export interface IUserModel<T> extends UserInterface<T>, Document { 
-    id: T & Types.ObjectId;
-}
+interface User extends UserInterface, Document { }
 
-// export interface IUserDocument extends Model<IUserModel> {
+// export interface IUserDocument extends Model<User> {
 //     comparePassword(password: string, hash: string): Promise<boolean>;
 // }
 
 // 2. Create a Schema corresponding to the document interface.
-const userSchema: Schema = new Schema<UserInterface<Types.ObjectId>>(
+const userSchema: Schema = new Schema<UserInterface>(
     {
+        
         username: {
             type: String,
             required: [true, "Please provide name"],
@@ -60,26 +59,18 @@ const userSchema: Schema = new Schema<UserInterface<Types.ObjectId>>(
                 message: "this is not a valid number",
             },
         },
+        confirmPassword: {
+            type: String,
+            minlength: [6, "Minimum password length is 4 characters"],
+            select: false,
+        },
         role: {
             type: Schema.Types.ObjectId,
-            ref: "Role",
+            ref: 'Role',
             required: true,
-            default: ["vendor"],
-        },
-        businessName: {
-            type: String,
-            required: [true, "Please enter your business name"],
         },
         avatar: {
             type: String,
-        },
-        createdAt: {
-            type: Date,
-            default: Date.now(),
-        },
-        updatedAt: {
-            type: Date,
-            default: Date.now(),
         },
         isAdmin: {
             type: Boolean,
@@ -89,16 +80,10 @@ const userSchema: Schema = new Schema<UserInterface<Types.ObjectId>>(
             type: Boolean,
             default: true,
         },
-        // tokens: [
-        //     {
-        //         token: {
-        //             type: String,
-        //             required: true,
-        //         },
-        //     },
-        // ],
-        resetPasswordToken: String,
-        resetPasswordExpires: Date,
+        isEmailVerified: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,
@@ -106,37 +91,41 @@ const userSchema: Schema = new Schema<UserInterface<Types.ObjectId>>(
 );
 
 // Hash Password
-userSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) {
-        return next();
-    }
+// userSchema.pre("save", async function (next) {
+//     if (!this.isModified("password")) {
+//         return next();
+//     }
 
-    try {
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(this.password, salt);
-        this.password = hashedPassword;
-        next();
-    } catch (error) {
-        console.log('error', error);
-        next()
-    }
-});
+//     try {
+//         const salt = await bcrypt.genSalt(10);
+//         const hashedPassword = await bcrypt.hash(this.password, salt);
+//         this.password = hashedPassword;
+//         next();
+//     } catch (error) {
+//         console.log('error', error);
+//         next()
+//     }
+// });
 
-// jwt token
-userSchema.methods.getJwtToken = function (): string {
-    const secret = process.env.ACCESS_TOKEN_SECRET || "your_jwt_secret";
-    const token = jwt.sign({ _id: this._id }, secret, {
-        expiresIn: '30m',
-    });
-    return token;
-};
+// // jwt token
+// userSchema.methods.getJwtToken = function (): string {
+//     const secret = process.env.ACCESS_TOKEN_SECRET || "your_jwt_secret";
+//     const token = jwt.sign({ _id: this._id }, secret, {
+//         expiresIn: '30m',
+//     });
+//     return token;
+// };
 
-// compare password
-userSchema.methods.comparePassword = async function (
-    password: string,
-    hash: string
-): Promise<boolean> {
-    return await bcrypt.compare(password, hash);
-};
+// // compare password
+// userSchema.methods.comparePassword = async function (
+//     password: string,
+//     hash: string
+// ): Promise<boolean> {
+//     return await bcrypt.compare(password, hash);
+// };
 
-export default model<IUserModel<Types.ObjectId>>("User", userSchema);
+// export default model<User>("User", userSchema);
+export const User = model<User>("User", userSchema);
+// export User;
+
+export const getUserByEmail = (email: string) => User.findOne({ email }).populate('role').exec();
