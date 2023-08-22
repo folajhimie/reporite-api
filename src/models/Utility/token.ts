@@ -1,5 +1,7 @@
 import { Document, Schema, model, Types} from "mongoose";
-import { TokenInterface } from "../../interfaces /Utility/tokenInterface";
+import { TokenInterface } from "../../interfaces /Utility/TokenInterface";
+// import { TokenInterface } from "../../interfaces /Utility/tokenInterface";
+
 
 // Define the interface with a generic
 // interface Token<T> {

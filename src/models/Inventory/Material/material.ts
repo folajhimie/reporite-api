@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema, Model, Types, model } from 'mongoose';
-import { MaterialInterface } from '../../interfaces /Inventory/materialInterface';
+import { MaterialInterface } from '../../../interfaces /Inventory/Material/materialInterface';
 
 interface Material extends MaterialInterface, Document {}
 // const userSchema: Schema = new Schema<UserInterface>(
