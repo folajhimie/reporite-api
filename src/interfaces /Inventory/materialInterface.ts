@@ -1,3 +1,50 @@
+import mongoose, { Document, Schema, Model, Types } from 'mongoose';
+
+/**
+ * Interface to model the Material Schema for TypeScript.
+ * @param name:string
+ * @param cost:number
+ * @param inventory_managed:boolean
+ * @param stock:number
+ * @param min_stock:number
+ * @param max_stock:number
+ * @param currency:Types.ObjectId
+ * @param user:Types.ObjectId
+ * @param organization:Types.ObjectId
+ */
+
+// Define the material schema
+export interface MaterialInterface {
+  name: string;
+  cost: number;
+  inventory_managed: boolean,
+  stock: number;
+  min_stock: number,
+  max_stock: number,
+  currency_id: Types.ObjectId;
+  created_by: Types.ObjectId;
+  organization_id: Types.ObjectId;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // // Define the interface with a generic
 // interface RelatedEntity<T> {
 //   entity: T;
