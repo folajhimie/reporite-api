@@ -1,4 +1,4 @@
-import IUserRepository from "../../../repositories/People/userRepositories";
+import IUserRepository from "../../../repositories/People/users/userRepositories";
 import { AppError, HttpCode } from "../../../exceptions/appError";
 import { Request, Response, NextFunction } from "express";
 import { UserRepository } from "./userService";

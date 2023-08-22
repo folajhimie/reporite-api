@@ -15,7 +15,7 @@ import generateResetPasswordTemplate from "../../../templates/resetPasswordTempl
 import { generateHashPassword } from "../../../utils/password-manager";
 import Otp from "../../../models/People/otp";
 // import { AuthRepository } from "./authService";
-import IAuthRepository from "../../../repositories/People/authRepositories";
+import IAuthRepository from "../../../repositories/People/users/authRepositories";
 
 // type TodoPreview = Pick<UserInterface, "email" | "password">;
 

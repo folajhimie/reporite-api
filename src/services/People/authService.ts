@@ -1,5 +1,5 @@
 import  User from "../../models/People/user";
-import IAuthRepository from "../../repositories/People/authRepositories";
+import IAuthRepository from "../../repositories/People/users/authRepositories";
 import { UserInterface } from "../../interfaces /People/userInterface";
 import { AppError, HttpCode } from "../../exceptions/appError";
 
