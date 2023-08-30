@@ -84,6 +84,16 @@ const userSchema: Schema = new Schema<UserInterface>(
             type: Boolean,
             default: false,
         },
+        request_id: { 
+            type: Schema.Types.ObjectId, 
+            ref: 'Request', 
+            required: true 
+        },
+        organization_id: { 
+            type: Schema.Types.ObjectId, 
+            ref: 'Organization', 
+            required: true 
+        },
     },
     {
         timestamps: true,

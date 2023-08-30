@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import User from '../models/People/user';
+import { User } from '../models/People/user';
 import { AppError, HttpCode } from '../exceptions/appError';
 
 interface UserPayload {

@@ -1,28 +1,12 @@
-import { Document, model, Schema, Types } from "mongoose";
+import mongoose, { Document, Schema, Model } from "mongoose";
+import { IWishListInterface } from "../../../interfaces /Production/WishList/wishListInterface";
 
-/**
- * Interface to model the Cart Schema for TypeScript.
- * @param productName: string;
- * @param productPrice: number;
- * @param productImage: string;
- * @param quantity: number;
- * @param userId: string,
- * @param productId: number,
- * @param stock: number,
- */
+interface WishList extends IWishListInterface, Document { }
 
 
-export interface Cart extends Document {
-    productName: string;
-    productPrice: number;
-    productImage: string;
-    quantity: number;
-    userId: string,
-    productId: number,
-    stock: number,
-}
 
-const cartSchema: Schema = new Schema({
+const wishListSchema: Schema = new Schema<IWishListInterface>(
+    {
     productName: {
         type: String,
         required: [true, "Please enter your product name"],
@@ -47,13 +31,14 @@ const cartSchema: Schema = new Schema({
         type: String,
         required: [true, "Please enter your user id"],
     },
-    stock: {
+    Stock: {
         type: Number,
         required: [true, "Please enter your product stock"],
     }
 });
 
-export default model<Cart>('Cart', cartSchema);
+const WishList: Model<IWishListInterface> = mongoose.model<WishList>("WishList", wishListSchema);
+export default WishList;
 
 
 
