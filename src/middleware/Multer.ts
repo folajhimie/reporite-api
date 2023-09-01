@@ -1,75 +1,93 @@
+import jimp from "jimp"; // Import the jimp library
+import multer, { FileFilterCallback } from 'multer';
+// import sharp from 'sharp';
+import { Request, Response, NextFunction } from 'express';
+import path from "path";
+import fs from "fs";
 
-import express, { Request } from 'express';
-import multer, { StorageEngine, FileFilterCallback } from 'multer';
-import path from 'path';
-
-type DestinationCallback = (error: Error | null, destination: string) => void
-type FileNameCallback = (error: Error | null, filename: string) => void
-
-
-interface UploadedFile {
-    fieldname: string;
-    originalname: string;
-    encoding: string;
-    mimetype: string;
-    destination: string;
-    filename: string;
-    path: string;
-    size: number;
+interface RequestWithFiles extends Request {
+    files?: Express.Multer.File[];
 }
 
-
-// Configure Multer disk storage
-const fileStorage: StorageEngine = multer.diskStorage({
-    destination: (
-        req: Request, 
-        file: UploadedFile, 
-        cb: DestinationCallback
-    ) => {
-        cb(null, path.join(__dirname, './uploads'));
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, path.join(__dirname, "../public/images/"));
     },
-    filename: (
-        req: Request, 
-        file: UploadedFile, 
-        cb: FileNameCallback
-    ) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        const extname = path.extname(file.originalname);
-        // const filename = file.originalname.split(".")[0];
-        cb(null, file.fieldname + '-' + uniqueSuffix + extname);
+    filename: function (req, file, cb) {
+        const uniquesuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+        cb(null, file.fieldname + "-" + uniquesuffix + ".jpeg");
     },
 });
 
-const fileFilter = (
-    request: Request,
-    file: Express.Multer.File,
-    callback: FileFilterCallback
-): void => {
-    if (
-        file.mimetype === 'image/png' ||
-        file.mimetype === 'image/jpg' ||
-        file.mimetype === 'image/jpeg'
-    ) {
-        callback(null, true)
+const multerFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback | any): void => {
+    if (file.mimetype.startsWith("image")) {
+        cb(null, true);
     } else {
-        callback(null, false)
+        cb(new Error("Unsupported file format"), false);
     }
+};
+
+const upload = multer({
+    storage: storage,
+    fileFilter: multerFilter,
+    limits: { fileSize: 1000000 },
+});
+
+// const upload = multer({ storage, fileFilter: multerFilter });
+
+// const imageResizes = async (destination: string, files?: Express.Multer.File[]) => {
+//     if (!files) return;
+//     await Promise.all(
+//         files.map(async (file) => {
+//             await sharp(file.path)
+//                 .resize(300, 300)
+//                 .toFormat("jpeg")
+//                 .jpeg({ quality: 90 })
+//                 .toFile(`public/images/${destination}/${file.filename}`);
+//             fs.unlinkSync(`public/images/${destination}/${file.filename}`);
+//         })
+//     );
+// };
+
+
+// import fs from "fs";
+// import path from "path";
+
+
+interface File {
+  path: string;
+  filename: string;
 }
 
-export const upload = multer({ storage: fileStorage, fileFilter: fileFilter });
+async function imageResize(destination: string, files?: Express.Multer.File[]): Promise<void> {
+  if (!files) return;
 
+  await Promise.all(
+    files.map(async (file) => {
+      const resizedImage = await jimp.read(file.path);
+      await resizedImage
+        .resize(300, 300)
+        .quality(90)
+        .writeAsync(`public/images/${destination}/${file.filename}`);
+        
+      fs.unlinkSync(file.path); // Remove the original image file
+    })
+  );
+}
 
+// Example usage
+// const files: File[] = [
+//   {
+//     path: "path/to/image.jpg",
+//     filename: "image.jpg",
+//   },
+//   // ... add more files here
+// ];
 
-// app.post('/upload', upload.single('image'), (req: Request, res: Response) => {
-//     const uploadedFile = req.file as UploadedFile;
-
-//     if (!uploadedFile) {
-//         return res.status(400).json({ error: 'No file uploaded' });
-//     }
-
-//     const filePath = uploadedFile.path;
-
-//     return res.json({ imagePath: filePath });
+// imageResize("products", files).catch((error) => {
+//   console.error("Error resizing images:", error);
 // });
 
 
+
+export { upload, imageResize };

@@ -1,14 +1,14 @@
 
-export class Features {
-    private queryStr: { [key: string]: string }; // Assuming the queryStr object has a 'keyword' property
-    private query: any; // Replace 'any' with the actual type of your MongoDB query object
+export class ApiFeatures {
+    public queryStr: { [key: string]: string }; // Assuming the queryStr object has a 'keyword' property
+    public query: any; // Replace 'any' with the actual type of your MongoDB query object
 
     constructor(queryStr: { keyword?: string }, query: any) {
         this.queryStr = queryStr;
         this.query = query;
     }
 
-    search(): Features {
+    search(): ApiFeatures {
         const keyword = this.queryStr.keyword
             ? {
                 name: {
@@ -21,7 +21,7 @@ export class Features {
         return this;
     }
 
-    filter(): Features {
+    filter(): ApiFeatures {
         const queryCopy = { ...this.queryStr };
 
         // Removing some fields for filtering
@@ -33,7 +33,7 @@ export class Features {
         return this;
     }
 
-    pagination(resultPerPage: number): Features {
+    pagination(resultPerPage: number): ApiFeatures {
         const currentPage = Number(this.queryStr.page) || 1;
         const skip = resultPerPage * (currentPage - 1);
 

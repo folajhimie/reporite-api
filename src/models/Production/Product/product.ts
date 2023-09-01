@@ -31,46 +31,80 @@ const productSchema: Schema = new Schema<IProductInterface>(
         vendorPrice: {
             type: Number,
         },
+        min_stock: {
+            type: Number,
+            default: 0
+        },
+        max_stock: {
+            type: Number,
+            default: 50
+        },
         stock: {
             type: Number,
             required: [true, "Please enter your product stock!"],
         },
         images: [
             {
-                type: String,
+                public_id: {
+                    type: String,
+                    required: true,
+                },
+                url: {
+                    type: String,
+                    required: true,
+                },
             },
         ],
+        numOfReviews: {
+            type: Number,
+            default: 0
+        },
         reviews: [
             {
-                user: {
-                    type: Object,
+                user: { 
+                    type: Schema.Types.ObjectId, 
+                    ref: "User", 
+                    required: true 
                 },
-                rating: {
-                    type: Number,
+                name: { 
+                    type: String, 
+                    required: true 
                 },
-                comment: {
-                    type: String,
+                rating: { 
+                    type: Number, 
+                    required: true 
                 },
-                productId: {
-                    type: String,
+                comment: { 
+                    type: String, 
+                    required: true 
                 },
-                createdAt: {
-                    type: Date,
-                    default: Date.now(),
+                productId: { 
+                    type: String, 
+                    required: true 
+                },
+                createdAt: { 
+                    type: Date, 
+                    default: Date.now 
                 },
             },
+
         ],
         ratings: {
             type: Number,
         },
-        shopId: { 
-            type: Schema.Types.ObjectId, 
-            ref: 'Shop', 
-            required: true 
+        shopId: {
+            type: Schema.Types.ObjectId,
+            ref: 'Shop',
+            required: true
         },
         shop: {
             type: Object,
             required: true,
+        },
+        createdBy: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
         },
         sold_out: {
             type: Number,
