@@ -1,41 +1,40 @@
-import mongoose, { Document, Schema, Model } from "mongoose";
+import mongoose, { Document, Schema, Types } from 'mongoose';
 
-interface OrderItem extends Document {
-  name: string;
-  qty: number;
-  image: string;
-  price: number;
-  product: mongoose.Schema.Types.ObjectId;
+interface IOrderItem {
+  _id: Types.ObjectId;
+  productName: string;
+  productPrice: number;
+  quantity: number;
+  productImage: string;
+  productId: string;
+  shopId: string;
 }
 
-interface ShippingAddress extends Document {
+interface IShippingAddress {
   address: string;
   city: string;
-  postalcode: string;
+  state: string;
   country: string;
+  phoneNumber?: number;
 }
 
-interface PaymentResult extends Document {
-  id: string;
-  status: string;
-  upload_status: string;
-  email_address: string;
+interface IPaymentInfo {
+  id?: string;
+  status?: string;
+  type?: string;
 }
 
-export interface IOrderInterface extends Document {
-  user: mongoose.Schema.Types.ObjectId;
-  orderItems: OrderItem[];
-  shippingAddress: ShippingAddress;
-  paymentMethod?: string; // Payment method might be optional
-  paymentResult?: PaymentResult; // Payment result might be optional
-  taxPrice: number;
-  shippingPrice: number;
+interface IOrderInterface extends Document {
+  cart: IOrderItem[];
+  shippingAddress: IShippingAddress;
+  createdBy: Types.ObjectId; // Define your user type here, replace 'any' with the actual type
   totalPrice: number;
-  isPaid: boolean;
-  paidAt?: Date;
-  isDeliverd: boolean;
-  deliverAt?: Date;
+  status: string;
+  paymentInfo: IPaymentInfo;
+  paidAt: Date;
+  deliveredAt?: Date;
   createdAt: Date;
 }
 
+export { IOrderInterface, IPaymentInfo, IShippingAddress, IOrderItem }
 

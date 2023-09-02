@@ -1,113 +1,89 @@
-import mongoose, { Document, Schema, Model } from "mongoose";
+import mongoose, { Document, Schema, Model, Types } from "mongoose";
 import { IOrderInterface } from "../../../interfaces /Production/Order/orderInterface";
 
 interface Order extends IOrderInterface, Document { }
 
 
-
-
 const orderSchema: Schema = new Schema<IOrderInterface>(
     {
-        user: {
-            type: mongoose.Schema.Types.ObjectId,
-            required: true,
-            ref: "User",
-        },
-        orderItems: [
+        cart: [
             {
-                name: {
+                _id: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    default: () => new Types.ObjectId(),
+                },
+                productName: {
                     type: String,
                     required: true,
                 },
-                qty: {
+                productPrice: {
                     type: Number,
                     required: true,
                 },
-                image: {
+                quantity: {
+                    type: Number,
+                    required: true,
+                },
+                productImage: {
                     type: String,
                     required: true,
                 },
-                price: {
-                    type: Number,
-                    required: true,
-                },
-                product: {
+                productId: {
                     type: mongoose.Schema.Types.ObjectId,
                     required: true,
                     ref: "Product",
                 },
+                shopId: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    required: true,
+                    ref: "Shop",
+                }
             },
         ],
         shippingAddress: {
-            address: {
-                type: String,
-                required: true,
-            },
-            city: {
-                type: String,
-                required: true,
-            },
-            postalcode: {
-                type: String,
-                required: true,
-            },
-            country: {
-                type: String,
-                required: true,
-            },
+            type: Object,
+            required: true,
         },
-        paymentMethod: {
+        createdBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+            ref: "User",
+        },
+        totalPrice: {
+            type: Number,
+            required: true,
+        },
+        status: {
             type: String,
-            // required: true,
+            default: 'Processing',
         },
-        paymentResult: {
+        paymentInfo: {
             id: {
                 type: String,
             },
             status: {
                 type: String,
             },
-            upload_status: {
+            type: {
                 type: String,
             },
-            email_address: {
-                type: String,
-            },
-        },
-        taxPrice: {
-            type: Number,
-            required: true,
-            default: 0.0,
-        },
-        shippingPrice: {
-            type: Number,
-            required: true,
-            default: 0.0,
-        },
-        totalPrice: {
-            type: Number,
-            required: true,
-            default: 0.0,
-        },
-        isPaid: {
-            type: Boolean,
-            required: true,
-            default: false,
         },
         paidAt: {
             type: Date,
+            default: Date.now(),
         },
-        isDeliverd: {
-            type: Boolean,
-            required: true,
-            default: false,
-        },
-        deliverAt: {
+        deliveredAt: {
             type: Date,
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now(),
         },
     },
     { timestamps: true }
 );
+
+// export default mongoose.model<IOrder>('Order', orderSchema);
 
 const Order: Model<IOrderInterface> = mongoose.model<Order>("Order", orderSchema);
 export default Order;

@@ -6,8 +6,7 @@ import Shop from "../../../models/Production/Shop/shop";
 import cloudinary from 'cloudinary';
 
 import { ApiFeatures } from "../../../utils/Feature";
-import { nextDay } from "date-fns";
-import { stringify } from "querystring";
+
 
 
 export class ProductRepository implements IProductRepository {
@@ -261,59 +260,53 @@ export class ProductRepository implements IProductRepository {
 
     async createNewReview(productData: IReview, reqUser: any): Promise<any> {
         const { rating, comment, productId, user, name } = productData;
-        // const { user, name } = reqUser;
-
+      
         try {
-            const review: IReview = {
-                user,
-                name,
-                rating: Number(rating),
-                productId,
-                comment,
-            };
-
-            const product = await Product.findById(productId)
-            if (!product) {
-                throw new AppError({
-                    httpCode: HttpCode.NOT_FOUND,
-                    description: 'Product is not found with this id'
-                });
-            } else {
-
-                const isReviewed = product?.reviews.find(
-                    (rev) => rev.user.toString() === reqUser._id.toString()
-                );
-
-                if (isReviewed) {
-                    product.reviews.forEach((rev) => {
-                        if (rev.user.toString() === reqUser._id.toString()) {
-                            rev.rating = rating;
-                            rev.comment = comment;
-                        }
-                    });
-                } else {
-                    product.reviews.push(review);
-                    product.numOfReviews = product.reviews.length;
+          const review: IReview = {
+            user: user,
+            name: name,
+            rating: Number(rating),
+            productId: productId,
+            comment: comment,
+          };
+      
+          const product = await Product.findById(productId);
+      
+          if (!product) {
+            throw new Error("Product is not found with this id");
+          } else {
+            const isReviewed = product.reviews.find(
+              (rev) => rev.user.toString() === reqUser._id.toString()
+            );
+      
+            if (isReviewed) {
+              product.reviews.forEach((rev) => {
+                if (rev.user.toString() === reqUser._id.toString()) {
+                  rev.rating = rating;
+                  rev.comment = comment;
                 }
-
-                let avg = 0;
-
-                product?.reviews.forEach((rev) => {
-                    avg += rev.rating;
-                });
-
-                product.ratings = avg / product?.reviews.length;
-
-                await product.save({ validateBeforeSave: false });
-
-                return product;
+              });
+            } else {
+              product.reviews.push(review);
+              product.numOfReviews = product.reviews.length;
             }
-
-
+      
+            let avg = 0;
+      
+            product.reviews.forEach((rev) => {
+              avg += rev.rating;
+            });
+      
+            product.ratings = avg / product.reviews.length;
+      
+            await product.save({ validateBeforeSave: false });
+      
+            return product;
+          }
         } catch (error) {
-            console.error("Error showing Reviews:", error);
+          console.error("Error creating/updating review:", error);
         }
-    }
+      }
 
     async getProductReviews(reqQuery: any): Promise<any> {
         try {

@@ -1,44 +1,81 @@
 import mongoose, { Document, Schema, Model } from "mongoose";
 import { IShopInterface } from "../../../interfaces /Production/Shop/shopInterface";
 
-interface Shop extends IShopInterface, Document { }
+interface Shop extends IShopInterface, Document {}
 
 
 const shopSchema: Schema = new Schema<IShopInterface>(
     {
         name: {
             type: String,
-            required: [true, "Please enter your Shop name!"],
+            required: [true, "Please enter your shop name!"],
+        },
+        email: {
+            type: String,
+            required: [true, "Please enter your shop email address"],
         },
         description: {
             type: String,
-            required: [true, "Please enter your Shop description!"],
-        },
-        phoneNumber: {
-            type: String,
-            required: [true, "Please enter your Shop price!"],
         },
         address: {
             type: String,
-            required: [true, "Please enter your Shop category!"],
+            required: true,
+        },
+        phoneNumber: {
+            type: Number,
+            required: true,
+        },
+        role: {
+            name: String,
+            default: "Vendor",
         },
         avatar: {
             type: String,
             required: true,
         },
-        productId: { 
-            type: Schema.Types.ObjectId, 
-            ref: 'Product', 
-            required: true 
+        withdrawMethod: {
+            id: {
+              type: String,
+              required: true,
+            },
+            withdrawType: {
+              type: String,
+              default: "Transfer",
+            },
         },
-        role: {
-            type: Schema.Types.ObjectId,
-            ref: 'Role',
-            required: true,
+        availableBalance: {
+            type: Number,
+            default: 0,
         },
+        transactions: [
+            {
+                amount: {
+                    type: Number,
+                    required: true,
+                },
+                status: {
+                    type: String,
+                    default: "Processing",
+                },
+                createdAt: {
+                    type: Date,
+                    default: Date.now(),
+                },
+                updatedAt: {
+                    type: Date,
+                },
+            },
+        ],
+        createdAt: {
+            type: Date,
+            default: Date.now(),
+        },
+
     },
     { timestamps: true }
 );
+
+
 
 
 const Shop: Model<IShopInterface> = mongoose.model<Shop>("Shop", shopSchema);
