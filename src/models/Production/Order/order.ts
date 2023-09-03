@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema, Model, Types } from "mongoose";
 import { IOrderInterface } from "../../../interfaces /Production/Order/orderInterface";
 
-interface Order extends IOrderInterface, Document { }
+interface Order extends IOrderInterface, Document {}
 
 
 const orderSchema: Schema = new Schema<IOrderInterface>(
