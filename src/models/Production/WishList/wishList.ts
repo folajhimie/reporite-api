@@ -5,40 +5,27 @@ interface WishList extends IWishListInterface, Document { }
 
 
 
-const wishListSchema: Schema = new Schema<IWishListInterface>(
-    {
-    productName: {
-        type: String,
-        required: [true, "Please enter your product name"],
+const wishListSchema: Schema = new Schema<IWishListInterface>({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User', // Replace with your User model
     },
-    productPrice: {
-        type: Number,
-        required: [true, "Please enter your product price"],
-    },
-    productImage: {
-        type: String,
-        required: [true, "Please enter your product image"],
-    },
-    quantity: {
-        type: Number,
-        required: [true, "Please enter your product quantity"],
-    },
-    userId: {
-        type: String,
-        required: [true, "Please enter your user id"],
-    },
-    productId: {
-        type: String,
-        required: [true, "Please enter your user id"],
-    },
-    Stock: {
-        type: Number,
-        required: [true, "Please enter your product stock"],
-    }
+    products: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+            ref: 'Product', // Replace with your Product model
+        },
+    ],
 });
 
 const WishList: Model<IWishListInterface> = mongoose.model<WishList>("WishList", wishListSchema);
 export default WishList;
+
+
+
+
 
 
 

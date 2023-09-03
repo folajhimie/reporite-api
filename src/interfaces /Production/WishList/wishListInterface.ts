@@ -1,13 +1,8 @@
-import mongoose, { Document, Schema, Model } from "mongoose";
+import mongoose, { Document, Schema, Model, Types } from 'mongoose';
 
 export interface IWishListInterface extends Document {
-    productName: string;
-    productPrice: number;
-    productImage: string;
-    quantity: number;
-    userId: string;
-    productId: string;
-    Stock: number;
+  user: Types.ObjectId;
+  products: Types.ObjectId[];
 }
 
 
