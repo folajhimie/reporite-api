@@ -44,7 +44,7 @@ export class PromotionRepository implements IPromotionRepository {
 
     async getSinglePromotion(reqParamsId: any): Promise<any> {
         try {
-            const promotion = await Promotion.findById(reqParamsId);
+            const promotion = await Promotion.findById(reqParamsId).populate('product');
 
             if (!promotion) {
                 throw new AppError({
@@ -65,7 +65,7 @@ export class PromotionRepository implements IPromotionRepository {
         try {
             const promotions = await Promotion.find().sort({
                 createdAt: -1,
-            });;
+            }).populate("product");
 
             if (!promotions) {
                 throw new AppError({

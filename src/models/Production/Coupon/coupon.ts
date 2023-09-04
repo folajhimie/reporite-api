@@ -1,9 +1,9 @@
 import mongoose, { Document, Schema, Model } from "mongoose";
-import { ICoupounCodeInterface } from "../../../interfaces /Production/CoupounCode/coupounCodeInterface";
+import { ICouponInterface } from "../../../interfaces /Production/Coupon/couponInterface";
 
-interface CoupounCode extends ICoupounCodeInterface, Document { }
+interface Coupon extends ICouponInterface, Document { }
 
-const coupounCodeSchema: Schema = new Schema<ICoupounCodeInterface>(
+const couponSchema: Schema = new Schema<ICouponInterface>(
     {
         name: {
             type: String,
@@ -35,5 +35,5 @@ const coupounCodeSchema: Schema = new Schema<ICoupounCodeInterface>(
     { timestamps: true }
 );
 
-const CoupounCode: Model<ICoupounCodeInterface> = mongoose.model<CoupounCode>("CoupounCode", coupounCodeSchema);
-export default CoupounCode;
+const Coupon: Model<ICouponInterface> = mongoose.model<Coupon>("Coupon", couponSchema);
+export default Coupon;

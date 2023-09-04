@@ -52,7 +52,7 @@ export class WishListRepository implements IWishListRepository {
 
     async getWishListData(reqParamsId: any): Promise<any> {
         try {
-            const wishList = await WishList.findById(reqParamsId);
+            const wishList = await WishList.findById(reqParamsId).populate('product').populate('user');
 
             if (!wishList) {
                 throw new AppError({
@@ -92,7 +92,7 @@ export class WishListRepository implements IWishListRepository {
         try {
             const wishListData = await WishList.find().sort({
                 createdAt: -1,
-            });;
+            });
 
             if (!wishListData) {
                 throw new AppError({
