@@ -14,10 +14,6 @@ const productSchema: Schema = new Schema<IProductInterface>(
             type: String,
             required: [true, "Please enter your product description!"],
         },
-        category: {
-            type: String,
-            required: [true, "Please enter your product category!"],
-        },
         tags: {
             type: String,
         },
@@ -97,13 +93,18 @@ const productSchema: Schema = new Schema<IProductInterface>(
             ref: 'Shop',
             required: true
         },
-        shop: {
-            type: Object,
-            required: true,
-        },
+        // shop: {
+        //     type: Object,
+        //     required: true,
+        // },
         createdBy: {
             type: Schema.Types.ObjectId,
             ref: 'User',
+            required: true
+        },
+        category: {
+            type: Schema.Types.ObjectId,
+            ref: 'Category',
             required: true
         },
         sold_out: {

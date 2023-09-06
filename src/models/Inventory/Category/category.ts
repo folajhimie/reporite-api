@@ -3,6 +3,7 @@ import { ICategoryInterface } from "../../../interfaces /Inventory/Category/cate
 
 interface Category extends ICategoryInterface, Document { }
 
+// Define the category schema
 const categorySchema = new Schema<ICategoryInterface>(
     {
         name: {
@@ -10,9 +11,15 @@ const categorySchema = new Schema<ICategoryInterface>(
             required: [true, "Please enter the category name"],
             unique: true
         },
+        products: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Product', // Reference the Product model
+            },
+        ],
     },
     { timestamps: true }
 );
 
-const Category: Model<ICategoryInterface> = mongoose.model<Category>("Category", categorySchema);
+const Category: Model<ICategoryInterface> = mongoose.model<ICategoryInterface>("Category", categorySchema);
 export default Category;

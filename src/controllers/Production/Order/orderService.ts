@@ -4,7 +4,7 @@ import Order from "../../../models/Production/Order/order";
 import { HttpCode, AppError } from "../../../exceptions/appError";
 import Shop from "../../../models/Production/Shop/shop";
 import { Utility } from "../../../Helpers/Utility";
-import Cart from "../../../models/Production/Cart/cart";
+import { Cart } from "../../../models/Production/Cart/cart";
 // import { Request } from "../../../models/Request/request";
 import { Request } from "express";
 import { ParamsDictionary } from "express-serve-static-core";

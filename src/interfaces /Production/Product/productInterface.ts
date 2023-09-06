@@ -1,5 +1,9 @@
 import mongoose, { Document, Schema, Model, Types} from "mongoose";
 import { IShopInterface } from "../Shop/shopInterface";
+import { UserInterface } from "../../People/userInterface";
+import { ICategoryInterface } from "../../Inventory/Category/categoryInterface";
+
+
 interface IReview extends Document{
   user: Types.ObjectId; // You might want to specify the user schema here
   name: string;
@@ -17,7 +21,6 @@ interface IProductImage {
 interface IProductInterface extends Document {
   name: string;
   description: string;
-  category: string;
   tags?: string;
   originalPrice?: number;
   discountPrice: number;
@@ -30,8 +33,9 @@ interface IProductInterface extends Document {
   reviews: IReview[];
   ratings?: number;
   shopId: Types.ObjectId | IShopInterface;
-  shop: Record<string, any>; // You might want to specify the shop schema here
-  createdBy: Types.ObjectId;
+  // shop: Record<string, any>; // You might want to specify the shop schema here
+  createdBy: Types.ObjectId | UserInterface;
+  category: Types.ObjectId | ICategoryInterface;
   sold_out?: number;
   createdAt: Date;
 }
