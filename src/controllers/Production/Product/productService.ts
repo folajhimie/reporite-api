@@ -6,6 +6,7 @@ import Shop from "../../../models/Production/Shop/shop";
 import cloudinary from 'cloudinary';
 
 import { ApiFeatures } from "../../../utils/Feature";
+import { IShopInterface } from "../../../interfaces /Production/Shop/shopInterface";
 
 
 
@@ -17,7 +18,7 @@ export class ProductRepository implements IProductRepository {
             // Validate shop existence
             let { shopId, images } = productData;  // Assuming the request contains the shopId
 
-            const shopData = await Shop.findById(shopId);
+            const shopData: IShopInterface | null = await Shop.findById(shopId);
             if (!shopData) {
                 throw new AppError({
                     httpCode: HttpCode.NOT_FOUND,
@@ -60,12 +61,23 @@ export class ProductRepository implements IProductRepository {
                     max_stock: productData.max_stock,
                     stock: productData.stock,
                     images: imagesLinks,
-                    shop: shopData, // You might want to specify the shop schema here
+                    shopId: shopId, // You might want to specify the shop schema here
                     reviews: [], // Empty reviews array
                 };
 
                 // Create the product
                 const product = await Product.create(productInfo);
+
+                // check if shop exist and then query the products array
+                if (Array.isArray(shopData.products)) {
+
+                    // if the products id does not exist in the shop model push the product id into the shop
+                    if (!shopData.products.includes(product._id)) {
+                        shopData.products.push(product._id);
+                        await shopData.save();
+                    }
+                }
+                
                 return product;
             }
 
