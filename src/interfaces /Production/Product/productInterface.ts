@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema, Model, Types} from "mongoose";
-
+import { IShopInterface } from "../Shop/shopInterface";
 interface IReview extends Document{
   user: Types.ObjectId; // You might want to specify the user schema here
   name: string;
@@ -29,7 +29,7 @@ interface IProductInterface extends Document {
   images: IProductImage[];
   reviews: IReview[];
   ratings?: number;
-  shopId: Types.ObjectId;
+  shopId: Types.ObjectId | IShopInterface;
   shop: Record<string, any>; // You might want to specify the shop schema here
   createdBy: Types.ObjectId;
   sold_out?: number;

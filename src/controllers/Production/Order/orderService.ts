@@ -19,7 +19,7 @@ export class OrderRepository implements IOrderRepository {
     ): Promise<any> {
         try {
             const { shippingAddress, createdBy, paymentInfo } = orderData;
-            let cart: IOrderItem[] = cartData.map((item) => ({
+            let cart: IOrderItem[]  = cartData.map((item) => ({
                 productName: item.productName,
                 productPrice: item.productPrice,
                 quantity: item.quantity,

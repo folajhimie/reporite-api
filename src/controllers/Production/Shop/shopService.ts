@@ -5,7 +5,8 @@ import { IShopInterface } from "../../../interfaces /Production/Shop/shopInterfa
 // import { Request } from "../../../models/Request/request";
 import cloudinary from 'cloudinary'
 import mongoose, { Document, Schema, Model } from "mongoose";
-
+import Product from "../../../models/Production/Product/product";
+import { Cart } from "../../../models/Production/Cart/cart";
 export class ShopRepository implements IShopRepository {
 
     // Create a new shop
@@ -125,9 +126,26 @@ export class ShopRepository implements IShopRepository {
     }
 
     // Delete a shop
-    async deleteShop(reqParamsId: any): Promise<any> {
+    async deleteShop(reqParams: any): Promise<any> {
+        // In your controller, you'll need to perform the following steps:
+
+        // Find the store by ID.
+        // Retrieve all products associated with the store.
+        // Remove references to these products from any carts.
+        // Delete the products.
+        // Delete the store.
+
         try {
-            const shop: IShopInterface | null = await Shop.findByIdAndDelete(reqParamsId);
+            // const shop: IShopInterface | null = await Shop.findByIdAndDelete(reqParamsId);
+
+            
+
+            // return shop;
+
+            const { shopId } = reqParams;
+
+            // Find the store by ID
+            const shop: IShopInterface | null = await Shop.findById(shopId);
 
             if (!shop) {
                 throw new AppError({
@@ -136,7 +154,21 @@ export class ShopRepository implements IShopRepository {
                 });
             }
 
-            return shop;
+            // Retrieve all products associated with the store
+            const products = await Product.find({ shopId: shopId });
+
+            // Remove references to these products from any carts
+            await Cart.updateMany(
+                { 'items': { $in: products.map((product) => product._id) } },
+                { $pull: { 'items': { $in: products.map((product) => product._id) } } }
+            );
+
+            // Delete the products
+            await Product.deleteMany({ shopId: shopId });
+
+            // Delete the store
+            await shop.remove();
+            
         } catch (error) {
             console.error('Error deleting a single shop:', error);
         }

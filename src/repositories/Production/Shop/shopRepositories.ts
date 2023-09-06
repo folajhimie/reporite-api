@@ -7,7 +7,7 @@ export default interface IShopRepository {
     updateShop(req: any, shopData: Partial<IShopInterface>): Promise<any>;
     getAllShop(reqQuery: any): Promise <any>;
     getSingleShop(reqParamsId: any): Promise<any>;
-    deleteShop(reqParamsId: any): Promise<any>;
+    deleteShop(reqParams: any): Promise<any>;
     deactivateShop(reqParamsId: any): Promise<any>;
     searchShop(req: any): Promise<any>;
 }
