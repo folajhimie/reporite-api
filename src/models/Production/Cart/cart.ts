@@ -1,41 +1,56 @@
 import mongoose, { Document, Schema, Model } from "mongoose";
-import { ICartInterface } from "../../../interfaces /Production/Cart/cartInterface";
+import { ICartInterface, ICartItemInterface } from "../../../interfaces /Production/Cart/cartInterface";
 
-interface Cart extends ICartInterface, Document { }
+interface Cart extends ICartInterface, Document {}
 
-const cartSchema: Schema = new Schema<ICartInterface>(
+interface CartItem extends ICartItemInterface, Document {}
+
+const cartItemSchema: Schema = new Schema<ICartItemInterface>(
     {
-        productName: {
-            type: String,
-            required: [true, "Please enter your product name"],
-        },
-        productPrice: {
-            type: Number,
-            required: [true, "Please enter your product price"],
-        },
-        productImage: {
-            type: String,
-            required: [true, "Please enter your product image"],
+        products: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Product',
+            required: true,
         },
         quantity: {
             type: Number,
-            required: [true, "Please enter your product quantity"],
-        },
-        userId: {
-            type: String,
-            required: [true, "Please enter your user id"],
-        },
-        productId: {
-            type: String,
-            required: [true, "Please enter your product id"],
-        },
-        Stock: {
-            type: Number,
-            required: [true, "Please enter your product stock"],
+            required: true,
         },
     },
     { timestamps: true }
 );
 
-const Cart: Model<ICartInterface> = mongoose.model<Cart>("Cart", cartSchema);
-export default Cart;
+const cartSchema: Schema = new Schema<ICartInterface>(
+    {
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User', // Reference to the User model
+            required: true,
+        },
+        items: [{ type: mongoose.Schema.Types.ObjectId, ref: 'CartItem' }], // Reference the CartItem model
+    // ... define other cart fields here
+    },
+    { timestamps: true }
+);
+
+const Cart: Model<ICartInterface> = mongoose.model<ICartInterface>("Cart", cartSchema);
+
+const CartItem: Model<ICartItemInterface> = mongoose.model<ICartItemInterface>('CartItem', cartItemSchema);
+
+// export default Cart;
+export { Cart, CartItem };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

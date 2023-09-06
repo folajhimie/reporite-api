@@ -1,24 +1,25 @@
-import mongoose, { Document, Schema, Model } from "mongoose";
+// models/Product.ts
+import mongoose, { Document, Schema, Model, Types } from 'mongoose';
+import { IProductInterface } from '../Product/productInterface';
+import { UserInterface } from '../../People/userInterface';
 
-/**
- * Interface to model the Cart Schema for TypeScript.
- * @param productName: string;
- * @param productPrice: number;
- * @param productImage: string;
- * @param quantity: number;
- * @param userId: string,
- * @param productId: number,
- * @param stock: number,
- */
-
-export interface ICartInterface extends Document {
-    productName: string;
-    productPrice: number;
-    productImage: string;
+interface ICartItemInterface {
+    products: Types.ObjectId | IProductInterface;
     quantity: number;
-    userId: string;
-    productId: string;
-    Stock: number;
 }
+
+interface ICartInterface extends Document {
+    user: Types.ObjectId | UserInterface; // Reference to the user who owns the cart
+    items: ICartItemInterface[];
+}
+
+export { ICartInterface, ICartItemInterface }
+
+
+
+
+
+
+
 
 
