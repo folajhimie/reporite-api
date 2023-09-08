@@ -1,6 +1,6 @@
 import IProductRepository from "../../../repositories/Production/Product/productRepositories";
-import { IProductInterface, IProductImage, IReview } from "../../../interfaces /Production/Product/productInterface";
-import Product from "../../../models/Production/Product/product";
+import { IProductInterface, IProductImage, IReviewInterface } from "../../../interfaces /Production/Product/productInterface";
+import { Product, Review } from "../../../models/Production/Product/product";
 import { AppError, HttpCode } from "../../../exceptions/appError";
 import Shop from "../../../models/Production/Shop/shop";
 import cloudinary from 'cloudinary';
@@ -77,7 +77,7 @@ export class ProductRepository implements IProductRepository {
                         await shopData.save();
                     }
                 }
-                
+
                 return product;
             }
 
@@ -270,59 +270,15 @@ export class ProductRepository implements IProductRepository {
         }
     }
 
-    async createNewReview(productData: IReview, reqUser: any): Promise<any> {
-        const { rating, comment, productId, user, name } = productData;
-      
+    async createNewReview(
+        req: any,
+    ): Promise<any> {
         try {
-          const review: IReview = {
-            user: user,
-            name: name,
-            rating: Number(rating),
-            productId: productId,
-            comment: comment,
-          };
-      
-          const product = await Product.findById(productId);
-      
-          if (!product) {
-            throw new Error("Product is not found with this id");
-          } else {
-            const isReviewed = product.reviews.find(
-              (rev) => rev.user.toString() === reqUser._id.toString()
-            );
-      
-            if (isReviewed) {
-              product.reviews.forEach((rev) => {
-                if (rev.user.toString() === reqUser._id.toString()) {
-                  rev.rating = rating;
-                  rev.comment = comment;
-                }
-              });
-            } else {
-              product.reviews.push(review);
-              product.numOfReviews = product.reviews.length;
-            }
-      
-            let avg = 0;
-      
-            product.reviews.forEach((rev) => {
-              avg += rev.rating;
-            });
-      
-            product.ratings = avg / product.reviews.length;
-      
-            await product.save({ validateBeforeSave: false });
-      
-            return product;
-          }
-        } catch (error) {
-          console.error("Error creating/updating review:", error);
-        }
-      }
+            const { rating, comment, productId, title } = req.body;
+            const userId = req.user._id; // Assuming you have user information in the request
 
-    async getProductReviews(reqQuery: any): Promise<any> {
-        try {
-            const product = await Product.findById(reqQuery);
+            // Find the product by ID
+            const product: IProductInterface | null = await Product.findById(productId);
 
             if (!product) {
                 throw new AppError({
@@ -331,65 +287,188 @@ export class ProductRepository implements IProductRepository {
                 });
             }
 
-            return product;
+            // // Check if the user has already reviewed this product
+            // const existingReviewIndex = product.reviews.findIndex(
+            //     (rev) => rev.userId.toString() === userId.toString()
+            // );
+
+            // if (existingReviewIndex !== -1) {
+            //     // Update the existing review
+            //     const existingReview = product.reviews[existingReviewIndex];
+            //     existingReview.title = title;
+            //     existingReview.rating = rating;
+            //     existingReview.comment = comment;
+            // } else {
+            //     // Create a new review
+            //     const newReviews: IReviewInterface = {
+            //         userId,
+            //         title,
+            //         rating,
+            //         comment,
+            //         productId,
+            //     };
+
+            //     product.reviews.push(newReviews);
+            // }
+
+            // Check if the user has already reviewed the product
+            const existingReview = await Review.findOne({ productId, userId });
+
+            // userReviewIndex !== -1
+            // Update existing review
+            // When userReviewIndex is equal to -1, it means that the element is not present in the array.
+
+            if (existingReview) {
+                // Update the existing review
+                existingReview.title = title;
+                existingReview.rating = rating;
+                existingReview.comment = comment;
+
+                await existingReview.save();
+            } else {
+                // Create a new review
+                const newReview: IReviewInterface = new Review({
+                    userId,
+                    title,
+                    rating,
+                    comment,
+                    productId,
+                });
+
+                // Save the new review
+                await newReview.save();
+
+                // Add the review to the product's reviews array
+                product.reviews.push(newReview);
+
+                // Update the number of reviews and average ratings for the product
+                product.numOfReviews = product.reviews.length;
+
+                let totalRatings = 0;
+                product.reviews.forEach((rev) => {
+                    totalRatings += rev.rating;
+                });
+                product.ratings = totalRatings / product.reviews.length;
+
+                await product.save();
+            }
 
         } catch (error) {
-            console.error("Error getting single products:", error);
+            console.error('Error creating/updating review:', error);
+        }
+    };
+
+    // Get reviews for a specific product
+    async getReviewsByProductId(req: any): Promise<any> {
+        try {
+            const productId = req.params.productId;
+            const product = await Product.findById(productId);
+
+            if (!product) {
+                throw new AppError({
+                    httpCode: HttpCode.NOT_FOUND,
+                    description: 'Product is not found with this id'
+                });
+            }
+
+            return product.reviews;
+
+        } catch (error) {
+            console.error('Error fetching reviews:', error);
         }
     }
 
-    async deleteReview(reqQuery: any): Promise<any> {
+    async deleteReviewById(req: any): Promise<any> {
         try {
-            const product = await Product.findById(reqQuery.productId);
+            const reviewId = req.params.reviewId;
+            const userId = req.user._id; // Assuming you have user authentication middleware
 
-            if (!product) {
-                throw new AppError({
-                    httpCode: HttpCode.NOT_FOUND,
-                    description: 'Product is not found with this id'
-                });
-            }
-
-            const reviews = product.reviews.filter(
-                (rev) => rev._id.toString() !== reqQuery.id.toString()
-            );
-
-            let avg = 0 
-
-            reviews.forEach((rev) => {
-                avg += rev.rating
-            });
-
-            let ratings = 0;
-
-            if (reviews.length === 0) {
-                ratings = 0;
-            } else {
-                ratings = avg / reviews.length;
-            }
-
-            const numOfReviews = reviews.length;
-
-            await Product.findByIdAndUpdate(
-                reqQuery.productId,
+            const product = await Product.findOneAndUpdate(
+                { 'reviews._id': reviewId, 'reviews.userId': userId },
                 {
-                    reviews,
-                    ratings,
-                    numOfReviews,
+                    $pull: { reviews: { _id: reviewId } },
                 },
-                {
-                    new: true,
-                    runValidators: true,
-                    useFindAndModify: false,
-                }
+                { new: true }
             );
 
+            if (!product) {
+                throw new AppError({
+                    httpCode: HttpCode.NOT_FOUND,
+                    description: 'Product is not found with this id'
+                });
+            }
 
+            // Recalculate the average rating for the product
 
+            let totalRating = 0;
+            product.reviews.forEach((review) => {
+                totalRating += review.rating;
+            });
+
+            product.ratings = product.reviews.length > 0 ? totalRating / product.reviews.length : 0;
+
+            // Recalculate the number of reviews
+            const numOfReviews = product.reviews.length;
+
+            await product.save();
 
         } catch (error) {
-            
+            console.error('Error deleting review:', error);
         }
-    }
+    };
+
+    // async deleteReview(reqQuery: any): Promise<any> {
+    //     try {
+    //         const product = await Product.findById(reqQuery.productId);
+
+    //         if (!product) {
+    //             throw new AppError({
+    //                 httpCode: HttpCode.NOT_FOUND,
+    //                 description: 'Product is not found with this id'
+    //             });
+    //         }
+
+    //         const reviews = product.reviews.filter(
+    //             (rev) => rev._id.toString() !== reqQuery.id.toString()
+    //         );
+
+    //         let avg = 0
+
+    //         reviews.forEach((rev) => {
+    //             avg += rev.rating
+    //         });
+
+    //         let ratings = 0;
+
+    //         if (reviews.length === 0) {
+    //             ratings = 0;
+    //         } else {
+    //             ratings = avg / reviews.length;
+    //         }
+
+    //         const numOfReviews = reviews.length;
+
+    //         await Product.findByIdAndUpdate(
+    //             reqQuery.productId,
+    //             {
+    //                 reviews,
+    //                 ratings,
+    //                 numOfReviews,
+    //             },
+    //             {
+    //                 new: true,
+    //                 runValidators: true,
+    //                 useFindAndModify: false,
+    //             }
+    //         );
+
+
+
+
+    //     } catch (error) {
+
+    //     }
+    // }
 
 }
 

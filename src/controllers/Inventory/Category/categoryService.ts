@@ -2,7 +2,7 @@ import ICategoryRepository from "../../../repositories/Inventory/Category/catego
 import { HttpCode, AppError } from "../../../exceptions/appError";
 import { ICategoryInterface } from "../../../interfaces /Inventory/Category/categoryInterface";
 import Category from "../../../models/Inventory/Category/category";
-import Product from "../../../models/Production/Product/product";
+import { Product } from "../../../models/Production/Product/product";
 import { IProductInterface } from "../../../interfaces /Production/Product/productInterface";
 
 

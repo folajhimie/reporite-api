@@ -4,12 +4,12 @@ import { UserInterface } from "../../People/userInterface";
 import { ICategoryInterface } from "../../Inventory/Category/categoryInterface";
 
 
-interface IReview extends Document{
-  user: Types.ObjectId; // You might want to specify the user schema here
-  name: string;
+interface IReviewInterface extends Document{
+  userId: Types.ObjectId | UserInterface; // You might want to specify the user schema here
+  title: string;
   rating: number;
   comment: string;
-  productId: string;
+  productId: Types.ObjectId;
   createdAt?: Date;
 }
 
@@ -30,7 +30,7 @@ interface IProductInterface extends Document {
   numOfReviews: number,
   stock: number;
   images: IProductImage[];
-  reviews: IReview[];
+  reviews: IReviewInterface[];
   ratings?: number;
   shopId: Types.ObjectId | IShopInterface;
   // shop: Record<string, any>; // You might want to specify the shop schema here
@@ -40,6 +40,6 @@ interface IProductInterface extends Document {
   createdAt: Date;
 }
 
-export { IProductInterface, IReview, IProductImage };
+export { IProductInterface, IReviewInterface, IProductImage };
 
 

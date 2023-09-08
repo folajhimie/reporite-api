@@ -3,7 +3,7 @@ import { IWishListInterface } from "../../../interfaces /Production/WishList/wis
 import { HttpCode, AppError } from "../../../exceptions/appError";
 import WishList from "../../../models/Production/WishList/wishList";
 import { Request } from "express";
-import Product from "../../../models/Production/Product/product";
+import { Product } from "../../../models/Production/Product/product";
 // import { ParamsDictionary } from "express-serve-static-core";
 // import { ParsedQs } from "qs";
 

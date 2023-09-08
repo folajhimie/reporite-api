@@ -1,8 +1,42 @@
 import mongoose, { Document, Schema, Model } from "mongoose";
-import { IProductInterface } from "../../../interfaces /Production/Product/productInterface";
+import { IProductInterface, IReviewInterface } from "../../../interfaces /Production/Product/productInterface";
 
-interface Product extends IProductInterface, Document { }
+interface Product extends IProductInterface, Document {}
 
+interface Review extends IReviewInterface, Document {}
+
+
+const reviewSchema: Schema = new Schema<IReviewInterface>(
+    {
+        userId: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+            ref: "User",
+        },
+        title: {
+            type: String,
+            required: true,
+        },
+        rating: {
+            type: Number,
+            required: true,
+        },
+        comment: {
+            type: String,
+            required: true,
+        },
+        productId: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+            ref: "Product",
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now(),
+        },
+    },
+    { timestamps: true }
+);
 
 const productSchema: Schema = new Schema<IProductInterface>(
     {
@@ -55,36 +89,7 @@ const productSchema: Schema = new Schema<IProductInterface>(
             type: Number,
             default: 0
         },
-        reviews: [
-            {
-                user: { 
-                    type: Schema.Types.ObjectId, 
-                    ref: "User", 
-                    required: true 
-                },
-                name: { 
-                    type: String, 
-                    required: true 
-                },
-                rating: { 
-                    type: Number, 
-                    required: true 
-                },
-                comment: { 
-                    type: String, 
-                    required: true 
-                },
-                productId: { 
-                    type: String, 
-                    required: true 
-                },
-                createdAt: { 
-                    type: Date, 
-                    default: Date.now 
-                },
-            },
-
-        ],
+        reviews: [reviewSchema],
         ratings: {
             type: Number,
         },
@@ -120,5 +125,8 @@ const productSchema: Schema = new Schema<IProductInterface>(
 );
 
 
-const Product: Model<IProductInterface> = mongoose.model<Product>("Product", productSchema);
-export default Product;
+const Product: Model<IProductInterface> = mongoose.model<IProductInterface>("Product", productSchema);
+
+const Review: Model<IReviewInterface> = mongoose.model<IReviewInterface>("Review", reviewSchema);
+
+export { Product, Review }

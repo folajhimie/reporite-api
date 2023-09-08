@@ -1,13 +1,17 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
+import { UserInterface } from '../../People/userInterface';
+import { IProductInterface } from '../Product/productInterface';
+import { IShopInterface } from '../Shop/shopInterface';
 
-interface IOrderItem {
-  _id: Types.ObjectId;
+interface IOrderItemInterface {
+  // _id: Types.ObjectId;
   productName: string;
   productPrice: number;
   quantity: number;
   productImage: string;
-  productId: string;
-  shopId: string;
+  orderId: Types.ObjectId;
+  productId: Types.ObjectId | IProductInterface;
+  shopId: Types.ObjectId | IShopInterface;
 }
 
 interface IShippingAddress {
@@ -25,9 +29,9 @@ interface IPaymentInfo {
 }
 
 interface IOrderInterface extends Document {
-  cart: IOrderItem[];
+  orderItems: Types.ObjectId[] | IOrderItemInterface[];
   shippingAddress: IShippingAddress;
-  createdBy: Types.ObjectId; // Define your user type here, replace 'any' with the actual type
+  createdBy: Types.ObjectId | UserInterface; // Define your user type here, replace 'any' with the actual type
   totalPrice: number;
   status: string;
   paymentInfo: IPaymentInfo;
@@ -36,5 +40,5 @@ interface IOrderInterface extends Document {
   createdAt: Date;
 }
 
-export { IOrderInterface, IPaymentInfo, IShippingAddress, IOrderItem }
+export { IOrderInterface, IPaymentInfo, IShippingAddress, IOrderItemInterface }
 

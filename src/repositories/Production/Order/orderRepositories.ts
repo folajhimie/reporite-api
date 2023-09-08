@@ -1,9 +1,9 @@
-import { IOrderInterface, IOrderItem } from "../../../interfaces /Production/Order/orderInterface";
+import { IOrderItemInterface, IOrderInterface } from "../../../interfaces /Production/Order/orderInterface";
 import { Response, Request } from "express";
 
 export default interface IOrderRepository {
     // END POINT FOR PRODUCT 
-    createOrder(orderData: Partial<IOrderInterface>,  cartData: Partial<IOrderItem>[]): Promise<any>;
+    createOrder(request: Request): Promise<any>;
     getSingleOrder(reqParamsId: any): Promise<any>;
     getSellerAllOrders(reqParamsId: any): Promise<any>
     // getAllOrders(reqQuery: any): Promise<any>;

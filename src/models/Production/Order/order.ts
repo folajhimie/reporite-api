@@ -1,48 +1,73 @@
 import mongoose, { Document, Schema, Model, Types } from "mongoose";
-import { IOrderInterface } from "../../../interfaces /Production/Order/orderInterface";
+import { IOrderInterface, IOrderItemInterface } from "../../../interfaces /Production/Order/orderInterface";
 
 interface Order extends IOrderInterface, Document {}
 
+interface OrderItem extends IOrderItemInterface, Document {}
+
+
+const orderItemSchema: Schema = new Schema<IOrderItemInterface>(
+    {
+        productName: {
+            type: String,
+            required: true,
+        },
+        productPrice: {
+            type: Number,
+            required: true,
+        },
+        quantity: {
+            type: Number,
+            required: true,
+        },
+        productImage: {
+            type: String,
+            required: true,
+        },
+        productId: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+            ref: "Product",
+        },
+        shopId: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+            ref: "Shop",
+        },
+        orderId: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+            ref: "Order",
+        },
+
+    },
+    { timestamps: true }
+);
 
 const orderSchema: Schema = new Schema<IOrderInterface>(
     {
-        cart: [
-            {
-                _id: {
-                    type: mongoose.Schema.Types.ObjectId,
-                    default: () => new Types.ObjectId(),
-                },
-                productName: {
-                    type: String,
-                    required: true,
-                },
-                productPrice: {
-                    type: Number,
-                    required: true,
-                },
-                quantity: {
-                    type: Number,
-                    required: true,
-                },
-                productImage: {
-                    type: String,
-                    required: true,
-                },
-                productId: {
-                    type: mongoose.Schema.Types.ObjectId,
-                    required: true,
-                    ref: "Product",
-                },
-                shopId: {
-                    type: mongoose.Schema.Types.ObjectId,
-                    required: true,
-                    ref: "Shop",
-                }
-            },
-        ],
+        orderItems: [{ type: mongoose.Schema.Types.ObjectId, ref: 'OrderItem' }],
         shippingAddress: {
-            type: Object,
-            required: true,
+            address: {
+                type: String,
+                required: true
+            },
+            city: {
+                type: String,
+                required: true
+            },
+            state: {
+                type: String,
+                required: true
+            },
+            country: {
+                type: String,
+                required: true
+            },
+            phoneNumber: {
+                type: Number,
+                required: true
+            }
         },
         createdBy: {
             type: mongoose.Schema.Types.ObjectId,
@@ -85,5 +110,8 @@ const orderSchema: Schema = new Schema<IOrderInterface>(
 
 // export default mongoose.model<IOrder>('Order', orderSchema);
 
-const Order: Model<IOrderInterface> = mongoose.model<Order>("Order", orderSchema);
-export default Order;
+const Order: Model<IOrderInterface> = mongoose.model<IOrderInterface>("Order", orderSchema);
+
+const OrderItem: Model<IOrderItemInterface> = mongoose.model<IOrderItemInterface>("OrderItem", orderItemSchema);
+
+export { Order, OrderItem}

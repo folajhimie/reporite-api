@@ -1,12 +1,11 @@
 // import Product from "../models/Production/Product/product";
-import Product from "../models/Production/Product/product";
+import { Product } from "../models/Production/Product/product";
 import { Response, Request } from "express";
 import Shop from "../models/Production/Shop/shop";
 import { IShopInterface } from "../interfaces /Production/Shop/shopInterface";
 
 
 export class Utility {
-
 
     // Helper function to check if the shop matches the user (customize as needed)
     shopMatchesUser(shop: any, user: any): boolean {
@@ -25,9 +24,9 @@ export class Utility {
         return totalPrice;
     }
 
-    async updateOrder(id: any, quantity: number, statusToOrder: string): Promise<void> {
+    async updateOrder(order: any, statusToOrder: string): Promise<void> {
         try {
-            const product = await Product.findById(id);
+            const product = await Product.findById(order.productId);
 
             if (!product) {
                 // Handle the case where the product is not found
@@ -38,16 +37,16 @@ export class Utility {
             let productSoldOut = product.sold_out || 0;
 
             if (statusToOrder === "Refund Success") {
-                productStock += quantity;
-                productSoldOut -= quantity;
+                productStock += order.quantity;
+                productSoldOut -= order.quantity;
     
                 product.stock = productStock;
                 product.sold_out = productSoldOut;
             }
 
             if (statusToOrder === "Transferred to delivery partner") {
-                productStock -= quantity;
-                productSoldOut += quantity;
+                productStock -= order.quantity;
+                productSoldOut += order.quantity;
     
                 product.stock = productStock;
                 product.sold_out = productSoldOut;
@@ -79,9 +78,6 @@ export class Utility {
             throw error;
         }
     }
-
-
-
 
 }
 

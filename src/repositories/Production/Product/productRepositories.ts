@@ -1,4 +1,4 @@
-import { IProductInterface, IReview } from "../../../interfaces /Production/Product/productInterface";
+import { IProductInterface, IReviewInterface } from "../../../interfaces /Production/Product/productInterface";
 
 export default interface IProductRepository {
     // END POINT FOR PRODUCT 
@@ -15,9 +15,10 @@ export default interface IProductRepository {
     // deleteShopProduct(product: IProductInterface): Promise<IProductInterface>;
 
     // END POINT FOR REVIEW
-    createNewReview(productData: IReview, reqUser: any): Promise<any>;
-    getProductReviews(reqQuery: any): Promise<any>;
-    deleteReview(reqQuery: any): Promise<any>;
+    // createNewReview(reviewData: IReviewInterface, reqUser: any): Promise<any>;
+    createNewReview(req: any): Promise<any>
+    getReviewsByProductId(req: any): Promise<any>
+    deleteReviewById(req: any): Promise<any>;
 
 
 }
