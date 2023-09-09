@@ -4,6 +4,8 @@ import { IProductRequestInterface } from "../../../interfaces /Request/ProdReque
 import IProductRequestRepository from "../../../repositories/Request/prodRequest/prodRequestRepositories";
 import { HelpFunction } from "../../../Helpers/helpFunction";
 import { ApiFeatures } from "../../../utils/Feature";
+import { Product } from "../../../models/Production/Product/product";
+import { IProductInterface } from "../../../interfaces /Production/Product/productInterface";
 
 
 export class ProductRequestRepository implements IProductRequestRepository {
@@ -59,7 +61,7 @@ export class ProductRequestRepository implements IProductRequestRepository {
         try {
             // const productRequests = await ProductRequest.find();
 
-            const query = ProductRequest.find();
+            const query = ProductRequest.find().populate('product').exec();
             const resultPerPage: number = 10;
 
             const productRequestCount = await ProductRequest.countDocuments();
@@ -78,8 +80,7 @@ export class ProductRequestRepository implements IProductRequestRepository {
                 productRequestCount
             }
 
-            return productRequestData
-
+            return productRequestData;
 
         } catch (error) {
             console.error('Error fetching product requests:', error);
@@ -90,7 +91,7 @@ export class ProductRequestRepository implements IProductRequestRepository {
     async getProductRequestById(req: any): Promise<any> {
         try {
             const productRequestId = req.params.productRequestId;
-            const productRequest = await ProductRequest.findById(productRequestId);
+            const productRequest = await ProductRequest.findById(productRequestId).populate('product').exec();
 
 
             if (!productRequest) {
@@ -146,27 +147,50 @@ export class ProductRequestRepository implements IProductRequestRepository {
     };
 
     // Delete a product request by ID
-    async deleteProductRequestById(req: any): Promise<any>{
+    async deleteProductRequestById(req: any): Promise<any> {
         try {
-            const productRequestId = req.params.productRequestId;
-            const productRequest = await ProductRequest.findByIdAndDelete(productRequestId);
+            const productRequestId = req.params.id; // Assuming you get the ID of the ProductRequest to delete from the request params
+
+            // Find the ProductRequest by ID
+            const productRequest = await ProductRequest.findById(productRequestId);
 
             if (!productRequest) {
                 throw new AppError({
                     httpCode: HttpCode.NOT_FOUND,
-                    description: 'Product is not found with this id'
+                    description: 'ProductRequest is not found with this id'
                 });
             }
 
-            return productRequest;
+            // Check if the ProductRequest is associated with a Product
+            if (productRequest.productId) {
+                // Find the associated Product
+                const product: IProductInterface | null = await Product.findById(productRequest.productId);
+
+                if (product) {
+                    // Disassociate the ProductRequest from the Product
+                    product.productRequest = null;
+                    await product.save();
+                }
+            }
+
+            // Delete the ProductRequest
+            await ProductRequest.findByIdAndDelete(productRequestId);
+
+            // Disassociate the ProductRequest from the associated Product
+            // Assuming you have a reference to the Product in your ProductRequest model
+            // productRequest.productId = null; // Set the productId to null or use an appropriate value
+
+            // Save the ProductRequest to update the association
+            // await productRequest.save();
+
+            // Now you can safely delete the ProductRequest
+            // await productRequest.deleteOne();
+
+
         } catch (error) {
-            console.error('Error deleting product request:', error);
+            console.error('Error deleting ProductRequest:', error);
         }
-    };
-
-
-
-
+    }
 
 
 

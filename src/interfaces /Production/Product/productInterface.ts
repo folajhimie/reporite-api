@@ -2,6 +2,7 @@ import mongoose, { Document, Schema, Model, Types} from "mongoose";
 import { IShopInterface } from "../Shop/shopInterface";
 import { UserInterface } from "../../People/userInterface";
 import { ICategoryInterface } from "../../Inventory/Category/categoryInterface";
+import { IProductRequestInterface } from "../../Request/ProdRequest/prodRequestInterface";
 
 
 interface IReviewInterface extends Document{
@@ -36,6 +37,7 @@ interface IProductInterface extends Document {
   // shop: Record<string, any>; // You might want to specify the shop schema here
   createdBy: Types.ObjectId | UserInterface;
   category: Types.ObjectId | ICategoryInterface;
+  productRequest: Types.ObjectId | IProductRequestInterface | null;
   sold_out?: number;
   createdAt: Date;
 }

@@ -1,5 +1,6 @@
 import mongoose, { Document, Schema, Model } from "mongoose";
 import { IProductInterface, IReviewInterface } from "../../../interfaces /Production/Product/productInterface";
+// import { ProductRequest } from "../../Request/ProdRequest.ts/prodRequest";
 
 interface Product extends IProductInterface, Document {}
 
@@ -110,6 +111,11 @@ const productSchema: Schema = new Schema<IProductInterface>(
         category: {
             type: Schema.Types.ObjectId,
             ref: 'Category',
+            required: true
+        },
+        productRequest: {
+            type: Schema.Types.ObjectId,
+            ref: 'ProductRequest',
             required: true
         },
         sold_out: {
