@@ -103,7 +103,7 @@ export class ProductRepository implements IProductRepository {
     async getAllProducts(reqQuery: any): Promise<any> {
 
         try {
-            const resultPerPage = 10; // Number of results per page
+            const resultPerPage: number  = 10; // Number of results per page
             const query = Product.find(); // Your query for fetching products
 
             const productsCount = await Product.countDocuments();
