@@ -15,6 +15,8 @@ const productRequestLogSchema: Schema = new Schema<IProductRequestLogInterface>(
             type: Number,
             required: true,
         },
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        shopId: { type: mongoose.Schema.Types.ObjectId, ref: 'Shop' },
     }
 )
 

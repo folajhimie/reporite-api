@@ -1,8 +1,5 @@
 
 
-
-
-
 export class HelpFunction {
     static timeToSeconds(value: number, unit: string): number {
         const timeValues: Record<string, number> = {

@@ -23,15 +23,18 @@ export class CartRepository implements IcartRepository {
                 cart = new Cart({ userId, items: [] });
             }
 
-            const cartItem: ICartItemInterface = new CartItem({
+            const cartItem = new CartItem({
                 products: productId,
                 quantity,
                 // ... other cart item fields
             });
+            await cartItem.save()
 
             // Add the new cart item
             cart.items.push(cartItem);
             await cart.save();
+            
+
 
             return cart;
         } catch (error) {

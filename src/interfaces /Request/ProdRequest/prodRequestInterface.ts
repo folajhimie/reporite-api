@@ -10,7 +10,7 @@ interface IProductRequestInterface {
     expirationDate: Date;
     quantity: number;
     vendorPrice: number;
-    productRequestLog: [IProductRequestLogInterface];
+    productRequestLog: IProductRequestLogInterface[];
 }
 
 export { IProductRequestInterface }
