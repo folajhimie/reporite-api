@@ -1,15 +1,7 @@
 
 import mongoose, { Document, Schema, Model, Types } from 'mongoose';
 
-/**
- * Interface to model the JobStatuses Schema for TypeScript.
- * @param cost: string;
- * @param quantity: number;
- * @param description: string;
- * @param created_by: Types.ObjectId;
- * @param float_request_id: Types.ObjectId;
- * @param float_request_statuses_id: Types.ObjectId;
- */
+
 
 // Define the JobStatuses Schema
 export interface JobStatusesInterface {
