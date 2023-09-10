@@ -1,5 +1,5 @@
 import MailService from "../../utils/MailService";
-import { UserInterface } from "../../interfaces /People/userInterface";
+import { UserInterface } from "../../interfaces/People/userInterface";
 import verifyEmail from "../../templates/verifyEmailTemplate";
 import { Request } from "express";
 

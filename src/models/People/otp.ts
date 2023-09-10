@@ -1,4 +1,4 @@
-import IOtp from "../../interfaces /People/otpInterface";
+import IOtp from "../../interfaces/People/otpInterface";
 import { Document, model, Schema, Types } from "mongoose";
 import { OtpType } from "../../utils/Enums";
 

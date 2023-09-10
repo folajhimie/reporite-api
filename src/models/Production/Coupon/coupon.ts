@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema, Model } from "mongoose";
-import { ICouponInterface } from "../../../interfaces /Production/Coupon/couponInterface";
+import { ICouponInterface } from "../../../interfaces/Production/Coupon/couponInterface";
 
 interface Coupon extends ICouponInterface, Document { }
 

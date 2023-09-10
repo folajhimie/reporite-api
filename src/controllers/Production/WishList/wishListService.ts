@@ -1,5 +1,5 @@
 import IWishListRepository from "../../../repositories/Production/WishList/wishListRepositories";
-import { IWishListInterface } from "../../../interfaces /Production/WishList/wishListInterface";
+import { IWishListInterface } from "../../../interfaces/Production/WishList/wishListInterface";
 import { HttpCode, AppError } from "../../../exceptions/appError";
 import WishList from "../../../models/Production/WishList/wishList";
 import { Request } from "express";

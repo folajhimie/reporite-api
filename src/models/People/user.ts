@@ -2,7 +2,7 @@ import { Document, model, Schema, Types } from "mongoose";
 // import bcrypt from "bcryptjs";
 // import dotenv from "dotenv";
 // import jwt from "jsonwebtoken";
-import { UserInterface } from "../../interfaces /People/userInterface";
+import { UserInterface } from "../../interfaces/People/userInterface";
 // dotenv.config();
 
 /**

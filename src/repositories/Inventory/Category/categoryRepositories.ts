@@ -1,4 +1,4 @@
-import { ICategoryInterface } from "../../../interfaces /Inventory/Category/categoryInterface";
+import { ICategoryInterface } from "../../../interfaces/Inventory/Category/categoryInterface";
 
 export default interface ICategoryRepository {
     // END POINTS FOR CATEGORY

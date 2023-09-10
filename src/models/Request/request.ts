@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema, Model, Types, model } from 'mongoose';
-import { RequestInterface } from '../../interfaces /Request/requestInterface';
+import { RequestInterface } from '../../interfaces/Request/requestInterface';
 
 interface Request extends RequestInterface, Document {}
 // const userSchema: Schema = new Schema<UserInterface>(

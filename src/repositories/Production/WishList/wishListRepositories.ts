@@ -1,4 +1,4 @@
-import { IWishListInterface } from "../../../interfaces /Production/WishList/wishListInterface";
+import { IWishListInterface } from "../../../interfaces/Production/WishList/wishListInterface";
 import { Request, Response } from 'express';
 
 

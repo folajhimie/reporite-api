@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema, Model } from "mongoose";
-import { IShopInterface } from "../../../interfaces /Production/Shop/shopInterface";
+import { IShopInterface } from "../../../interfaces/Production/Shop/shopInterface";
 import { RoleType } from "../../../utils/Enums";
 
 

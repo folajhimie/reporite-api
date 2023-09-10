@@ -1,7 +1,7 @@
 import IShopRepository from "../../../repositories/Production/Shop/shopRepositories";
 import Shop from "../../../models/Production/Shop/shop";
 import { HttpCode, AppError } from "../../../exceptions/appError";
-import { IShopInterface } from "../../../interfaces /Production/Shop/shopInterface";
+import { IShopInterface } from "../../../interfaces/Production/Shop/shopInterface";
 // import { Request } from "../../../models/Request/request";
 import cloudinary from 'cloudinary'
 import mongoose, { Document, Schema, Model } from "mongoose";

@@ -2,7 +2,7 @@ import IUserRepository from "../../../repositories/People/users/userRepositories
 import { AppError, HttpCode } from "../../../exceptions/appError";
 import { Request, Response, NextFunction } from "express";
 import { UserRepository } from "./userService";
-import { UserInterface } from "../../../interfaces /People/userInterface";
+import { UserInterface } from "../../../interfaces/People/userInterface";
 import { jsonOne, jsonAll } from "../../../utils/Reponse";
 
 

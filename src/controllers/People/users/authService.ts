@@ -1,7 +1,7 @@
 import IAuthRepository from "../../../repositories/People/users/authRepositories";
 // import { Document, model, Schema, Types } from "mongoose";
 import { User, getUserByEmail } from "../../../models/People/user";
-import { UserInterface } from "../../../interfaces /People/userInterface";
+import { UserInterface } from "../../../interfaces/People/userInterface";
 import { AppError, HttpCode } from "../../../exceptions/appError";
 import Role from "../../../models/People/roles";
 import { RoleType } from "../../../utils/Enums";

@@ -1,4 +1,4 @@
-import { IOrderItemInterface, IOrderInterface } from "../../../interfaces /Production/Order/orderInterface";
+import { IOrderItemInterface, IOrderInterface } from "../../../interfaces/Production/Order/orderInterface";
 import { Response, Request } from "express";
 
 export default interface IOrderRepository {

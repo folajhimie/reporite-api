@@ -1,4 +1,4 @@
-import { UserInterface } from "../../../interfaces /People/userInterface";
+import { UserInterface } from "../../../interfaces/People/userInterface";
 import IUserRepository from "../../../repositories/People/users/userRepositories";
 import { User } from "../../../models/People/user";
 import { AppError, HttpCode } from "../../../exceptions/appError";

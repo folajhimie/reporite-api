@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema, Model } from "mongoose";
-import { ICartInterface, ICartItemInterface } from "../../../interfaces /Production/Cart/cartInterface";
+import { ICartInterface, ICartItemInterface } from "../../../interfaces/Production/Cart/cartInterface";
 
 interface Cart extends ICartInterface, Document {}
 

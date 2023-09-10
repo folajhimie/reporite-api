@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema, Model, Types } from "mongoose";
-import { IOrderInterface, IOrderItemInterface } from "../../../interfaces /Production/Order/orderInterface";
+import { IOrderInterface, IOrderItemInterface } from "../../../interfaces/Production/Order/orderInterface";
 
 interface Order extends IOrderInterface, Document {}
 

@@ -1,12 +1,12 @@
 import IProductRepository from "../../../repositories/Production/Product/productRepositories";
-import { IProductInterface, IProductImage, IReviewInterface } from "../../../interfaces /Production/Product/productInterface";
+import { IProductInterface, IProductImage, IReviewInterface } from "../../../interfaces/Production/Product/productInterface";
 import { Product, Review } from "../../../models/Production/Product/product";
 import { AppError, HttpCode } from "../../../exceptions/appError";
 import Shop from "../../../models/Production/Shop/shop";
 import cloudinary from 'cloudinary';
 
 import { ApiFeatures } from "../../../utils/Feature";
-import { IShopInterface } from "../../../interfaces /Production/Shop/shopInterface";
+import { IShopInterface } from "../../../interfaces/Production/Shop/shopInterface";
 
 
 

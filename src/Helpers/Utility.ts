@@ -2,8 +2,8 @@
 import { Product } from "../models/Production/Product/product";
 import { Response, Request } from "express";
 import Shop from "../models/Production/Shop/shop";
-import { IShopInterface } from "../interfaces /Production/Shop/shopInterface";
 
+import { IShopInterface } from "../interfaces/Production/Shop/shopInterface";
 
 export class Utility {
 

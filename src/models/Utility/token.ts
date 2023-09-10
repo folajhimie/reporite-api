@@ -1,5 +1,5 @@
 import { Document, Schema, model, Types} from "mongoose";
-import { TokenInterface } from "../../interfaces /Utility/TokenInterface";
+import { TokenInterface } from "../../interfaces/Utility/TokenInterface";
 // import { TokenInterface } from "../../interfaces /Utility/tokenInterface";
 
 

@@ -1,4 +1,4 @@
-import { ICartInterface } from "../../../interfaces /Production/Cart/cartInterface";
+import { ICartInterface } from "../../../interfaces/Production/Cart/cartInterface";
 
 export default interface IcartRepository {
     // END POINTS FOR CART

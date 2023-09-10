@@ -1,5 +1,5 @@
 import IOrderRepository from "../../../repositories/Production/Order/orderRepositories";
-import { IOrderInterface, IOrderItemInterface, IShippingAddress, IPaymentInfo } from "../../../interfaces /Production/Order/orderInterface";
+import { IOrderInterface, IOrderItemInterface, IShippingAddress, IPaymentInfo } from "../../../interfaces/Production/Order/orderInterface";
 import { OrderItem, Order } from "../../../models/Production/Order/order";
 import { HttpCode, AppError } from "../../../exceptions/appError";
 import Shop from "../../../models/Production/Shop/shop";

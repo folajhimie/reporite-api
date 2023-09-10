@@ -1,6 +1,6 @@
 import IcartRepository from "../../../repositories/Production/Cart/cartRepositories";
 import { HttpCode, AppError } from "../../../exceptions/appError";
-import { ICartInterface, ICartItemInterface } from "../../../interfaces /Production/Cart/cartInterface";
+import { ICartInterface, ICartItemInterface } from "../../../interfaces/Production/Cart/cartInterface";
 import { Cart, CartItem } from "../../../models/Production/Cart/cart";
 // import Product from "../../../models/Production/Product/product";
 // import { IProductInterface } from "../../../interfaces /Production/Product/productInterface";

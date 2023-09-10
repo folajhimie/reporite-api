@@ -1,5 +1,5 @@
 import { Document, model, Schema } from "mongoose";
-import { IRole } from "../../interfaces /People/roleInterface";
+import { IRole } from "../../interfaces/People/roleInterface";
 
 /**
  * Interface to model the Role Schema for TypeScript.

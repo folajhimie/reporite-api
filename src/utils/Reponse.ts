@@ -1,4 +1,4 @@
-import { UserInterface } from "../interfaces /People/userInterface";
+import { UserInterface } from "../interfaces/People/userInterface";
 interface IResponse<T> {
     data: T[];
     meta: {

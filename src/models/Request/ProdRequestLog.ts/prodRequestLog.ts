@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema, Model, Types } from "mongoose";
-import { IProductRequestLogInterface } from "../../../interfaces /Request/ProdRequestLog/prodRequestLogInterface";
+import { IProductRequestLogInterface } from "../../../interfaces/Request/ProdRequestLog/prodRequestLogInterface";
 // import { Product } from "../../Production/Product/product";
 
 interface ProductRequestLog extends IProductRequestLogInterface, Document {}

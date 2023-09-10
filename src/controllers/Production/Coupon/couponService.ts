@@ -1,5 +1,5 @@
 import ICouponRepository from "../../../repositories/Production/CoupounCode/coupounCodeRepositories";
-import { ICouponInterface } from "../../../interfaces /Production/Coupon/couponInterface";
+import { ICouponInterface } from "../../../interfaces/Production/Coupon/couponInterface";
 import Coupon from "../../../models/Production/Coupon/coupon";
 import { HttpCode, AppError } from "../../../exceptions/appError";
 

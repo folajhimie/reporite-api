@@ -1,5 +1,5 @@
 
-import { UserInterface } from "../../../interfaces /People/userInterface";
+import { UserInterface } from "../../../interfaces/People/userInterface";
 
 export default interface IUserRepository {
     // signUp(email: string, password: string): Promise<boolean>;

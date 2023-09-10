@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema, Model } from "mongoose";
-import { ICategoryInterface } from "../../../interfaces /Inventory/Category/categoryInterface";
+import { ICategoryInterface } from "../../../interfaces/Inventory/Category/categoryInterface";
 
 interface Category extends ICategoryInterface, Document { }
 

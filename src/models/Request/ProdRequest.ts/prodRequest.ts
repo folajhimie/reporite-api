@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema, Model, Types } from "mongoose";
-import { IProductRequestInterface } from "../../../interfaces /Request/ProdRequest/prodRequestInterface";
+import { IProductRequestInterface } from "../../../interfaces/Request/ProdRequest/prodRequestInterface";
 // import { Product } from "../../Production/Product/product";
 import { ProductRequestLog } from "../ProdRequestLog.ts/prodRequestLog";
 

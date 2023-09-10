@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema, Model } from "mongoose";
-import { IWishListInterface } from "../../../interfaces /Production/WishList/wishListInterface";
+import { IWishListInterface } from "../../../interfaces/Production/WishList/wishListInterface";
 
 interface WishList extends IWishListInterface, Document { }
 

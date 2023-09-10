@@ -1,4 +1,4 @@
-import { IProductRequestInterface } from "../../../interfaces /Request/ProdRequest/prodRequestInterface";
+import { IProductRequestInterface } from "../../../interfaces/Request/ProdRequest/prodRequestInterface";
 
 export default interface IProductRequestRepository {
     createProductRequest(req: any): Promise<any>;

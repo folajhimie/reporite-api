@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema, Model, Types } from 'mongoose';
-import { IPromotionInterface } from '../../../interfaces /Production/Promotion/promotionInterface';
+import { IPromotionInterface } from '../../../interfaces/Production/Promotion/promotionInterface';
 
 interface Promotion extends IPromotionInterface, Document {}
 

@@ -1,7 +1,7 @@
 
 // import mongoose, { Document, Model } from 'mongoose';
 import { Document, model, Schema, Types } from "mongoose";
-import { RequestInterface } from "../../interfaces /Request/requestInterface";
+import { RequestInterface } from "../../interfaces/Request/requestInterface";
 
 // import User from "../../models/People/user";
 

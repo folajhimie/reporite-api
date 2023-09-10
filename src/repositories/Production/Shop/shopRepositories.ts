@@ -1,4 +1,4 @@
-import { IShopInterface } from "../../../interfaces /Production/Shop/shopInterface";
+import { IShopInterface } from "../../../interfaces/Production/Shop/shopInterface";
 
 import { Request } from "../../../models/Request/request";
 

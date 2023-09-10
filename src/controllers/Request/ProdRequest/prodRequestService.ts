@@ -1,11 +1,11 @@
 import { HttpCode, AppError } from "../../../exceptions/appError";
 import { ProductRequest } from "../../../models/Request/ProdRequest.ts/prodRequest";
-import { IProductRequestInterface } from "../../../interfaces /Request/ProdRequest/prodRequestInterface";
+import { IProductRequestInterface } from "../../../interfaces/Request/ProdRequest/prodRequestInterface";
 import IProductRequestRepository from "../../../repositories/Request/prodRequest/prodRequestRepositories";
 import { HelpFunction } from "../../../Helpers/helpFunction";
 import { ApiFeatures } from "../../../utils/Feature";
 import { Product } from "../../../models/Production/Product/product";
-import { IProductInterface } from "../../../interfaces /Production/Product/productInterface";
+import { IProductInterface } from "../../../interfaces/Production/Product/productInterface";
 
 
 export class ProductRequestRepository implements IProductRequestRepository {

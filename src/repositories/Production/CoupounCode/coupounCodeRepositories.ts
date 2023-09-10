@@ -1,4 +1,4 @@
-import { ICouponInterface } from "../../../interfaces /Production/Coupon/couponInterface";
+import { ICouponInterface } from "../../../interfaces/Production/Coupon/couponInterface";
 
 
 export default interface ICouponRepository {

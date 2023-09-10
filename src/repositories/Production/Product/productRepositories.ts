@@ -1,4 +1,4 @@
-import { IProductInterface, IReviewInterface } from "../../../interfaces /Production/Product/productInterface";
+import { IProductInterface, IReviewInterface } from "../../../interfaces/Production/Product/productInterface";
 
 export default interface IProductRepository {
     // END POINT FOR PRODUCT 

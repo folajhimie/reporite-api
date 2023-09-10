@@ -2,8 +2,8 @@ import IPromotionRepository from "../../../repositories/Production/Promotion/pro
 import Product from "../../../models/Production/Product/product";
 import Promotion from "../../../models/Production/Promotion/promotion";
 import { HttpCode, AppError } from "../../../exceptions/appError";
-import { IPromotionInterface } from "../../../interfaces /Production/Promotion/promotionInterface";
-import { IProductInterface } from "../../../interfaces /Production/Product/productInterface";
+import { IPromotionInterface } from "../../../interfaces/Production/Promotion/promotionInterface";
+import { IProductInterface } from "../../../interfaces/Production/Product/productInterface";
 
 
 export class PromotionRepository implements IPromotionRepository {

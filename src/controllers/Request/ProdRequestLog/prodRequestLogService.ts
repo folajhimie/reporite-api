@@ -1,9 +1,9 @@
 import { HttpCode, AppError } from "../../../exceptions/appError";
 import IProductRequestLogRepository from "../../../repositories/Request/prodRequestLog/prodRequestLogRepositories";
 import { ProductRequestLog } from "../../../models/Request/ProdRequestLog.ts/prodRequestLog";
-import { IProductRequestInterface } from "../../../interfaces /Request/ProdRequest/prodRequestInterface";
+import { IProductRequestInterface } from "../../../interfaces/Request/ProdRequest/prodRequestInterface";
 import { ProductRequest } from "../../../models/Request/ProdRequest.ts/prodRequest";
-import { IProductRequestLogInterface } from "../../../interfaces /Request/ProdRequestLog/prodRequestLogInterface";
+import { IProductRequestLogInterface } from "../../../interfaces/Request/ProdRequestLog/prodRequestLogInterface";
 import { ApiFeatures } from "../../../utils/Feature";
 
 

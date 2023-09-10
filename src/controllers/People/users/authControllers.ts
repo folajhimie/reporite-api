@@ -5,7 +5,7 @@ import { Request, Response, NextFunction } from "express";
 import verifyEmail from "../../../templates/verifyEmailTemplate";
 import MailService from "../../../utils/MailService";
 import { jsonOne, jsonAll } from "../../../utils/Reponse";
-import { UserInterface } from "../../../interfaces /People/userInterface";
+import { UserInterface } from "../../../interfaces/People/userInterface";
 import { TokenController } from "../token/tokenControllers";
 import { OtpType } from "../../../utils/Enums";
 import { MailController } from "../../Utility/mailControllers";
