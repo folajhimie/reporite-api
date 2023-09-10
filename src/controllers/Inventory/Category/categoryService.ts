@@ -19,6 +19,7 @@ export class CategoryRepository implements ICategoryRepository {
                 name,
             });
 
+            
             // Save the category to the database
             await category.save();
 
