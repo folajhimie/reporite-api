@@ -17,14 +17,25 @@ export class TokenController {
         return tokenHolder;
     }
 
+    // async tokenExpiration(){
+    //     let tokenExpiration: any = new Date();
+
+    //     tokenExpiration = tokenExpiration.setMinutes(
+    //         tokenExpiration.getMinutes() + 10
+    //     );
+
+    //     return tokenExpiration
+    // }
+
     async tokenExpiration(){
         let tokenExpiration: any = new Date();
-
-        tokenExpiration = tokenExpiration.setMinutes(
-            tokenExpiration.getMinutes() + 10
-        );
-
-        return tokenExpiration
+        
+        const expiryDate = new Date(tokenExpiration.getTime() + 30 * 60 * 1000); // Add 30 minutes in milliseconds
+      
+        return expiryDate;
     }
+
+    
+      
 }
 

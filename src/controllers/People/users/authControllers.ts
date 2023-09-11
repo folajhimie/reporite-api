@@ -28,8 +28,8 @@ export class AuthController {
             //CREATE USER  
             const authRepository: IAuthRepository = new AuthRepository();
             let resultAuth = await authRepository.createUser(
-                req.body
-            )
+                req
+            );
 
             //GENERATE OTP CODE FOR USER
             const otpController = new OtpController();
@@ -43,7 +43,7 @@ export class AuthController {
 
             //SEND VERIFICATION MAIL TO USER 
             const mailController = new MailController();
-            const text = 'Verify OTP';
+            const text = 'Account Verification';
             let emailStructure = verifyEmail(otpCode)
             let mailType = mailController.createMail(emailStructure, resultAuth, req, text)
 

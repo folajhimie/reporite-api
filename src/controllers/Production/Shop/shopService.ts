@@ -5,7 +5,7 @@ import { IShopInterface } from "../../../interfaces/Production/Shop/shopInterfac
 // import { Request } from "../../../models/Request/request";
 import cloudinary from 'cloudinary'
 import mongoose, { Document, Schema, Model } from "mongoose";
-import Product from "../../../models/Production/Product/product";
+import { Product } from "../../../models/Production/Product/product";
 import { Cart } from "../../../models/Production/Cart/cart";
 export class ShopRepository implements IShopRepository {
 
@@ -82,7 +82,7 @@ export class ShopRepository implements IShopRepository {
             shop.avatar = result.secure_url;
 
             // Update the shop properties
-            const shopUpadtedData = await Shop.findByIdAndUpdate(shopId, shopData, {
+            const shopUpdatedData = await Shop.findByIdAndUpdate(shopId, shopData, {
                 new: true,
                 runValidators: true,
                 useUnified: false,

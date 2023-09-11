@@ -3,136 +3,158 @@ import IAuthRepository from "../../../repositories/People/users/authRepositories
 import { User, getUserByEmail } from "../../../models/People/user";
 import { UserInterface } from "../../../interfaces/People/userInterface";
 import { AppError, HttpCode } from "../../../exceptions/appError";
-import Role from "../../../models/People/roles";
+// import Role from "../../../models/People/roles";
 import { RoleType } from "../../../utils/Enums";
-import { generateHashPassword, comparePassword } from "../../../utils/password-manager";
+import { generateHashPassword, comparePassword, compareEmail } from "../../../utils/password-manager";
 import Otp from "../../../models/People/otp";
+import cloudinary from 'cloudinary';
 
 // import { OtpType } from "../../../utils/Enums";
 
 
 export class AuthRepository implements IAuthRepository {
-    
-    async createUser(user: Omit<UserInterface, 'avatar'>): Promise<UserInterface> {
 
-        const { username, email, phone, password, confirmPassword } = user;
+    async createUser(req: any): Promise<any> {
+
+        const { username, email, phone, password, confirmPassword, avatar, role } = req.body;
 
         //verifying if content exist
         if (!username || !email || !phone || !password || !confirmPassword) {
-            throw new AppError({
-                httpCode: HttpCode.NO_CONTENT,
-                description: 'Input form is empty'
-            });
+            throw new AppError({ httpCode: HttpCode.NO_CONTENT, description: 'Input form is empty' });
         }
 
         //compare password to see if they match
         if (password !== confirmPassword) {
-            throw new AppError({
-                httpCode: HttpCode.FORBIDDEN,
-                description: 'password and confirmPassword do not match!'
-            });
+            throw new AppError({ httpCode: HttpCode.FORBIDDEN, description: 'password and confirmPassword do not match!' });
         }
 
         // Check if user with email already exists
         const existingUser = await User.findOne({ email }).exec();
         if (existingUser) {
-            throw new AppError({
-                httpCode: HttpCode.UNAUTHORIZED,
-                description: 'User with email already existsAuthentication failed'
-            });
+            throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'User with email already exists.. Authentication failed' });
         }
 
         //get role form the model
-        const role = await Role.findOne({ name: RoleType.ADMIN }).exec();
-        if (!role) {
-            throw new AppError({
-                httpCode: HttpCode.UNPROCESSABLE,
-                description: 'User role not found'
-            });
+        // const role = await Role.findOne({ name: RoleType.ADMIN }).exec();
+        // if (!role) {
+        //     throw new AppError({
+        //         httpCode: HttpCode.UNPROCESSABLE,
+        //         description: 'User role not found'
+        //     });
+        // }
+
+        if (!req.file) {
+            throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'No File Uploaded!' });
         }
+
+        // Creating a user image which would be uploaded in cloudinary
+        const userImage = await cloudinary.v2.uploader.upload(req.file.buffer.toString('base64'));
 
         //GENEARTE ENCRYPTION PASSWORD
         const hashPassword = generateHashPassword(password);
         // (await hashPassword).toString
 
-        //CREATE USER 
+
+        // Create a new shop with the image URL
         let newUser = new User({
             username,
             email,
             phone,
             password: hashPassword,
-            role: role._id
+            avatar: userImage.secure_url,
+            role
         })
+        
         let savedUser = await newUser.save();
 
         // this.users.push(newUser);
 
         return savedUser
     }
- 
-    async loginUser({email, password}: Pick<UserInterface, 'email' | 'password'>): Promise<UserInterface>{
+
+    async loginUser({ email, password }: Pick<UserInterface, 'email' | 'password'>): Promise<UserInterface> {
         //verifying if content exist
-        if (!email || !password ) {
-            throw new AppError({ 
-                httpCode: HttpCode.NO_CONTENT, 
-                description: 'Input form is empty' 
-            }); 
+        if (!email || !password) {
+            throw new AppError({ httpCode: HttpCode.NO_CONTENT, description: 'Input form is empty' });
         }
 
-        const existingUser = await getUserByEmail(email);
+        // const existingUser = await getUserByEmail(email);
 
-        if (!existingUser) {
-            throw new AppError({ 
-                httpCode: HttpCode.UNAUTHORIZED, 
-                description: 'User with email already existsAuthentication failed' 
-            });
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'User with email already existsAuthentication failed' });
         }
-        
-        const isValidUser = await comparePassword(password, existingUser.password);
+
+        const isValidUser = await comparePassword(password, user.password);
+
+        const isValidEmail = compareEmail(email, user.email);
+
+        // Check if user with email already exists
+        // if (!isValidEmail || !isValidUser) {
+        //     throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'You have entered an invalid email address or password' });
+        // }
 
         //CHECK IF USER IS ACTIVE
-        if (existingUser.active === false) {
-            throw new AppError({ 
-                httpCode: HttpCode.UNAUTHORIZED, 
-                description: 'Please User has been deactivated',
-            });
-        }
-        
-        //CHECK FOR USER VERIFIED AND EXISTING 
-        if (!existingUser.isEmailVerified) {
-            throw new AppError({ 
-                httpCode: HttpCode.UNAUTHORIZED, 
-                description: 'Please confirm your account by confirmation email OTP and try again',
-            });
-        }
-        
-        // Check if user with email already exists
-        if (!existingUser || !isValidUser) {
-            throw new AppError({ 
-                httpCode: HttpCode.UNAUTHORIZED, 
-                description: 'You have entered an invalid email address or password',
-            });
+        if (user.active === false) {
+            throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'Please User has been deactivated' });
         }
 
-        return existingUser;
+        //CHECK FOR USER VERIFIED AND EXISTING 
+        if (!user.emailVerified) {
+            throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'Please confirm your account by confirmation email OTP and try again' });
+        }
+
+        // Check if the user account is locked
+        if (user.isLocked === true) {
+            throw new AppError({ httpCode: HttpCode.FORBIDDEN, description: 'Account is locked' });
+        }
+
+        // Perform your authentication logic here (e.g., checking the password)
+
+        // If authentication fails, increment the failedLoginAttempts
+        if (!isValidEmail || !isValidUser) {
+            user.failedLoginAttempts++;
+
+            // Check if the user has reached the maximum failed login attempts
+            if (user.failedLoginAttempts >= 6) {
+                user.isLocked = true;
+                user.failedLoginAttempts = 0; // Reset the failed login attempts
+
+                await user.save();
+
+                throw new AppError({ httpCode: HttpCode.FORBIDDEN, description: 'Account is locked due to too many failed login attempts' });
+            }
+
+            await user.save();
+
+            throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'Authentication failed' });
+        }
+
+        // If authentication succeeds, reset the failed login attempts
+        user.failedLoginAttempts = 0;
+        await user.save();
+
+        return user;
     }
+
 
     async forgotPassword({ email }: UserInterface): Promise<UserInterface> {
 
         const existingUser = await getUserByEmail(email);
 
         //CHECK FOR USER VERIFIED AND EXISTING 
-        if (!existingUser?.isEmailVerified) {
-            throw new AppError({ 
-                httpCode: HttpCode.UNAUTHORIZED, 
+        if (!existingUser?.emailVerified) {
+            throw new AppError({
+                httpCode: HttpCode.UNAUTHORIZED,
                 description: 'Please confirm your account by confirmation email OTP and try again',
             });
         }
-        
+
         // Check if user with email already exists
         if (!existingUser) {
-            throw new AppError({ 
-                httpCode: HttpCode.UNAUTHORIZED, 
+            throw new AppError({
+                httpCode: HttpCode.UNAUTHORIZED,
                 description: 'You have entered an invalid email address or password',
             });
         }
@@ -147,28 +169,28 @@ export class AuthRepository implements IAuthRepository {
 
     }
 
-    async verifyPassword(email:string, otp:string): Promise<UserInterface> {
+    async verifyPassword(email: string, otp: string): Promise<UserInterface> {
 
         let user = await getUserByEmail(email);
 
         //IF USER NOT EXISTS
         if (!user) {
-            throw new AppError({ 
-                httpCode: HttpCode.UNAUTHORIZED, 
+            throw new AppError({
+                httpCode: HttpCode.UNAUTHORIZED,
                 description: 'You have entered an invalid email address.'
             });
         }
-        return user 
+        return user
     }
 
-    async resetPassword(email:string, otp:string, password: string): Promise<any>{
+    async resetPassword(email: string, otp: string, password: string): Promise<any> {
 
-        let user = await User.findOne({ email}).exec();
+        let user = await User.findOne({ email }).exec();
 
         //CHECK IF THE USER EXIST
         if (!user) {
-            throw new AppError({ 
-                httpCode: HttpCode.UNAUTHORIZED, 
+            throw new AppError({
+                httpCode: HttpCode.UNAUTHORIZED,
                 description: 'You have entered an invalid email address.'
             });
         }
@@ -180,7 +202,7 @@ export class AuthRepository implements IAuthRepository {
         return responseUser
     }
 
-    async verifyEmail(otp:string, email:string): Promise<void> {
+    async verifyEmail(otp: string, email: string): Promise<void> {
 
         let user = await User.findOne({ email }).exec();
 
@@ -188,8 +210,8 @@ export class AuthRepository implements IAuthRepository {
 
         //CHECK IF USER EXIST
         if (!user) {
-            throw new AppError({ 
-                httpCode: HttpCode.NOT_FOUND, 
+            throw new AppError({
+                httpCode: HttpCode.NOT_FOUND,
                 description: 'User not Found.'
             });
         }
@@ -198,15 +220,15 @@ export class AuthRepository implements IAuthRepository {
 
         // CHECK IF OTP CODE IS IN OTP TABLE
         if (otpCode?.otp !== otp) {
-            throw new AppError({ 
-                httpCode: HttpCode.NOT_FOUND, 
+            throw new AppError({
+                httpCode: HttpCode.NOT_FOUND,
                 description: 'Invalid Otp Code'
             });
         }
 
         if (otpCode?.otpExpiration < new Date()) {
-            throw new AppError({ 
-                httpCode: HttpCode.FORBIDDEN, 
+            throw new AppError({
+                httpCode: HttpCode.FORBIDDEN,
                 description: 'Otp Expired'
             });
         }
@@ -217,7 +239,7 @@ export class AuthRepository implements IAuthRepository {
             },
             {
                 isEmailVerified: true,
-            }, 
+            },
         )
     }
 }

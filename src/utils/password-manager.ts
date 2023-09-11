@@ -12,4 +12,13 @@ export const comparePassword = async (
   return await bcrypt.compare(password, hashPassword);
 };
 
+export const compareEmail =  (
+  email: string,
+  userEmail: string,
+) => {
+  return email === userEmail;
+};
+
+
+
 

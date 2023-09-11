@@ -52,20 +52,14 @@ export class UserRepository implements IUserRepository {
 
         // CHECK IF USER IS TRYING TO UPDATE ANOTHER USER DATA
         if (userId !== payload.params.userId) {
-            throw new AppError({ 
-                httpCode: HttpCode.FORBIDDEN, 
-                description: 'Access Forbidden' 
-            });
+            throw new AppError({ httpCode: HttpCode.FORBIDDEN, description: 'Access Forbidden' });
         }
 
         let foundUser = await User.findById(userId);
 
         //IF USER IS NOT FOUND 
         if (!foundUser) {
-            throw new AppError({ 
-                httpCode: HttpCode.UNAUTHORIZED, 
-                description: 'User not found!' 
-            });
+            throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'User not found!' });
         }
 
         let savedUser = await User.findOneAndUpdate(

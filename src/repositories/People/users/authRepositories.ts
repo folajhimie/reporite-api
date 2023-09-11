@@ -8,7 +8,7 @@ import { UserInterface } from "../../../interfaces/People/userInterface";
 
 export default interface IAuthRepository {
   // createUser(user: User): Promise<User>;
-  createUser(user: Omit<UserInterface, 'avatar'>): Promise<UserInterface>;
+  createUser(req: any): Promise<any>;
   loginUser(user: Pick<UserInterface, 'email' | 'password'>): Promise<UserInterface>;
   forgotPassword(user: UserInterface): Promise<UserInterface>;
   verifyPassword(email:string, otp:string): Promise<UserInterface>;

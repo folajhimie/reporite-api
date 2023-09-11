@@ -1,9 +1,7 @@
-import { Document, model, Schema, Types } from "mongoose";
-// import bcrypt from "bcryptjs";
-// import dotenv from "dotenv";
-// import jwt from "jsonwebtoken";
+import mongoose, { Document, Schema, Model, Types } from "mongoose";
 import { UserInterface } from "../../interfaces/People/userInterface";
-// dotenv.config();
+import { Product } from "../Production/Product/product";
+import { RoleType } from "../../utils/Enums";
 
 /**
  * Interface to model the User Schema for TypeScript.
@@ -18,9 +16,7 @@ import { UserInterface } from "../../interfaces/People/userInterface";
 //EXPORT INTERFACE WITH MONGOOSE DOCUMENT
 interface User extends UserInterface, Document { }
 
-// export interface IUserDocument extends Model<User> {
-//     comparePassword(password: string, hash: string): Promise<boolean>;
-// }
+
 
 // 2. Create a Schema corresponding to the document interface.
 const userSchema: Schema = new Schema<UserInterface>(
@@ -65,9 +61,9 @@ const userSchema: Schema = new Schema<UserInterface>(
             select: false,
         },
         role: {
-            type: Schema.Types.ObjectId,
-            ref: 'Role',
-            required: true,
+            type: String,
+            enum: Object.values(RoleType),
+            default: RoleType.VENDOR,
         },
         avatar: {
             type: String,
@@ -76,24 +72,28 @@ const userSchema: Schema = new Schema<UserInterface>(
             type: Boolean,
             default: false,
         },
+        isLocked: {
+            type: Boolean,
+            default: false,
+        },
+        failedLoginAttempts: {
+            type: Number,
+            default: 0,
+        },
         active: {
             type: Boolean,
             default: true,
         },
-        isEmailVerified: {
+        emailVerified: {
             type: Boolean,
             default: false,
         },
-        request_id: { 
+        shopId: { 
             type: Schema.Types.ObjectId, 
-            ref: 'Request', 
+            ref: 'Shop', 
             required: true 
         },
-        organization_id: { 
-            type: Schema.Types.ObjectId, 
-            ref: 'Organization', 
-            required: true 
-        },
+        products: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
     },
     {
         timestamps: true,
@@ -135,7 +135,12 @@ const userSchema: Schema = new Schema<UserInterface>(
 // };
 
 // export default model<User>("User", userSchema);
-export const User = model<User>("User", userSchema);
+// export const User = model<User>("User", userSchema);
+
+const User: Model<UserInterface> = mongoose.model<UserInterface>("User", userSchema);
+// export User;
 // export User;
 
 export const getUserByEmail = (email: string) => User.findOne({ email }).populate('role').exec();
+
+export { User }
