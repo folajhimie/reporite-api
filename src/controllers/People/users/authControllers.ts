@@ -13,7 +13,9 @@ import { verifyOtp } from "../../../utils/otp-service";
 import { AppError, HttpCode } from "../../../exceptions/appError";
 import generateResetPasswordTemplate from "../../../templates/resetPasswordTemplate";
 import { generateHashPassword } from "../../../utils/password-manager";
+import { generateAuthToken } from "../../../utils/token-generator";
 import Otp from "../../../models/People/otp";
+import sendToken from "../../../utils/sendToken";
 // import { AuthRepository } from "./authService";
 import IAuthRepository from "../../../repositories/People/users/authRepositories";
 
@@ -30,6 +32,11 @@ export class AuthController {
             let resultAuth = await authRepository.createUser(
                 req
             );
+
+            // Send HTTP-only cookie
+            sendToken(resultAuth, res)
+            
+            // Generate JWT Token
 
             //GENERATE OTP CODE FOR USER
             const otpController = new OtpController();

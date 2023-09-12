@@ -60,6 +60,9 @@ const userSchema: Schema = new Schema<UserInterface>(
             minlength: [6, "Minimum password length is 4 characters"],
             select: false,
         },
+        code: {
+            type: String,           
+        },
         role: {
             type: String,
             enum: Object.values(RoleType),
@@ -67,6 +70,8 @@ const userSchema: Schema = new Schema<UserInterface>(
         },
         avatar: {
             type: String,
+            required: [true, "Please add a photo"],
+            default: "https://i.ibb.co/4pDNDk1/avatar.png",
         },
         isAdmin: {
             type: Boolean,

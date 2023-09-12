@@ -4,6 +4,7 @@ import { User } from '../models/People/user';
 import { AppError, HttpCode } from '../exceptions/appError';
 import asyncMiddleware from './catchAsyncErrors';
 import Shop from '../models/Production/Shop/shop';
+import { UserInterface } from '../interfaces/People/userInterface';
 
 interface UserPayload {
     _id: string;
@@ -14,29 +15,42 @@ interface UserPayload {
 declare global {
     namespace Express {
         interface Request {
-            user?: UserPayload;
+            user?: UserPayload | any;
             seller?: Shop | any; // Assuming the type of 'Shop'
         }
     }
 }
 
-export const authMiddleware = asyncMiddleware(async (req: Request, res: Response, next: NextFunction) => {
+export const authMiddleware = asyncMiddleware(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         // const token = req.header('Authorization')?.replace('Bearer ', '');
 
         const { token } = req.cookies;
 
         if (!token) {
-            // throw new Error('Authentication failed');
-            return next(new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'Please Login to Continue' }));
+            return next(new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Please Login to Continue' }));
         }
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as UserPayload;
-        const user = await User.findById(decoded._id);
+
+        // const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!);
+        const user = await User.findById(decoded._id).select("-password");
+
         if (!user) {
-            // throw new Error('Authentication failed');
-            return next(new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'Please Login to Continue' }));
+            return next(new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Please Login to Continue' }));
         }
-        req.user = decoded;
+
+        if (!user.active) {
+            return next(new AppError({ httpCode: HttpCode.FORBIDDEN, description: 'This account has been de-activated' }));
+        }
+
+        if (!user.isLocked) {
+            return next(new AppError({ httpCode: HttpCode.FORBIDDEN, description: 'This account has been Locked' }));
+        }
+
+        // req.user = decoded;
+
+        req.user = user
+
         next();
     } catch (error) {
         throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'You must be logged in' });

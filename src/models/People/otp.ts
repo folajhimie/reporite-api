@@ -16,6 +16,11 @@ const otpSchema: Schema = new Schema<IOtp<Types.ObjectId>>(
             type: String,
             enum: Object.values(OtpType),
         },
+        uniqueString: {
+            type: String,
+            required: true,
+            default: null,
+        },
         otp: {
             type: String,
             required: true,

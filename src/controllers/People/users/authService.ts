@@ -8,6 +8,8 @@ import { RoleType } from "../../../utils/Enums";
 import { generateHashPassword, comparePassword, compareEmail } from "../../../utils/password-manager";
 import Otp from "../../../models/People/otp";
 import cloudinary from 'cloudinary';
+import { validateUser } from "../../../validator/user/userValidator";
+import { HelpFunction } from "../../../Helpers/helpFunction";
 
 // import { OtpType } from "../../../utils/Enums";
 
@@ -15,6 +17,7 @@ import cloudinary from 'cloudinary';
 export class AuthRepository implements IAuthRepository {
 
     async createUser(req: any): Promise<any> {
+        const users = await User.find();
 
         const { username, email, phone, password, confirmPassword, avatar, role } = req.body;
 
@@ -28,11 +31,31 @@ export class AuthRepository implements IAuthRepository {
             throw new AppError({ httpCode: HttpCode.FORBIDDEN, description: 'password and confirmPassword do not match!' });
         }
 
+        // validate the user info to check if user is correct
+        const validationError = validateUser({
+            username,
+            phone,
+            email,
+            password,
+            confirmPassword,
+        });
+
+        if (validationError) {
+            throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: validationError });
+        }
+
+        // The function for getting the user code number
+        const getUserCode: string | number = HelpFunction.addZeroToSingleDigit(users.length)
+
+        const userCode: string = `CRT/USR/${getUserCode}`;
+
         // Check if user with email already exists
         const existingUser = await User.findOne({ email }).exec();
+
         if (existingUser) {
             throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'User with email already exists.. Authentication failed' });
         }
+
 
         //get role form the model
         // const role = await Role.findOne({ name: RoleType.ADMIN }).exec();
@@ -62,9 +85,10 @@ export class AuthRepository implements IAuthRepository {
             phone,
             password: hashPassword,
             avatar: userImage.secure_url,
-            role
+            role,
+            code: userCode,
         })
-        
+
         let savedUser = await newUser.save();
 
         // this.users.push(newUser);

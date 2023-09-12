@@ -14,6 +14,7 @@ export interface UserInterface{
     role: RoleType;
     isAdmin: Boolean;
     isLocked: Boolean;
+    code: string;
     failedLoginAttempts: number;
     active: Boolean;
     emailVerified: boolean;
