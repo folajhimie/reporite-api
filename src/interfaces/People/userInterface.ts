@@ -17,6 +17,8 @@ export interface UserInterface{
     code: string;
     failedLoginAttempts: number;
     active: Boolean;
+    userAgent: string[],
+    ipAddress: string,
     emailVerified: boolean;
     shopId: Types.ObjectId | IShopInterface | null;
     products: Types.ObjectId[] | IProductInterface[] | null;

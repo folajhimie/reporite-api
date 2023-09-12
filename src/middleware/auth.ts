@@ -46,9 +46,7 @@ export const authMiddleware = asyncMiddleware(async (req: Request, res: Response
         if (!user.isLocked) {
             return next(new AppError({ httpCode: HttpCode.FORBIDDEN, description: 'This account has been Locked' }));
         }
-
         // req.user = decoded;
-
         req.user = user
 
         next();
@@ -68,7 +66,7 @@ export const isSeller = asyncMiddleware(async (req: Request, res: Response, next
     
         const decoded: any = jwt.verify(seller_token, process.env.ACCESS_TOKEN_SECRET!);
     
-        req.seller = await Shop.findById(decoded.id);
+        req.seller = await Shop.findById(decoded._id);
     
         next();
     } catch (error) {

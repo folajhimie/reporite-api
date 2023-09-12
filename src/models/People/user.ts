@@ -93,6 +93,15 @@ const userSchema: Schema = new Schema<UserInterface>(
             type: Boolean,
             default: false,
         },
+        userAgent: {
+            type: [String],
+            required: true,
+            default: [],
+        },
+        ipAddress: {
+            type: String,
+            required: true,
+        },
         shopId: { 
             type: Schema.Types.ObjectId, 
             ref: 'Shop', 

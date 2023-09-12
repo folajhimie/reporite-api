@@ -10,6 +10,10 @@ import Otp from "../../../models/People/otp";
 import cloudinary from 'cloudinary';
 import { validateUser } from "../../../validator/user/userValidator";
 import { HelpFunction } from "../../../Helpers/helpFunction";
+import UAParser from 'ua-parser-js';
+
+
+
 
 // import { OtpType } from "../../../utils/Enums";
 
@@ -77,8 +81,16 @@ export class AuthRepository implements IAuthRepository {
         const hashPassword = generateHashPassword(password);
         // (await hashPassword).toString
 
+        // Get the user's IP address from the request object
+        const ipAddressData = req.ip; // This gets the user's IP address
 
-        // Create a new shop with the image URL
+        // Get User Device Details
+        const parser = new UAParser();
+        const uaString = req.headers["user-agent"] || ''; // Ensure you handle the case where user-agent is undefined
+        const ua = parser.setUA(uaString).getResult();
+        const userAgentData: string[] = [ua.ua];
+
+        // Create a new shop with the image URL and IP Address 
         let newUser = new User({
             username,
             email,
@@ -87,12 +99,12 @@ export class AuthRepository implements IAuthRepository {
             avatar: userImage.secure_url,
             role,
             code: userCode,
+            ipAddress: ipAddressData,
+            userAgent: userAgentData
         })
 
         let savedUser = await newUser.save();
-
         // this.users.push(newUser);
-
         return savedUser
     }
 

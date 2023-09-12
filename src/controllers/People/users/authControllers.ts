@@ -42,7 +42,7 @@ export class AuthController {
             const otpController = new OtpController();
             let otpType = OtpType.VERIFICATION
 
-            //GENERATE TOKEN EXPIRATION 
+            //GENERATE TOKEN EXPIRATION DATE
             let tokenExpiration = new TokenController();
             let tokenExp = await tokenExpiration.tokenExpiration()
 
