@@ -1,4 +1,4 @@
-const resetPassword = function (otp, firstName) {
+const resetPassword = function (resetUrl: string, username: string) {
     const html = `
     <!DOCTYPE html>
 <html lang="en" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -99,13 +99,13 @@ const resetPassword = function (otp, firstName) {
                       style="--bg-opacity: 1; background-color: #ffffff; border-radius: 4px; font-family: Montserrat, -apple-system, 'Segoe UI', sans-serif; font-size: 14px; line-height: 24px; padding: 48px; text-align: left; --text-opacity: 1; color: #626262;"
                       align="left">
 
-                      <p style="font-weight: 600; font-size: 18px; margin-bottom: 10px;margin-top: 10px">Hey ${firstName},</p>
+                      <p style="font-weight: 600; font-size: 18px; margin-bottom: 10px;margin-top: 10px">Hey ${username},</p>
 
                       <p style="margin: 0 0 24px;">
-                        This is the password reset OTP you requested from node-typescript-boilerplate. Use to reset your node-typescript-boilerplate account password.
+                        This is the password reset resetUrl you requested from node-typescript-boilerplate. Use to reset your node-typescript-boilerplate account password.
                       </p>
                       
-                      <lable style="display: block; font-size: 24px; line-height: 100%; margin-bottom: 24px; --text-opacity: 1; color: #000000; text-decoration: none;">${otp}</lable>
+                      <lable style="display: block; font-size: 24px; line-height: 100%; margin-bottom: 24px; --text-opacity: 1; color: #000000; text-decoration: none;">${resetUrl}</lable>
                       <table style="font-family: 'Montserrat',Arial,sans-serif;" cellpadding="0" cellspacing="0"
                         role="presentation">
                         <tr>
@@ -157,7 +157,7 @@ const resetPassword = function (otp, firstName) {
 </html>`;
     const text = `
         Reset Password, You recently requested to reset your password for your node-typescript-boilerplate account. Copy and paste it for reset password:
-        ${otp}
+        ${resetUrl}
 
 If you did not requested a password reset, please ignore this email or reply to let us know. This password reset is only valid for the next 2 hours.`;
     return {

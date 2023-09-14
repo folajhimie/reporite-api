@@ -16,6 +16,7 @@ import { generateHashPassword } from "../../../utils/password-manager";
 import { generateAuthToken } from "../../../utils/token-generator";
 import Otp from "../../../models/People/otp";
 import sendToken from "../../../utils/sendToken";
+import loginCode from "../../../templates/loginWithCode";
 // import { AuthRepository } from "./authService";
 import IAuthRepository from "../../../repositories/People/users/authRepositories";
 
@@ -33,29 +34,34 @@ export class AuthController {
                 req
             );
 
-            // Send HTTP-only cookie
-            sendToken(resultAuth, res)
-            
-            // Generate JWT Token
+            // Send HTTP-only cookie and Then hash the user details
+            let tokenAuth = sendToken(resultAuth, res)
 
             //GENERATE OTP CODE FOR USER
             const otpController = new OtpController();
             let otpType = OtpType.VERIFICATION
 
             //GENERATE TOKEN EXPIRATION DATE
-            let tokenExpiration = new TokenController();
-            let tokenExp = await tokenExpiration.tokenExpiration()
+            // let tokenExpiration = new TokenController();
+            // let tokenExp = await tokenExpiration.tokenExpiration()
 
-            let otpCode = await otpController.createOtp(resultAuth, otpType, tokenExp)
+            let otpCode = await otpController.createOtp(resultAuth, otpType)
 
             //SEND VERIFICATION MAIL TO USER 
             const mailController = new MailController();
             const text = 'Account Verification';
             let emailStructure = verifyEmail(otpCode)
-            let mailType = mailController.createMail(emailStructure, resultAuth, req, text)
+            mailController.createMail(emailStructure, resultAuth, req, text)
 
             //SEND MESSAGE TO USER 
-            return jsonOne<UserInterface>(res, 201, resultAuth);
+            // return jsonOne<UserInterface>(res, 201, resultAuth);
+
+            let responseAuth = {
+                resultAuth,
+                accessToken: tokenAuth,
+            };
+
+            return jsonOne<object>(res, 200, responseAuth);
         } catch (error) {
             next(error);
         }
@@ -66,12 +72,11 @@ export class AuthController {
         try {
             const authRepository: IAuthRepository = new AuthRepository();
             let resultAuth = await authRepository.loginUser(
-                req.body
-            )
+                req.body, req
+            );
 
-            //CREATE TOKEN
-            const tokenRepository = new TokenController();
-            let tokenAuth = await tokenRepository.generateToken(resultAuth);
+            // Send HTTP-only cookie
+            let tokenAuth = sendToken(resultAuth, res)
 
             let responseAuth = {
                 resultAuth,
@@ -83,8 +88,47 @@ export class AuthController {
         } catch (error) {
             next(error);
         }
-
     }
+    
+    async sendLoginCode(req: Request, res: Response, next: NextFunction) {
+        try {
+            const authRepository: IAuthRepository = new AuthRepository();
+            let resultAuth = await authRepository.sendLoginCode(
+                req.body
+            );
+
+            const { userData, hashTokenData } = resultAuth
+
+            //SEND VERIFICATION MAIL TO USER 
+            const mailController = new MailController();
+            const text = 'Login Access Code - CARTTEL';
+            let emailStructure = loginCode(hashTokenData, userData.username)
+            mailController.createMail(emailStructure, userData, req, text)
+
+            return jsonOne<object>(res, 200, resultAuth);
+          
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async LoginWithCode(req: Request, res: Response, next: NextFunction) {
+        try {
+            const authRepository: IAuthRepository = new AuthRepository();
+            let resultAuth = await authRepository.loginWithCode(
+                req
+            );
+
+            // Send HTTP-only cookie
+            sendToken(resultAuth, res)
+
+            return jsonOne<object>(res, 200, resultAuth);
+          
+        } catch (error) {
+            next(error);
+        } 
+    }
+
     async forgotPassword(req: Request, res: Response, next: NextFunction) {
         try {
             const { email } = req.body;
@@ -93,14 +137,16 @@ export class AuthController {
             const authRepository: IAuthRepository = new AuthRepository();
             let resultAuth = await authRepository.forgotPassword(email)
 
+            const { user, resetUrl } = resultAuth
+
             //GENERATE TOKEN EXPIRATION 
-            let tokenExpiration = new TokenController();
-            let tokenExp = await tokenExpiration.tokenExpiration()
+            // let tokenExpiration = new TokenController();
+            // let tokenExp = await tokenExpiration.tokenExpiration()
 
             //GENERATE OTP CODE FOR USER
-            const otpController = new OtpController();
-            let otpType = OtpType.FORGET
-            let otpCode = await otpController.createOtp(resultAuth, otpType, tokenExp)
+            // const otpController = new OtpController();
+            // let otpType = OtpType.FORGET
+            // let otpCode = await otpController.createOtp(resultAuth, otpType)
 
             //SEND VERIFICATION MAIL TO USER 
             const mailController = new MailController();
@@ -108,10 +154,11 @@ export class AuthController {
             // let emailStructure = verifyEmail(otpCode)
             //GENERATE OTP AND SEND ON MAIL
             const emailStructure = generateResetPasswordTemplate(
-                otpCode,
-                resultAuth.username
+                resetUrl,
+                user.username
             );
-            let mailType = mailController.createMail(emailStructure, resultAuth, req, text)
+
+            mailController.createMail(emailStructure, user, req, text)
 
             return jsonOne<string>(
                 res,
@@ -155,27 +202,27 @@ export class AuthController {
 
             // VERIFYING IF USER EXIST
             const authRepository: IAuthRepository = new AuthRepository();
-            let resultAuth = await authRepository.resetPassword(email, otp, password);
+            await authRepository.resetPassword(req);
 
-            const { user } = resultAuth
+            // const { user } = resultAuth
 
             //CHECK FOR OTP
-            let otptype = OtpType.FORGET
-            let isOtpValid = await verifyOtp(user?.email, otp, otptype);
+            // let otptype = OtpType.FORGET
+            // let isOtpValid = await verifyOtp(user?.email, otp, otptype);
 
-            if (!isOtpValid) {
-                throw new AppError({
-                    httpCode: HttpCode.UNAUTHORIZED,
-                    description: 'This OTP has expired.'
-                });
-            }
+            // if (!isOtpValid) {
+            //     throw new AppError({
+            //         httpCode: HttpCode.UNAUTHORIZED,
+            //         description: 'This OTP has expired.'
+            //     });
+            // }
 
-            //ADD NEW PASSWORD 
-            const hashPassword = await generateHashPassword(password)
-            user.password = hashPassword;
-            await user.save();
+            // //ADD NEW PASSWORD 
+            // const hashPassword = await generateHashPassword(password)
+            // user.password = hashPassword;
+            // await user.save();
 
-            await Otp.findByIdAndDelete(isOtpValid)
+            // await Otp.findByIdAndDelete(isOtpValid)
             return jsonOne<string>(res, 200, 'Password updated successfully');
 
         } catch (error) {

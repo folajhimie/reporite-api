@@ -9,10 +9,12 @@ import { UserInterface } from "../../../interfaces/People/userInterface";
 export default interface IAuthRepository {
   // createUser(user: User): Promise<User>;
   createUser(req: any): Promise<any>;
-  loginUser(user: Pick<UserInterface, 'email' | 'password'>): Promise<UserInterface>;
-  forgotPassword(user: UserInterface): Promise<UserInterface>;
+  loginUser(user: Pick<UserInterface, 'email' | 'password'>, req: any): Promise<any>;
+  sendLoginCode(user: Pick<UserInterface, 'email'>): Promise<Record<string, string | any>>;
+  loginWithCode(req: any): Promise<Record<string, any>>;
+  forgotPassword(user: UserInterface): Promise<Record<string, string | any>>;
   verifyPassword(email:string, otp:string): Promise<UserInterface>;
-  resetPassword(email:string, otp:string, password: string): Promise<any>;
+  resetPassword(req: any): Promise<any>;
   verifyEmail(otp:string, email:string): Promise<void>;
   // logoutUser(): Promise<boolean>;
   // loginUser(user: UserInterface): Promise<UserInterface>;

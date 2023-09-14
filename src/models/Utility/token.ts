@@ -1,4 +1,6 @@
-import { Document, Schema, model, Types} from "mongoose";
+// import { Document, Schema, model, Types} from "mongoose";
+import mongoose, { Document, Schema, Model, Types } from "mongoose";
+// import { Token } from "nodemailer/lib/xoauth2";
 import { TokenInterface } from "../../interfaces/Utility/TokenInterface";
 // import { TokenInterface } from "../../interfaces /Utility/tokenInterface";
 
@@ -51,23 +53,30 @@ import { TokenInterface } from "../../interfaces/Utility/TokenInterface";
 
 // export interface ITokenModel extends TokenInterface<Schema.Types.ObjectId>, Document {}
 
-interface ITokenModel<T> extends TokenInterface<T>, Document {
-    id: T & Types.ObjectId;
+interface Token<T> extends TokenInterface<T>, Document {
+  id: T & Types.ObjectId;
 }
 
-const TokenSchema = new Schema<TokenInterface<Types.ObjectId>>({
-  id: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
+const tokenSchema = new Schema<TokenInterface<mongoose.Schema.Types.ObjectId>>({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "user",
     required: true,
   },
   token: {
     type: String,
     required: true,
   },
+  vToken: {
+    type: String,
+    default: "",
+  },
+  loginToken: {
+    type: String,
+    default: "",
+  },
   createdAt: {
     type: Date,
-    default: Date.now,
     required: true,
   },
   expiredAt: {
@@ -76,7 +85,15 @@ const TokenSchema = new Schema<TokenInterface<Types.ObjectId>>({
   },
 });
 
-export default model<ITokenModel<Types.ObjectId>>('Token', TokenSchema);
+// export default model<ITokenModel<Types.ObjectId>>('Token', TokenSchema);
+
+const Token: Model<TokenInterface<mongoose.Schema.Types.ObjectId>> = mongoose.model<TokenInterface<mongoose.Schema.Types.ObjectId>>("Token", tokenSchema);
+export { Token };
+// export User;
+
+// export const getUserByEmail = (email: string) => User.findOne({ email }).populate('role').exec();
+
+// export { User }
 
 // export default model<TokenInterface<Types.ObjectId>>('Token', TokenSchema);
 // import { Document, Types } from 'mongoose';

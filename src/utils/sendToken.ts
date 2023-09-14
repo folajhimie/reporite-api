@@ -3,7 +3,7 @@ import { Response } from 'express';
 import { generateAuthToken } from './token-generator';
 import { UserInterface } from '../interfaces/People/userInterface';
 
-const sendToken = (user: any, res: Response): void => {
+const sendToken = (user: any, res: Response): string => {
     const token = generateAuthToken(user?._id)
 
     // const token = generateToken(user.username);
@@ -15,7 +15,8 @@ const sendToken = (user: any, res: Response): void => {
         sameSite: "none",
         secure: true,
     })
-        
+
+    return token       
 };
 
 export default sendToken;

@@ -8,7 +8,7 @@ import { HttpCode, AppError } from "../../../exceptions/appError";
 
 export class OtpController {
 
-    async createOtp (savedUser: any, OtpType: string, tokenExpiration?:any): Promise<string> {
+    async createOtp (savedUser: any, OtpType: string): Promise<string> {
 
         // //GENERATE OTP FOR MAIL VERIFICATION
         // let tokenExpiration: any = new Date();
@@ -22,7 +22,7 @@ export class OtpController {
             userId: savedUser?._id,
             type: OtpType,
             otp,
-            otpExpiration: new Date(tokenExpiration),
+            otpExpiration:  Date.now() + 60 * (60 * 1000), // Thirty minutes
         });
 
         await newOtp.save();

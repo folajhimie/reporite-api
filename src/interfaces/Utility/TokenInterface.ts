@@ -1,7 +1,9 @@
 
 export interface TokenInterface<T> {
-    id: T;
+    userId: T;
     token: string;
+    vToken: string;
+    loginToken: string;
     createdAt: Date;
     expiredAt: Date;
 }

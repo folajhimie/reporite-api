@@ -8,7 +8,7 @@
 import nodemailer, { Transporter } from 'nodemailer';
 
 import Logging from '../Library/Logging';
-import { MailInterface } from '../models/Utility/mailInterface';
+import { MailInterface } from '../interfaces/Utility/mailInterface';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -22,6 +22,7 @@ export default class MailService {
     // private constructor(transporter: any) {
     //     this.transporter = transporter;
     // }
+    
     //INSTANCE CREATE FOR MAIL
     static getInstance() {
         if (!MailService.instance) {

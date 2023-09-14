@@ -5,8 +5,8 @@ import { Request } from "express";
 
 export class MailController {
 
-    async createMail(emailStructiure:any, user: UserInterface, req: Request, text:string) {
-        const emailTemplate = emailStructiure;
+    async createMail(emailStructure:any, user: UserInterface, req: Request, text:string) {
+        const emailTemplate = emailStructure;
         const mailService = MailService.getInstance();
 
         await mailService.sendMail(req.headers['X-Request-Id'], {
