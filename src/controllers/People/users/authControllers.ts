@@ -41,16 +41,18 @@ export class AuthController {
             const otpController = new OtpController();
             let otpType = OtpType.VERIFICATION
 
-            //GENERATE TOKEN EXPIRATION DATE
-            // let tokenExpiration = new TokenController();
-            // let tokenExp = await tokenExpiration.tokenExpiration()
+            //GENERATE TOKEN FOR THE OTP PAGE TO GET A UNIQUE LINK
+            let tokenExpiration = new TokenController();
+            let tokenExp = await tokenExpiration.createUniqueToken(resultAuth)
+
+            const { tokenData, sendOtpLink } = tokenExp
 
             let otpCode = await otpController.createOtp(resultAuth, otpType)
 
             //SEND VERIFICATION MAIL TO USER 
             const mailController = new MailController();
             const text = 'Account Verification';
-            let emailStructure = verifyEmail(otpCode)
+            let emailStructure = verifyEmail(otpCode, sendOtpLink)
             mailController.createMail(emailStructure, resultAuth, req, text)
 
             //SEND MESSAGE TO USER 
@@ -59,6 +61,7 @@ export class AuthController {
             let responseAuth = {
                 resultAuth,
                 accessToken: tokenAuth,
+                otpLink: tokenData
             };
 
             return jsonOne<object>(res, 200, responseAuth);
@@ -198,7 +201,7 @@ export class AuthController {
 
     async resetPassword(req: Request, res: Response, next: NextFunction) {
         try {
-            const { email, otp, password } = req.body;
+            // const { email, otp, password } = req.body;
 
             // VERIFYING IF USER EXIST
             const authRepository: IAuthRepository = new AuthRepository();
@@ -229,6 +232,19 @@ export class AuthController {
             next(error)
         }
 
+    }
+    
+
+    async verifyUserWithOTP(req: Request, res: Response, next: NextFunction) {
+        try {
+            // VERIFYING IF USER EXIST
+            const authRepository: IAuthRepository = new AuthRepository();
+            await authRepository.verifyUserWithOTP(req);
+
+            return jsonOne<string>(res, 200, 'OTP verified successfully and user now verified');
+        } catch (error) {
+            next(error) 
+        }
     }
 
     logoutUser(req: Request, res: Response, next: NextFunction) {

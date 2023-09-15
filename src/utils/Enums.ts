@@ -15,5 +15,6 @@ export enum AccountStatus {
 //OTP SEND TYPE ENUMS
 export enum OtpType {
     FORGET = 'forget',
-    VERIFICATION = 'verification'
+    VERIFICATION = 'verification',
+    CONFIRM = 'confirm'
 }

@@ -1,4 +1,4 @@
-const verifyEmail = function (otp: string) {
+const verifyEmail = function (otp: string, sendOtpLink: string) {
   const html = `
     <!DOCTYPE html>
     <html lang="en" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -106,6 +106,7 @@ Use this link to confirm your account and log in</div>
                             A request to create your node-typescript-boilerplate account was received.
 Use this link to confirm your account and log in
                           </p>
+                          <label style="display: block; font-size: 24px; line-height: 100%; margin-bottom: 24px; --text-opacity: 1; color: #000000; text-decoration: none;">${sendOtpLink}</label>
 
                           <lable style="display: block; font-size: 24px; line-height: 100%; margin-bottom: 24px; --text-opacity: 1; color: #000000; text-decoration: none;">${otp}</lable>
                           <table style="font-family: 'Montserrat',Arial,sans-serif;" cellpadding="0" cellspacing="0"
