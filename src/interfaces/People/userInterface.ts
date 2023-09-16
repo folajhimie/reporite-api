@@ -4,13 +4,16 @@ import { IShopInterface } from "../Production/Shop/shopInterface";
 import { IProductInterface } from "../Production/Product/productInterface";
 import { RoleType } from "../../utils/Enums";
 
-export interface UserInterface{
+export interface UserInterface {
     username: string;
     password: string;
     email: string;
     phone: string;
     confirmPassword: string;
-    avatar: string;
+    avatar: {
+        public_id: string;
+        secure_url: string;
+    };
     role: RoleType;
     isAdmin: Boolean;
     isLocked: Boolean;

@@ -2,22 +2,20 @@ import { UserInterface } from "../../../interfaces/People/userInterface";
 import IUserRepository from "../../../repositories/People/users/userRepositories";
 import { User } from "../../../models/People/user";
 import { AppError, HttpCode } from "../../../exceptions/appError";
+import cloudinary from 'cloudinary';
 
 export class UserRepository implements IUserRepository {
     async getUser(userId: string): Promise<UserInterface> {
-        
+
         let user = await User.findById(userId).populate('role').exec();
         if (!user) {
-            throw new AppError({ 
-                httpCode: HttpCode.UNAUTHORIZED, 
-                description: 'User not Found' 
-            });
+            throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'User not Found' });
         }
 
         return user
     }
 
-    async getAllUsers(requestQuery: any):  Promise<any>{
+    async getAllUsers(requestQuery: any): Promise<any> {
         let pageOptions: { page: number; limit: number } = {
             page: Number(requestQuery.query.page) || 1,
             limit: Number(requestQuery.query.limit) || 10
@@ -47,45 +45,70 @@ export class UserRepository implements IUserRepository {
         return responseType;
     }
 
-    async updateUser(payload: any, user: Partial<UserInterface>): Promise<any>{
-        const userId = payload['id'];
+    async updateUser(payload: any, user: Partial<UserInterface>): Promise<any> {
+        const userId = payload.params.id;
 
-        // CHECK IF USER IS TRYING TO UPDATE ANOTHER USER DATA
-        if (userId !== payload.params.userId) {
-            throw new AppError({ httpCode: HttpCode.FORBIDDEN, description: 'Access Forbidden' });
-        }
-
-        let foundUser = await User.findById(userId);
+        let foundUser: UserInterface | any = await User.findById(userId).exec();
 
         //IF USER IS NOT FOUND 
         if (!foundUser) {
-            throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'User not found!' });
+            throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'User not found!' });
         }
 
-        let savedUser = await User.findOneAndUpdate(
-            { _id: userId },
+        const imageId = foundUser?.avatar?.public_id
+
+        await cloudinary.v2.uploader.destroy(imageId);
+
+        const myCloud = await cloudinary.v2.uploader.upload(foundUser.avatar, {
+            folder: "users",
+            width: 150,
+            crop: "scale",
+        });
+
+        const foundImage = foundUser.avatar = {
+            public_id: myCloud.public_id,
+            secure_url: myCloud.secure_url,
+        };
+
+        const newUserData = {
+            username: user?.username,
+            email: user?.email,
+            phone: user?.phone,
+            role: user?.role,
+            avatar: foundImage,
+            isAdmin: user?.isAdmin,
+            isLocked: user?.isLocked,
+            code: user?.code,
+            active: user?.active
+        };
+
+
+        let savedUser = await User.findByIdAndUpdate(
+            { _id: payload.user.id },
             {
-                username: user?.username,
-                email: user?.email,
-                phone: user?.phone,
-                role: user?.role,
-                avatar: user?.avatar
-            }
+                newUserData
+            },
+            { 
+                new: true,
+                runValidator: true,
+                useFindAndModify: false,
+            } // Return the updated document
         )
 
         return savedUser;
     }
 
-    async deleteUser(userId: string): Promise<void>{
+    async deleteUser(userId: string): Promise<void> {
 
-        const user = await User.findById(userId);
+        const user: UserInterface | any = await User.findById(userId).exec();
+        
+        const imageId = user?.avatar?.public_id
+
+        await cloudinary.v2.uploader.destroy(imageId);
 
         //CHECK IF USER IS FOUND 
         if (!user) {
-            throw new AppError({ 
-                httpCode: HttpCode.NOT_FOUND, 
-                description: 'User not found!' 
-            });
+            throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'User not found!'});
         }
 
         await User.findByIdAndDelete(userId)

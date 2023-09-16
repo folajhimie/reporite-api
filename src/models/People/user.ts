@@ -21,7 +21,7 @@ interface User extends UserInterface, Document { }
 // 2. Create a Schema corresponding to the document interface.
 const userSchema: Schema = new Schema<UserInterface>(
     {
-        
+
         username: {
             type: String,
             required: [true, "Please provide name"],
@@ -61,18 +61,43 @@ const userSchema: Schema = new Schema<UserInterface>(
             select: false,
         },
         code: {
-            type: String,           
+            type: String,
         },
         role: {
             type: String,
             enum: Object.values(RoleType),
             default: RoleType.VENDOR,
         },
+        // avatar: {
+        //     public_id: {
+        //       type: String,
+        //       required: true,
+        //     },
+        //     url: {
+        //       type: String,
+        //       required: true,
+        //     },
+        //     default: "https://i.ibb.co/4pDNDk1/avatar.png",
+        // },
         avatar: {
-            type: String,
-            required: [true, "Please add a photo"],
-            default: "https://i.ibb.co/4pDNDk1/avatar.png",
+            public_id: {
+                type: String,
+                required: true,
+            },
+            secure_url: {
+                type: String,
+                required: true,
+            },
+            default: {
+                public_id: 'default_public_id',
+                secure_url: "https://i.ibb.co/4pDNDk1/avatar.png",
+            },
         },
+        // avatars: {
+        //     type: String,
+        //     required: [true, "Please add a photo"],
+        //     default: "https://i.ibb.co/4pDNDk1/avatar.png",
+        // },
         isAdmin: {
             type: Boolean,
             default: false,
@@ -102,10 +127,10 @@ const userSchema: Schema = new Schema<UserInterface>(
             type: String,
             required: true,
         },
-        shopId: { 
-            type: Schema.Types.ObjectId, 
-            ref: 'Shop', 
-            required: true 
+        shopId: {
+            type: Schema.Types.ObjectId,
+            ref: 'Shop',
+            required: true
         },
         products: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
     },

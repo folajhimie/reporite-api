@@ -81,7 +81,11 @@ export class AuthRepository implements IAuthRepository {
             }
 
             // Creating a user image which would be uploaded in cloudinary
-            const userImage = await cloudinary.v2.uploader.upload(req.file.buffer.toString('base64'));
+            const userImage = await cloudinary.v2.uploader.upload(req.file.buffer.toString('base64'), {
+                folder: "users",
+                width: 150,
+                crop: "scale",
+            });
 
             //GENEARTE ENCRYPTION PASSWORD
             const hashPassword = generateHashPassword(password);

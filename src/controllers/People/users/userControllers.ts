@@ -15,7 +15,7 @@ export class UserController {
             let resultAuth = await userRepository.getUser(
                 req.params.id
             )
-            return jsonOne<UserInterface>(res, 200, resultAuth); 
+            return jsonOne<UserInterface>(res, 200, resultAuth);
         } catch (error) {
             next(error)
         }
@@ -29,9 +29,9 @@ export class UserController {
                 req
             )
 
-            const {users ,meta} = resultAuth 
+            const { users, meta } = resultAuth
             return jsonAll<any>(res, 200, users, meta);
-            
+
         } catch (error) {
             next(error)
         }
@@ -47,23 +47,23 @@ export class UserController {
                 req.body
             )
             return jsonOne<UserInterface>(res, 200, resultAuth);
-            
+
         } catch (error) {
             next(error)
         }
     }
 
-        async deleteUser(req: Request, res: Response, next: NextFunction) {
-            const userId = req.params.id 
-            try {
-                const userRepository: IUserRepository = new UserRepository();
-                let resultAuth = await userRepository.deleteUser(
-                    userId
-                )
-                return jsonOne<string>(res, 200, 'User Sucessfully Deleted');
-                
-            } catch (error) {
-                next(error)
-            }
-        } 
+    async deleteUser(req: Request, res: Response, next: NextFunction) {
+        const userId = req.params.id
+        try {
+            const userRepository: IUserRepository = new UserRepository();
+            let resultAuth = await userRepository.deleteUser(
+                userId
+            )
+            return jsonOne<string>(res, 200, 'User Sucessfully Deleted');
+
+        } catch (error) {
+            next(error)
+        }
+    }
 }
