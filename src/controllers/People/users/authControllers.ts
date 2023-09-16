@@ -17,6 +17,7 @@ import { generateAuthToken } from "../../../utils/token-generator";
 import Otp from "../../../models/People/otp";
 import sendToken from "../../../utils/sendToken";
 import loginCode from "../../../templates/loginWithCode";
+import resendOTPUser from "../../../templates/resendOtpTemplate";
 // import { AuthRepository } from "./authService";
 import IAuthRepository from "../../../repositories/People/users/authRepositories";
 
@@ -53,7 +54,7 @@ export class AuthController {
             const mailController = new MailController();
             const text = 'Account Verification';
             let emailStructure = verifyEmail(otpCode, sendOtpLink)
-            mailController.createMail(emailStructure, resultAuth, req, text)
+            await mailController.createMail(emailStructure, resultAuth, req, text)
 
             //SEND MESSAGE TO USER 
             // return jsonOne<UserInterface>(res, 201, resultAuth);
@@ -92,7 +93,7 @@ export class AuthController {
             next(error);
         }
     }
-    
+
     async sendLoginCode(req: Request, res: Response, next: NextFunction) {
         try {
             const authRepository: IAuthRepository = new AuthRepository();
@@ -109,7 +110,7 @@ export class AuthController {
             mailController.createMail(emailStructure, userData, req, text)
 
             return jsonOne<object>(res, 200, resultAuth);
-          
+
         } catch (error) {
             next(error);
         }
@@ -126,10 +127,10 @@ export class AuthController {
             sendToken(resultAuth, res)
 
             return jsonOne<object>(res, 200, resultAuth);
-          
+
         } catch (error) {
             next(error);
-        } 
+        }
     }
 
     async forgotPassword(req: Request, res: Response, next: NextFunction) {
@@ -173,32 +174,6 @@ export class AuthController {
         }
     }
 
-    async verifyPassword(req: Request, res: Response, next: NextFunction) {
-
-        try {
-            const { email, otp } = req.body
-
-            //VERIFYING EMAIL AND OTP
-            const authRepository: IAuthRepository = new AuthRepository();
-            let resultAuth = await authRepository.verifyPassword(email, otp)
-
-            //CHECK FOR OTP
-            let otptype = OtpType.FORGET
-            let isOtpValid = await verifyOtp(resultAuth?.email, otp, otptype);
-
-            if (!isOtpValid) {
-                throw new AppError({
-                    httpCode: HttpCode.UNAUTHORIZED,
-                    description: 'This OTP has expired.'
-                });
-            }
-
-            return jsonOne<string>(res, 200, 'Able to reset the password');
-        } catch (error) {
-            next(error);
-        }
-    }
-
     async resetPassword(req: Request, res: Response, next: NextFunction) {
         try {
             // const { email, otp, password } = req.body;
@@ -206,6 +181,8 @@ export class AuthController {
             // VERIFYING IF USER EXIST
             const authRepository: IAuthRepository = new AuthRepository();
             await authRepository.resetPassword(req);
+
+            return jsonOne<string>(res, 200, 'Password updated successfully');
 
             // const { user } = resultAuth
 
@@ -226,32 +203,64 @@ export class AuthController {
             // await user.save();
 
             // await Otp.findByIdAndDelete(isOtpValid)
-            return jsonOne<string>(res, 200, 'Password updated successfully');
 
         } catch (error) {
             next(error)
         }
 
     }
-    
 
     async verifyUserWithOTP(req: Request, res: Response, next: NextFunction) {
         try {
             // VERIFYING IF USER EXIST
             const authRepository: IAuthRepository = new AuthRepository();
-            await authRepository.verifyUserWithOTP(req);
+            const verifyUser = await authRepository.verifyUserWithOTP(req);
+
+            const { user, otp } = verifyUser;
+
+            //CHECK FOR OTP
+            // let otptype = OtpType.FORGET
+            await verifyOtp(user, otp);
 
             return jsonOne<string>(res, 200, 'OTP verified successfully and user now verified');
         } catch (error) {
-            next(error) 
+            next(error)
+        }
+    }
+
+    async resendOTP(req: Request, res: Response, next: NextFunction) {
+        try {
+            // VERIFYING IF USER EXIST
+            const authRepository: IAuthRepository = new AuthRepository();
+            const resendOTPUser = await authRepository.resendOTP(req);
+
+            const { user } = resendOTPUser;
+
+            //GENERATE OTP CODE FOR USER
+            const otpController = new OtpController();
+            let otpType = OtpType.VERIFICATION
+
+            let otpCode = await otpController.createOtp(user, otpType);
+
+            //SEND VERIFICATION MAIL TO USER 
+            const mailController = new MailController();
+            const text = 'Resend OTP To User';
+            let emailStructure = resendOTPUser(otpCode)
+            await mailController.createMail(emailStructure, user, req, text)
+
+        } catch (error) {
+            next(error)
         }
     }
 
     logoutUser(req: Request, res: Response, next: NextFunction) {
         try {
-            res.cookie("token", null, {
-                expires: new Date(Date.now()),
+            res.cookie("token", "", {
+                path: "/",
                 httpOnly: true,
+                expires: new Date(0),
+                sameSite: "none",
+                secure: true,
             });
 
             return jsonOne<string>(res, 201, 'Log out successful!');

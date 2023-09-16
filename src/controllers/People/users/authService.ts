@@ -1,5 +1,5 @@
 import IAuthRepository from "../../../repositories/People/users/authRepositories";
-// import { Document, model, Schema, Types } from "mongoose";
+import { Document, model, Schema, Types } from "mongoose";
 import { User, getUserByEmail } from "../../../models/People/user";
 import { UserInterface } from "../../../interfaces/People/userInterface";
 import { AppError, HttpCode } from "../../../exceptions/appError";
@@ -14,6 +14,7 @@ import UAParser from 'ua-parser-js';
 import { encrypt, decrypt, hashToken, createRandomToken } from "../../../utils/password-manager";
 import { Token } from "../../../models/Utility/token";
 import { generateOtp } from "../../../utils/otp-service";
+import IOtp from "../../../interfaces/People/otpInterface";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -420,77 +421,64 @@ export class AuthRepository implements IAuthRepository {
                 throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'User was not found!' });
             }
 
-            const otpCode = await Otp.findOne({ _id: findToken.userId }).exec();
+            // const otpCode = await Otp.findOne({ _id: findToken.userId }).exec();
 
-            // Check if the provided OTP matches the stored OTP
-            if (otpCode !== otp) {
-                throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Invalid OTP!' });
+            const otpResult = {
+                user, 
+                otp
             }
 
+            return otpResult;
+
+            // Check if the provided OTP matches the stored OTP
+            // if (otpCode !== otp) {
+            //     throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Invalid OTP!' });
+            // }
+
             // Mark the user as verified (update a field in the database)
-            user.emailVerified = true;
-            await user.save();
+            // user.emailVerified = true;
+            // await user.save();
 
             // You can also clear the OTP from the user's data at this point
 
         } catch (error) {
-
+            console.error('Error in verifying user with OTP code:', error);
         }
     }
 
-    async verifyPassword(email: string, otp: string): Promise<UserInterface> {
+    async resendOTP(req: any): Promise<any> {
+        try {
+            const { uniqueString } = req.params;
 
-        let user = await getUserByEmail(email);
+            const decipherLink: string = decrypt(uniqueString)
 
-        //IF USER NOT EXISTS
-        if (!user) {
-            throw new AppError({
-                httpCode: HttpCode.UNAUTHORIZED,
-                description: 'You have entered an invalid email address.'
-            });
+            // FIND UNIQUE LINK TO THE USER 
+            const findToken = await Token.findOne({ uniqueToken: decipherLink }).exec();
+
+            // CHECK IF THE TOKEN STILL EXIST 
+            if (!findToken) {
+                throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'Sorry Token was not found!' });
+            }
+
+            const user = await User.findOne({ _id: findToken.userId }).exec();
+
+            // CHECK IF THE USER STILL EXIST 
+            if (!user) {
+                throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'User was not found!' });
+            }
+
+            const otpCode = await Otp.findOne({ userId: user._id }).exec();
+
+            // IF OTP EXIST THEN DELETE IT 
+            if (otpCode) {
+                await otpCode.deleteOne();
+            }
+
+            return user;
+            
+        } catch (error) {
+            console.error('Error in re-sending OTP code:', error); 
         }
-        return user
     }
 
-
-    async verifyEmail(otp: string, email: string): Promise<void> {
-
-        let user = await User.findOne({ email }).exec();
-
-        let userId = user?._id
-
-        //CHECK IF USER EXIST
-        if (!user) {
-            throw new AppError({
-                httpCode: HttpCode.NOT_FOUND,
-                description: 'User not Found.'
-            });
-        }
-
-        const otpCode = await Otp.findById({ userId }).exec();
-
-        // CHECK IF OTP CODE IS IN OTP TABLE
-        if (otpCode?.otp !== otp) {
-            throw new AppError({
-                httpCode: HttpCode.NOT_FOUND,
-                description: 'Invalid Otp Code'
-            });
-        }
-
-        if (otpCode?.otpExpiration < new Date()) {
-            throw new AppError({
-                httpCode: HttpCode.FORBIDDEN,
-                description: 'Otp Expired'
-            });
-        }
-
-        await User.updateOne(
-            {
-                email,
-            },
-            {
-                isEmailVerified: true,
-            },
-        )
-    }
 }

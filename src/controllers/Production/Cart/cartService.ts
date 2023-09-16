@@ -51,10 +51,7 @@ export class CartRepository implements IcartRepository {
             const cart: ICartInterface | null = await Cart.findOne({ user: userId }).populate('items.products');
 
             if (!cart) {
-                throw new AppError({
-                    httpCode: HttpCode.NOT_FOUND,
-                    description: 'Cart is not Found'
-                });
+                throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'Cart is not Found'});
             }
 
             return cart;
@@ -72,10 +69,7 @@ export class CartRepository implements IcartRepository {
             const cart: ICartInterface | null = await Cart.findOne({ user: userId });
 
             if (!cart) {
-                throw new AppError({
-                    httpCode: HttpCode.NOT_FOUND,
-                    description: 'Cart is not Found'
-                });
+                throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'Cart is not Found'});
             }
 
             // const cartItem = cart.items.id(cartItemId);
@@ -85,12 +79,9 @@ export class CartRepository implements IcartRepository {
             const cartItems: ICartItemInterface | null = await CartItem.findByIdAndUpdate(itemId, { quantity });
 
             if (!cartItems) {
-                throw new AppError({
-                    httpCode: HttpCode.NOT_FOUND,
-                    description: 'Cart Item is not Found'
-                });
+                throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'Cart Item is not Found'});
             }
-            
+
             await cart.save();
 
         } catch (error) {
@@ -108,10 +99,7 @@ export class CartRepository implements IcartRepository {
             const cart: ICartInterface | null = await Cart.findOne({ user: userId });
 
             if (!cart) {
-                throw new AppError({
-                    httpCode: HttpCode.NOT_FOUND,
-                    description: 'Cart is not Found'
-                });
+                throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'Cart is not Found'});
             }
 
             await CartItem.findByIdAndRemove(itemId);
@@ -122,12 +110,6 @@ export class CartRepository implements IcartRepository {
             console.error('Error deleting cart item:', error);
         }
     };
-
-
-
-
-
-
 }
 
 

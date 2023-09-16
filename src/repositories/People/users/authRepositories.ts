@@ -15,9 +15,8 @@ export default interface IAuthRepository {
   forgotPassword(user: UserInterface): Promise<any>;
   resetPassword(req: any): Promise<any>;
   verifyUserWithOTP(req: any): Promise<any>;
+  resendOTP(req: any): Promise<any>;
 
-  verifyPassword(email:string, otp:string): Promise<UserInterface>;
-  verifyEmail(otp:string, email:string): Promise<void>;
   // logoutUser(): Promise<boolean>;
   // loginUser(user: UserInterface): Promise<UserInterface>;
   // resetPassword(email: string): Promise<boolean>;

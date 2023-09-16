@@ -9,50 +9,37 @@ import { HttpCode, AppError } from "../../../exceptions/appError";
 export class OtpController {
 
     async createOtp (savedUser: any, OtpType: string): Promise<string> {
-
         // //GENERATE OTP FOR MAIL VERIFICATION
         // let tokenExpiration: any = new Date();
         // tokenExpiration = tokenExpiration.setMinutes(
         //     tokenExpiration.getMinutes() + 10
         // );
-
         const otp: string = generateOtp(4);
 
         let newOtp = new Otp({
             userId: savedUser?._id,
             type: OtpType,
             otp,
-            otpExpiration:  Date.now() + 60 * (60 * 1000), // Thirty minutes
+            otpExpiration: Date.now() + 60 * (60 * 1000), // Thirty minutes
         });
 
         await newOtp.save();
 
         return otp;
-
     }
 
     async verifyOtp (
         user: any,
-        otp: string,
-        OtpType: string
+        userOtpCode: string
     ){
         //VERIFYING OTP
-        let isOtpValid = await verifyOtp(user._id, otp, OtpType);
+        let isOtpValid = await verifyOtp(user._id, userOtpCode);
 
-        if (!isOtpValid) {
-            throw new AppError({ 
-                httpCode: HttpCode.UNAUTHORIZED, 
-                description: 'This OTP has Invalid.!' 
-            });
-        }
-
-
-        user.isEmailVerified = true;
+        user.emailVerified = true;
         user.save();
-        //DELETE OTP
-        const foundOtp = await Otp.findByIdAndDelete(isOtpValid);
-        return foundOtp;
 
+        //DELETE OTP AFTER THE USER HAS BEEN VERIFIED 
+        await Otp.findByIdAndDelete(isOtpValid);
     }
 }
 
