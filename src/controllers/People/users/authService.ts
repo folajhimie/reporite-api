@@ -15,15 +15,81 @@ import { encrypt, decrypt, hashToken, createRandomToken } from "../../../utils/p
 import { Token } from "../../../models/Utility/token";
 import { generateOtp } from "../../../utils/otp-service";
 import IOtp from "../../../interfaces/People/otpInterface";
+import { OAuth2Client } from 'google-auth-library';
 import dotenv from "dotenv";
 dotenv.config();
 
 
 
-// import { OtpType } from "../../../utils/Enums";
+// import parser from 'ua-parser-js';
 
-
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 export class AuthRepository implements IAuthRepository {
+    async loginWithGoogle(req: any): Promise<any>{
+        try {
+            const { userToken } = req.body;
+
+            const ticket = await client.verifyIdToken({
+                idToken: userToken,
+                audience: process.env.GOOGLE_CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
+                // Or, if multiple clients access the backend:
+                //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
+            });
+
+
+            const payload: any = ticket.getPayload();
+
+            const { username, email, picture, sub } = payload;
+
+            const password = Date.now() + sub;
+
+
+
+            // Get User Device Details
+            const parser = new UAParser();
+            const uaString = req.headers["user-agent"] || ''; // Ensure you handle the case where user-agent is undefined
+            const ua = parser.setUA(uaString).getResult();
+            const userAgentData: string[] = [ua.ua];
+
+            // FIND ALL USERS TO GET THE USER CODE
+            const users = await User.find();
+
+            // The function for getting the user code number
+            const getUserCode: string | number = HelpFunction.addZeroToSingleDigit(users.length)
+
+            const userCode: string = `CRT/USR/${getUserCode}`;
+
+            // Get the user's IP address from the request object
+            const ipAddressData = req.ip; // This gets the user's IP address
+
+            // Check if the user exists
+            let user = await User.findOne({ email });
+
+            if (user) {
+                throw new AppError({ httpCode: HttpCode.FORBIDDEN, description: 'This user already exist!' });
+            }
+
+            // User doesn't exist, register user
+            if (!user) {
+                // Create a new user
+                user = await User.create({
+                    username,
+                    email,
+                    password,
+                    emailVerified: true,
+                    avatar: picture,
+                    code: userCode,
+                    ipAddress: ipAddressData,
+                    userAgent: userAgentData
+                });
+            }
+
+            return user
+            
+        } catch (error) {
+            console.error('Error creating using Google:', error); 
+        }
+    }
 
     async createUser(req: any): Promise<any> {
         try {
@@ -365,7 +431,6 @@ export class AuthRepository implements IAuthRepository {
 
     }
 
-
     async resetPassword(req: any): Promise<any> {
         try {
             const { password, confirmPassword } = req.body;
@@ -486,3 +551,8 @@ export class AuthRepository implements IAuthRepository {
     }
 
 }
+
+
+// http://localhost:6565/api/session/oauth/google
+
+// export default loginWithGoogle;

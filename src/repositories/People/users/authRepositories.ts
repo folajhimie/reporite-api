@@ -16,6 +16,7 @@ export default interface IAuthRepository {
   resetPassword(req: any): Promise<any>;
   verifyUserWithOTP(req: any): Promise<any>;
   resendOTP(req: any): Promise<any>;
+  loginWithGoogle(req: any): Promise<any>;
 
   // logoutUser(): Promise<boolean>;
   // loginUser(user: UserInterface): Promise<UserInterface>;

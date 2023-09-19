@@ -24,6 +24,23 @@ import IAuthRepository from "../../../repositories/People/users/authRepositories
 // type TodoPreview = Pick<UserInterface, "email" | "password">;
 
 export class AuthController {
+    async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
+        try {
+            //CREATE USER  
+            const authRepository: IAuthRepository = new AuthRepository();
+            let resultAuth = await authRepository.loginWithGoogle(
+                req
+            );
+
+            // Send HTTP-only cookie and Then hash the user details
+            sendToken(resultAuth, res)
+
+            
+        } catch (error) {
+            next(error);
+        }
+
+    }
 
     async registerUser(req: Request, res: Response, next: NextFunction) {
         try {
