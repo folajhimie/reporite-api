@@ -6,21 +6,21 @@ import { IPersonnalInterface } from "../../interfaces/Business/PersonnalInterfac
 export interface Personnal extends IPersonnalInterface, Document { }
 
 const personnalSchema: Schema = new Schema<IPersonnalInterface>({
-    businessOwner: {
+    businessVerificationType: {
         type: String,
-        required: [true, 'Business Name is required'],
-        maxlength: 50,
+        required: [true, 'Business Verification Type is required'],
+        maxlength: 200,
         minlength: 3,
         trim: true
     },
-    businessOwnerType: {
+    businessVerificationNumber: {
         type: String,
-        required: [true, 'Business Type is required'],
+        required: [true, 'Business Verification Number is required'],
         maxlength: 100,
         minlength: 10,
         trim: true
     },
-    utilityBill: {
+    businessVerificationImage: {
         public_id: {
             type: String,
             required: true,
@@ -29,10 +29,17 @@ const personnalSchema: Schema = new Schema<IPersonnalInterface>({
             type: String,
             required: true,
         },
-        default: {
-            public_id: 'default_public_id',
-            secure_url: "https://i.ibb.co/4pDNDk1/avatar.png",
+    },
+    businessUtilityBill: {
+        public_id: {
+            type: String,
+            required: true,
         },
+        secure_url: {
+            type: String,
+            required: true,
+        },
+        
     },
     
 },

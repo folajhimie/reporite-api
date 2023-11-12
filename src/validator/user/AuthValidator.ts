@@ -1,11 +1,6 @@
 // import { Request, Response, NextFunction } from 'express';
 import { body as bodyValidator, ResultFactory, validationResult } from 'express-validator';
 
-
-
-
-
-
 export const validateCreateUser = async (req: Request) => {
     await Promise.all([
         // Express-validator checks
