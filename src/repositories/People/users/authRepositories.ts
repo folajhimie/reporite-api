@@ -1,18 +1,18 @@
 
 // import mongoose, { Document, Model } from 'mongoose';
 import { Document, model, Schema, Types } from "mongoose";
-import { UserInterface } from "../../../interfaces/People/userInterface";
+import { IUserInterface } from "../../../interfaces/People/userInterface";
 
 // import User from "../../models/People/user";
 
 
 export default interface IAuthRepository {
   // createUser(user: User): Promise<User>;
-  createUser(req: any): Promise<any>;
-  loginUser(user: Pick<UserInterface, 'email' | 'password'>, req: any): Promise<any>;
-  sendLoginCode(user: Pick<UserInterface, 'email'>): Promise<Record<string, string | any>>;
+  createUser(req: any): Promise<void>;
+  loginUser(user: Pick<IUserInterface, 'email' | 'password'>, req: any): Promise<any>;
+  sendLoginCode(user: Pick<IUserInterface, 'email'>): Promise<Record<string, string | any>>;
   loginWithCode(req: any): Promise<Record<string, any>>;
-  forgotPassword(user: UserInterface): Promise<any>;
+  forgotPassword(user: IUserInterface): Promise<any>;
   resetPassword(req: any): Promise<any>;
   verifyUserWithOTP(req: any): Promise<any>;
   resendOTP(req: any): Promise<any>;

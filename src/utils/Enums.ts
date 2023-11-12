@@ -1,9 +1,11 @@
 
 // ROLE ENUMS
 export enum RoleType {
-    VENDOR = 'vendor',
-    ADMIN = 'admin',
-    USER= 'user'
+    Owner = "Owner",
+    Manager = "Manager",
+    Admin = "Admin",
+    Accountant = "Accountant",
+    User = "User"
 }
 
 //USER ACCOUNT STATUS ENUMS
@@ -14,6 +16,7 @@ export enum AccountStatus {
 
 //OTP SEND TYPE ENUMS
 export enum OtpType {
+    CREATED = 'created',
     FORGET = 'forget',
     VERIFICATION = 'verification',
     CONFIRM = 'confirm'

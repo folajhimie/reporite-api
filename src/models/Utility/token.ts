@@ -35,7 +35,7 @@ import { TokenInterface } from "../../interfaces/Utility/TokenInterface";
 //     token: string;
 //     createdAt: Date;
 // }
-  
+
 // // Import the interface into a model schema
 // import { Schema, model } from 'mongoose';
 // import { TokenInterface } from './token.interface';
@@ -49,7 +49,7 @@ import { TokenInterface } from "../../interfaces/Utility/TokenInterface";
 
 // // Create the model using the schema
 // const TokenModel = model<TokenInterface<Types.ObjectId>>('Token', TokenSchema);
-  
+
 
 // export interface ITokenModel extends TokenInterface<Schema.Types.ObjectId>, Document {}
 

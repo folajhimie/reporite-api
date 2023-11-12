@@ -1,12 +1,12 @@
 import IAuthRepository from "../../../repositories/People/users/authRepositories";
 import { Document, model, Schema, Types } from "mongoose";
 import { User, getUserByEmail } from "../../../models/People/user";
-import { UserInterface } from "../../../interfaces/People/userInterface";
+import { IUserInterface } from "../../../interfaces/People/userInterface";
 import { AppError, HttpCode } from "../../../exceptions/appError";
 // import Role from "../../../models/People/roles";
 import { RoleType } from "../../../utils/Enums";
 import { generateHashPassword, comparePassword, compareEmail } from "../../../utils/password-manager";
-import Otp from "../../../models/People/otp";
+import Otp from "../../../models/Utility/otp";
 import cloudinary from 'cloudinary';
 import { validateUser } from "../../../validator/user/userValidator";
 import { HelpFunction } from "../../../Helpers/helpFunction";
@@ -14,8 +14,9 @@ import UAParser from 'ua-parser-js';
 import { encrypt, decrypt, hashToken, createRandomToken } from "../../../utils/password-manager";
 import { Token } from "../../../models/Utility/token";
 import { generateOtp } from "../../../utils/otp-service";
-import IOtp from "../../../interfaces/People/otpInterface";
+import IOtp from "../../../interfaces/Utility/otpInterface";
 import { OAuth2Client } from 'google-auth-library';
+import { validateCreateUser, validateLoginUser } from "../../../validator/user/AuthValidator";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -39,7 +40,7 @@ export class AuthRepository implements IAuthRepository {
 
             const payload: any = ticket.getPayload();
 
-            const { username, email, picture, sub } = payload;
+            const { firstName, email, picture, sub } = payload;
 
             const password = Date.now() + sub;
 
@@ -73,10 +74,10 @@ export class AuthRepository implements IAuthRepository {
             if (!user) {
                 // Create a new user
                 user = await User.create({
-                    username,
+                    firstName,
                     email,
                     password,
-                    emailVerified: true,
+                    isVerified: true,
                     avatar: picture,
                     code: userCode,
                     ipAddress: ipAddressData,
@@ -91,34 +92,35 @@ export class AuthRepository implements IAuthRepository {
         }
     }
 
+    
+
     async createUser(req: any): Promise<any> {
+        
         try {
-            const users = await User.find();
-
-            const { username, email, phone, password, confirmPassword, avatar, role } = req.body;
-
-            //verifying if content exist
-            if (!username || !email || !phone || !password || !confirmPassword) {
-                throw new AppError({ httpCode: HttpCode.NO_CONTENT, description: 'Input form is empty' });
-            }
+            // Validate user input
+            await validateCreateUser(req);
+            
+            const { 
+                firstName, 
+                lastName, 
+                email, 
+                phone, 
+                password, 
+                confirmPassword, 
+                avatar, 
+                roles 
+            } = req.body as IUserInterface;
 
             //compare password to see if they match
             if (password !== confirmPassword) {
-                throw new AppError({ httpCode: HttpCode.FORBIDDEN, description: 'password and confirmPassword do not match!' });
+                throw new AppError({ 
+                    httpCode: HttpCode.FORBIDDEN, 
+                    description: 'password and confirmPassword do not match!' 
+                });
             }
 
-            // validate the user info to check if user is correct
-            const validationError = validateUser({
-                username,
-                phone,
-                email,
-                password,
-                confirmPassword,
-            });
-
-            if (validationError) {
-                throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: validationError });
-            }
+            //  Query to get all users 
+            const users: IUserInterface | any = await User.find();
 
             // The function for getting the user code number
             const getUserCode: string | number = HelpFunction.addZeroToSingleDigit(users.length)
@@ -129,21 +131,17 @@ export class AuthRepository implements IAuthRepository {
             const existingUser = await User.findOne({ email }).exec();
 
             if (existingUser) {
-                throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'User with email already exists.. Authentication failed' });
+                throw new AppError({ 
+                    httpCode: HttpCode.UNAUTHORIZED, 
+                    description: 'User with email already exists.. Authentication failed' 
+                });
             }
 
-
-            //get role form the model
-            // const role = await Role.findOne({ name: RoleType.ADMIN }).exec();
-            // if (!role) {
-            //     throw new AppError({
-            //         httpCode: HttpCode.UNPROCESSABLE,
-            //         description: 'User role not found'
-            //     });
-            // }
-
             if (!req.file) {
-                throw new AppError({ httpCode: HttpCode.NOT_FOUND, description: 'No File Uploaded!' });
+                throw new AppError({ 
+                    httpCode: HttpCode.NOT_FOUND, 
+                    description: 'No File Uploaded!' 
+                });
             }
 
             // Creating a user image which would be uploaded in cloudinary
@@ -168,12 +166,13 @@ export class AuthRepository implements IAuthRepository {
 
             // Create a new shop with the image URL and IP Address 
             let newUser = new User({
-                username,
+                firstName,
+                lastName,
                 email,
                 phone,
                 password: hashPassword,
                 avatar: userImage.secure_url,
-                role,
+                roles,
                 code: userCode,
                 ipAddress: ipAddressData,
                 userAgent: userAgentData
@@ -188,7 +187,7 @@ export class AuthRepository implements IAuthRepository {
         }
     }
 
-    async loginUser({ email, password }: Pick<UserInterface, 'email' | 'password'>, req: any): Promise<any> {
+    async loginUser({ email, password }: Pick<IUserInterface, 'email' | 'password'>, req: any): Promise<any> {
         try {
             //verifying if content exist
             if (!email || !password) {
@@ -254,7 +253,7 @@ export class AuthRepository implements IAuthRepository {
             }
 
             //CHECK FOR USER VERIFIED AND EXISTING 
-            if (!user.emailVerified) {
+            if (!user.isVerified) {
                 throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'Please confirm your account by confirmation email OTP and try again' });
             }
 
@@ -295,7 +294,7 @@ export class AuthRepository implements IAuthRepository {
         }
     }
 
-    async sendLoginCode(user: Pick<UserInterface, "email">): Promise<Record<string, any>> {
+    async sendLoginCode(user: Pick<IUserInterface, "email">): Promise<Record<string, any>> {
         try {
             const { email } = user;
 
@@ -378,7 +377,7 @@ export class AuthRepository implements IAuthRepository {
     }
 
     // FORGOT PASSWORD
-    async forgotPassword({ email }: UserInterface): Promise<any> {
+    async forgotPassword({ email }: IUserInterface): Promise<any> {
 
         try {
             const user = await User.findOne({ email }).exec();
@@ -454,7 +453,7 @@ export class AuthRepository implements IAuthRepository {
             }
 
             // Find user and reset password
-            let user: UserInterface | any = await User.findOne({ _id: userToken.userId })
+            let user: IUserInterface | any = await User.findOne({ _id: userToken.userId })
 
             user.password = password;
 
@@ -499,16 +498,9 @@ export class AuthRepository implements IAuthRepository {
 
             return otpResult;
 
-            // Check if the provided OTP matches the stored OTP
-            // if (otpCode !== otp) {
-            //     throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Invalid OTP!' });
-            // }
+           
 
-            // Mark the user as verified (update a field in the database)
-            // user.emailVerified = true;
-            // await user.save();
-
-            // You can also clear the OTP from the user's data at this point
+            
 
         } catch (error) {
             console.error('Error in verifying user with OTP code:', error);

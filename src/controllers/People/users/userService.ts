@@ -1,11 +1,11 @@
-import { UserInterface } from "../../../interfaces/People/userInterface";
+import { IUserInterface } from "../../../interfaces/People/userInterface";
 import IUserRepository from "../../../repositories/People/users/userRepositories";
 import { User } from "../../../models/People/user";
 import { AppError, HttpCode } from "../../../exceptions/appError";
 import cloudinary from 'cloudinary';
 
 export class UserRepository implements IUserRepository {
-    async getUser(userId: string): Promise<UserInterface> {
+    async getUser(userId: string): Promise<IUserInterface> {
 
         let user = await User.findById(userId).populate('role').exec();
         if (!user) {
@@ -45,10 +45,10 @@ export class UserRepository implements IUserRepository {
         return responseType;
     }
 
-    async updateUser(payload: any, user: Partial<UserInterface>): Promise<any> {
+    async updateUser(payload: any, user: Partial<IUserInterface>): Promise<any> {
         const userId = payload.params.id;
 
-        let foundUser: UserInterface | any = await User.findById(userId).exec();
+        let foundUser: IUserInterface | any = await User.findById(userId).exec();
 
         //IF USER IS NOT FOUND 
         if (!foundUser) {
@@ -71,12 +71,12 @@ export class UserRepository implements IUserRepository {
         };
 
         const newUserData = {
-            username: user?.username,
+            firstName: user?.firstName,
+            lastName: user?.lastName,
             email: user?.email,
             phone: user?.phone,
-            role: user?.role,
+            role: user?.roles,
             avatar: foundImage,
-            isAdmin: user?.isAdmin,
             isLocked: user?.isLocked,
             code: user?.code,
             active: user?.active
@@ -100,7 +100,7 @@ export class UserRepository implements IUserRepository {
 
     async deleteUser(userId: string): Promise<void> {
 
-        const user: UserInterface | any = await User.findById(userId).exec();
+        const user: IUserInterface | any = await User.findById(userId).exec();
         
         const imageId = user?.avatar?.public_id
 

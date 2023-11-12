@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { Response } from 'express';
 import { generateAuthToken } from './token-generator';
-import { UserInterface } from '../interfaces/People/userInterface';
+import { IUserInterface } from '../interfaces/People/userInterface';
 
 const sendToken = (user: any, res: Response): string => {
     const token = generateAuthToken(user?._id)

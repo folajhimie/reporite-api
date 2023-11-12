@@ -5,7 +5,7 @@ import { Request, Response, NextFunction } from "express";
 import verifyEmail from "../../../templates/verifyEmailTemplate";
 import MailService from "../../../utils/MailService";
 import { jsonOne, jsonAll } from "../../../utils/Reponse";
-import { UserInterface } from "../../../interfaces/People/userInterface";
+import { IUserInterface } from "../../../interfaces/People/userInterface";
 import { TokenController } from "../token/tokenControllers";
 import { OtpType } from "../../../utils/Enums";
 import { MailController } from "../../Utility/mailControllers";
@@ -14,7 +14,7 @@ import { AppError, HttpCode } from "../../../exceptions/appError";
 import generateResetPasswordTemplate from "../../../templates/resetPasswordTemplate";
 import { generateHashPassword } from "../../../utils/password-manager";
 import { generateAuthToken } from "../../../utils/token-generator";
-import Otp from "../../../models/People/otp";
+import Otp from "../../../models/Utility/otp";
 import sendToken from "../../../utils/sendToken";
 import loginCode from "../../../templates/loginWithCode";
 import resendOTPUser from "../../../templates/resendOtpTemplate";
@@ -57,7 +57,7 @@ export class AuthController {
 
             //GENERATE OTP CODE FOR USER
             const otpController = new OtpController();
-            let otpType = OtpType.VERIFICATION
+            let otpType = OtpType.CREATED
 
             //GENERATE TOKEN FOR THE OTP PAGE TO GET A UNIQUE LINK
             let tokenExpiration = new TokenController();

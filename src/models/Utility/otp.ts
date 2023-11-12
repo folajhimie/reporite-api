@@ -1,6 +1,7 @@
-import IOtp from "../../interfaces/People/otpInterface";
+import IOtp from "../../interfaces/Utility/otpInterface";
 import { Document, model, Schema, Types } from "mongoose";
-import { OtpType } from "../../utils/Enums";
+// import { OtpType } from "../../utils/Enums";
+// import { IOtpCodeInterface } from "../../interfaces/Utility/otpCodeInterface";
 
 
 interface Otp<T> extends IOtp<T>, Document {}
@@ -12,9 +13,13 @@ const otpSchema: Schema = new Schema<IOtp<Types.ObjectId>>(
             type: Schema.Types.ObjectId,
             ref: 'User',
         },
+        // type: {
+        //     type: String,
+        //     enum: Object.values(OtpType),
+        // },
         type: {
-            type: String,
-            enum: Object.values(OtpType),
+            type: Schema.Types.ObjectId,
+            ref: 'OtpCode',
         },
         // uniqueString: {
         //     type: String,
@@ -27,7 +32,7 @@ const otpSchema: Schema = new Schema<IOtp<Types.ObjectId>>(
         },
         otpExpiration: {
             type: Date,
-            default: null,
+            default: Date.now,
         },
     },
     { timestamps: true }

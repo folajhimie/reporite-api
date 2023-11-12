@@ -1,5 +1,5 @@
 import { Document, model, Schema } from "mongoose";
-import { IRole } from "../../interfaces/People/roleInterface";
+import { IRoleInterface } from "../../interfaces/People/roleInterface";
 
 /**
  * Interface to model the Role Schema for TypeScript.
@@ -8,9 +8,9 @@ import { IRole } from "../../interfaces/People/roleInterface";
 
 
 //EXPORT INTERFACE WITH MONGOOSE DOCUMENT
-export interface Role extends IRole, Document {}
+export interface Role extends IRoleInterface, Document {}
 
-const roleSchema: Schema = new Schema<IRole>({
+const roleSchema: Schema = new Schema<IRoleInterface>({
     name: {
         type: String,
         required: [true, 'Role is required'],
@@ -18,11 +18,14 @@ const roleSchema: Schema = new Schema<IRole>({
         minlength: 3,
         trim: true
     },
+    code: {
+        type: String, 
+    },
 },
     { timestamps: true }
 );
 
-const Role = model<Role>("Role", roleSchema);
+const Role = model<IRoleInterface>("Role", roleSchema);
 export default Role;
 
 

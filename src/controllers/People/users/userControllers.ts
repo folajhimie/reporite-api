@@ -2,7 +2,7 @@ import IUserRepository from "../../../repositories/People/users/userRepositories
 import { AppError, HttpCode } from "../../../exceptions/appError";
 import { Request, Response, NextFunction } from "express";
 import { UserRepository } from "./userService";
-import { UserInterface } from "../../../interfaces/People/userInterface";
+import { IUserInterface } from "../../../interfaces/People/userInterface";
 import { jsonOne, jsonAll } from "../../../utils/Reponse";
 
 
@@ -15,7 +15,7 @@ export class UserController {
             let resultAuth = await userRepository.getUser(
                 req.params.id
             )
-            return jsonOne<UserInterface>(res, 200, resultAuth);
+            return jsonOne<IUserInterface>(res, 200, resultAuth);
         } catch (error) {
             next(error)
         }
@@ -46,7 +46,7 @@ export class UserController {
                 payload,
                 req.body
             )
-            return jsonOne<UserInterface>(res, 200, resultAuth);
+            return jsonOne<IUserInterface>(res, 200, resultAuth);
 
         } catch (error) {
             next(error)

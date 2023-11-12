@@ -1,5 +1,6 @@
-import Otp from "../../../models/People/otp";
+import Otp from "../../../models/Utility/otp";
 import { generateOtp, verifyOtp } from "../../../utils/otp-service";
+import { IUserInterface } from "../../../interfaces/People/userInterface";
 import { OtpType } from "../../../utils/Enums";
 import { HttpCode, AppError } from "../../../exceptions/appError";
 // import IOtp from "../../../interfaces /People/otpInterface";
@@ -8,7 +9,7 @@ import { HttpCode, AppError } from "../../../exceptions/appError";
 
 export class OtpController {
 
-    async createOtp (savedUser: any, OtpType: string): Promise<string> {
+    async createOtp (savedUser: IUserInterface | any, OtpType: string): Promise<string> {
         // //GENERATE OTP FOR MAIL VERIFICATION
         // let tokenExpiration: any = new Date();
         // tokenExpiration = tokenExpiration.setMinutes(
@@ -29,13 +30,13 @@ export class OtpController {
     }
 
     async verifyOtp (
-        user: any,
+        user: IUserInterface | any,
         userOtpCode: string
     ){
         //VERIFYING OTP
         let isOtpValid = await verifyOtp(user._id, userOtpCode);
 
-        user.emailVerified = true;
+        user.isVerified = true;
         user.save();
 
         //DELETE OTP AFTER THE USER HAS BEEN VERIFIED 

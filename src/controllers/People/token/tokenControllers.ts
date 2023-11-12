@@ -2,7 +2,7 @@ import { JwtPayload } from "jsonwebtoken";
 // import { HttpCode, AppError } from "../../../exceptions/appError";
 import { generateAuthToken, decodeAuthToken } from "../../../utils/token-generator";
 import { Token } from "../../../models/Utility/token";
-import { UserInterface } from "../../../interfaces/People/userInterface";
+import { IUserInterface } from "../../../interfaces/People/userInterface";
 import { uuid } from 'uuidv4';
 // import crypto from 'crypto';
 import { encrypt } from "../../../utils/password-manager";
@@ -41,7 +41,7 @@ export class TokenController {
         return expiryDate;
     }
 
-    async createUniqueToken (user: UserInterface| any): Promise<string | any> {
+    async createUniqueToken (user: IUserInterface| any): Promise<string | any> {
         try {
 
             const uniqueString = uuid() + user._id;

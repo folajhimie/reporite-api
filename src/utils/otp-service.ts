@@ -1,5 +1,5 @@
 // import otp from "../models/People/otp";
-import Otp from "../models/People/otp";
+import Otp from "../models/Utility/otp";
 import { User } from "../models/People/user";
 import { HttpCode, AppError } from "../exceptions/appError";
 
@@ -45,7 +45,7 @@ export const verifyOtp = async function (
     }
 
     //CHECK IF USER HAS BEEN VERIFIED ALREADY. IF IT IS TRUE SEND A RESPONSE TO NOTIFY THE USER
-    if (user?.emailVerified) {
+    if (user?.isVerified) {
         throw new AppError({ httpCode: HttpCode.FORBIDDEN, description: 'This user has already been verified!'}); 
     }
 
