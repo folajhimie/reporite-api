@@ -2,9 +2,10 @@ import { AppError, HttpCode } from "../../exceptions/appError";
 import Business from "../../models/Business/Business";
 import { IBusinessInterface } from "../../interfaces/Business/BusinessInterface";
 import IBusinessRepository from "../../repositories/Business/BusinessRepositories";
-import cloudinary from 'cloudinary';
+// import cloudinary from 'cloudinary';
 import { Request } from 'express';
 import { validateCreateBusiness } from "../../validator/business/BusinessValidator";
+import { CloudinaryService } from "../../utils/Cloudinary";
 
 export class BusinessRepository implements IBusinessRepository {
 
@@ -37,8 +38,6 @@ export class BusinessRepository implements IBusinessRepository {
             console.error('Error creating business:', error);
         } 
     }
-
-
 
     async getBusiness(businessId: string): Promise<IBusinessInterface> {
 
@@ -101,13 +100,9 @@ export class BusinessRepository implements IBusinessRepository {
 
         const imageId = businessData?.avatar?.public_id
 
-        await cloudinary.v2.uploader.destroy(imageId);
-
-        const myCloud = await cloudinary.v2.uploader.upload(businessData?.avatar, {
-            folder: "business",
-            width: 150,
-            crop: "scale",
-        });
+        // await cloudinary.v2.uploader.destroy(imageId);
+        await CloudinaryService.destroyImage(imageId);
+        const myCloud = await CloudinaryService.uploadImage(businessData?.avatar, "business");
 
         const businessImage = businessData.avatar = {
             public_id: myCloud.public_id,
@@ -156,7 +151,9 @@ export class BusinessRepository implements IBusinessRepository {
         
         const businessImageId = business?.avatar?.public_id
 
-        await cloudinary.v2.uploader.destroy(businessImageId);
+        // await cloudinary.v2.uploader.destroy(businessImageId);
+
+        await CloudinaryService.destroyImage(businessImageId);
 
         //CHECK IF USER IS FOUND 
         await Business.findByIdAndDelete(businessId)

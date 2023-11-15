@@ -1,30 +1,66 @@
-// import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
+// cloudinaryService.ts
 import cloudinary from 'cloudinary';
-// import { ReadStream, createReadStream } from 'fs';
+import { CloudinaryOptions } from '../interfaces/Utility/CloudinaryInterface';
 import dotenv from 'dotenv';
 dotenv.config();
 
-// Define Cloudinary configuration interface
-interface CloudinaryConfig {
-    cloud_name: string | undefined;
-    api_key: string | undefined;
-    api_secret: string | undefined;
-}
-  
-// Define Cloudinary image interface
-interface CloudinaryImage {
+interface CloudinaryUploadResult {
     public_id: string;
     secure_url: string;
 }
 
-// Configure Cloudinary
-const config: CloudinaryConfig = {
-    cloud_name: process.env.CLOUD_NAME,
-    api_key: process.env.CLOUD_API_KEY,
-    api_secret: process.env.CLOUD_API_SECRET
-};
-  
-cloudinary.v2.config(config);
+export class CloudinaryService {
+    private static initialized = false;
+
+    private static cloudinaryImage: CloudinaryOptions = {
+        cloud_name: process.env.CLOUD_NAME || '',
+        api_key: process.env.CLOUD_API_KEY || '',
+        api_secret: process.env.CLOUD_API_SECRET || '',
+    };
+
+    static initialize() {
+        if (this.initialized) {
+            console.warn('CloudinaryService already initialized.');
+            return;
+        }
+
+        cloudinary.v2.config(this.cloudinaryImage);
+        this.initialized = true;
+    }
+
+    static async uploadImage(imageAvatar: string, folderData: string): Promise<CloudinaryUploadResult> {
+        this.initialize();
+
+        try {
+            const result = await cloudinary.v2.uploader.upload(imageAvatar, {
+                folder: folderData,
+                width: 150,
+                crop: 'scale',
+            });
+
+            return {
+                public_id: result.public_id,
+                secure_url: result.secure_url,
+            };
+        } catch (error) {
+            console.error('Error uploading image to Cloudinary:', error);
+            throw new Error('Failed to upload image to Cloudinary');
+        }
+    }
+
+    static async destroyImage(imageAvatar: string): Promise<void> {
+        this.initialize();
+
+        try {
+            await cloudinary.v2.uploader.destroy(imageAvatar);
+
+        } catch (error) {
+            console.error('Error deleting image to Cloudinary:', error);
+            throw new Error('Failed to delete image to Cloudinary');
+        }
+    }
+}
+
 
 
 
@@ -73,11 +109,6 @@ cloudinary.v2.config(config);
 //   console.log('Image uploaded to Cloudinary:');
 //   console.log(response.url);
 // })();
-
-
-
-
-
 
 // import cloudinary from 'cloudinary';
 
@@ -131,10 +162,10 @@ cloudinary.v2.config(config);
 //   (async () => {
 //     const filePath = 'path/to/your/image.jpg'; // Replace with the actual file path
 //     const folderName = 'uploads'; // Specify the destination folder in Cloudinary
-  
+
 //     const fileStream = createReadStream(filePath); // Assuming you have the file to upload
 //     const response = await uploadImage({ file: fileStream, folder: folderName });
-  
+
 //     console.log('Image uploaded to Cloudinary:');
 //     console.log(response.url);
 //   })();

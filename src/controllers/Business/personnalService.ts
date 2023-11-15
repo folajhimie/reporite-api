@@ -1,70 +1,80 @@
 import { AppError, HttpCode } from "../../exceptions/appError";
-import Business from "../../models/Business/Business";
-import { IBusinessInterface } from "../../interfaces/Business/BusinessInterface";
-import IBusinessRepository from "../../repositories/Business/BusinessRepositories";
-import cloudinary from 'cloudinary';
+// import Business from "../../models/Business/Business";
+// import cloudinary from 'cloudinary';
 import { Request } from 'express';
-import { validateCreateBusiness } from "../../validator/business/BusinessValidator";
+import Personnal from "../../models/Business/Personnal";
+import { IPersonnalInterface } from "../../interfaces/Business/PersonnalInterface";
+import IPersonnalRepository from "../../repositories/Business/PersonnalRepositories";
+import { validateCreatePersonnal } from "../../validator/business/PersonnalValidator";
+import { CloudinaryService } from "../../utils/Cloudinary";
 
-export class BusinessRepository implements IBusinessRepository {
 
-    async createBusiness(req: Request | any ): Promise<IBusinessInterface | any> {
+
+export class PersonnalRepository implements IPersonnalRepository {
+
+    async createPersonnal(req: Request | any ): Promise<IPersonnalInterface | any> {
         try {
+            // Extract data from the request body
+            await validateCreatePersonnal(req)
 
-            await validateCreateBusiness(req)
+            const personnalData = req.body as IPersonnalInterface; // Assuming the request body contains the necessary data
+    
+            // Upload images to Cloudinary
+            const businessVerificationImage = req.files['businessVerificationImage'][0];
+            const businessUtilityBill = req.files['businessUtilityBill'][0];
+    
+            // const bvImageResult = await cloudinary.v2.uploader.upload(businessVerificationImage.buffer.toString('base64'));
+            const bvImageResult = await CloudinaryService.uploadImage(businessVerificationImage.buffer.toString('base64'), "business");
 
-            const businessData = req.body as IBusinessInterface; // Assuming the request body contains the necessary data
+            const buImageResult = await CloudinaryService.uploadImage(businessUtilityBill.buffer.toString('base64'), "business");
+    
+            // Update the personnalData with Cloudinary URLs
+            personnalData.businessVerificationImage = {
+                public_id: bvImageResult.public_id,
+                secure_url: bvImageResult.secure_url,
+            };
+            personnalData.businessUtilityBill = {
+                public_id: buImageResult.public_id,
+                secure_url: buImageResult.secure_url,
+            };
+    
+            // Create the Personnal entity
+            // const createdPersonnal: PersonnalDocument = await Personnal.create(personnalData);
 
-            const { businessName } = businessData
+            const createdPersonnal: IPersonnalInterface = await Personnal.create(personnalData);
 
-            // Check if the business already exists
-            const existingBusiness = await Business.findOne({
-                businessName
-            });
-
-            if (existingBusiness) {
-                throw new AppError({ 
-                    httpCode: HttpCode.UNAUTHORIZED, 
-                    description: 'Business Found' 
-                });
-            }
-
-            const createdBusiness: IBusinessInterface | any = await Business.create(businessData);
-
-            return createdBusiness
+            return createdPersonnal;
 
         } catch (error) {
-            console.error('Error creating business:', error);
-        } 
+            console.error('Error creating personnal:', error);
+            // console.error('Error creating business:', error);
+        }
     }
 
 
 
-    async getBusiness(businessId: string): Promise<IBusinessInterface> {
+    async getPersonnal(personnalId: string): Promise<IPersonnalInterface> {
 
-        let business = await Business.findById(businessId).exec();
-        if (!business) {
+        let personnal = await Personnal.findById(personnalId).exec();
+        if (!personnal) {
             throw new AppError({ 
                 httpCode: HttpCode.UNAUTHORIZED, 
-                description: 'Business not Found' 
+                description: 'personnal not Found' 
             });
         }
-        return business
+        return personnal
     }
 
-    async getAllBusinesses(requestQuery: any): Promise<any> {
+    async getAllPersonnal(requestQuery: any): Promise<any> {
         let pageOptions: { page: number; limit: number } = {
             page: Number(requestQuery.query.page) || 1,
             limit: Number(requestQuery.query.limit) || 10
         }
 
-        const count = await Business.countDocuments({});
+        const count = await Personnal.countDocuments({});
 
         //GETTING DATA FORM TABLE
-        let businesses = await Business.find()
-            .populate('user')
-            .populate('products')
-            .populate('personnal')
+        let personnal = await Personnal.find()
             .limit(pageOptions.limit * 1)
             .skip((pageOptions.page - 1) * pageOptions.limit)
             .sort({ createdAt: 1 });
@@ -78,61 +88,68 @@ export class BusinessRepository implements IBusinessRepository {
         }
 
         const responseType = {
-            businesses,
+            personnal,
             meta
         }
         return responseType;
     }
 
-    async updateBusiness(req: Request): Promise<any> {
+    async updatePersonnal(req: Request | any): Promise<any> {
         
         // const i = req; 
-        const businessId = req?.params.id;
+        const personnalId = req?.params.id;
 
-        let businessData: IBusinessInterface | any = await Business.findById(businessId).exec();
+        const personnalData: IPersonnalInterface | any = await Personnal.findById(personnalId).exec();
 
         //IF USER IS NOT FOUND 
-        if (!businessData) {
+        if (!personnalData) {
             throw new AppError({ 
                 httpCode: HttpCode.NOT_FOUND, 
-                description: 'Business not found!' 
+                description: 'personnal not found!' 
             });
         }
 
-        const imageId = businessData?.avatar?.public_id
+        let businessVerificationImage;
+        let businessUtilityBill;
+    
+        // Upload images to Cloudinary
+        if(req.files['businessVerificationImage'][0]){
+            businessVerificationImage = req.files['businessVerificationImage'][0];
+            const verificationImage = personnalData?.businessVerificationImage?.public_id;
+            await CloudinaryService.destroyImage(verificationImage);
+        }
 
-        await cloudinary.v2.uploader.destroy(imageId);
+        if(req.files['businessUtilityBill'][0]){
+            businessUtilityBill = req.files['businessUtilityBill'][0];
+            const utilityImage = personnalData?.businessVerificationImage?.public_id;
+            await CloudinaryService.destroyImage(utilityImage);
+        } 
 
-        const myCloud = await cloudinary.v2.uploader.upload(businessData?.avatar, {
-            folder: "business",
-            width: 150,
-            crop: "scale",
-        });
+        // const bvImageResult = await cloudinary.v2.uploader.upload(businessVerificationImage.buffer.toString('base64'));
+        const bvImageResult = await CloudinaryService.uploadImage(businessVerificationImage.buffer.toString('base64'), "business");
+        const buImageResult = await CloudinaryService.uploadImage(businessUtilityBill.buffer.toString('base64'), "business");
 
-        const businessImage = businessData.avatar = {
-            public_id: myCloud.public_id,
-            secure_url: myCloud.secure_url,
+        // Update the personnalData with Cloudinary URLs
+        personnalData.businessVerificationImage = {
+            public_id: bvImageResult.public_id,
+            secure_url: bvImageResult.secure_url,
+        };
+        personnalData.businessUtilityBill = {
+            public_id: buImageResult.public_id,
+            secure_url: buImageResult.secure_url,
         };
 
-        const newBusinessData = {
-            businessName: businessData?.businessName,
-            businessType: businessData?.businessType,
-            businessAccount: businessData?.businessAccount,
-            businessCategory: businessData?.businessCategory,
-            businessCode: businessData?.businessCode,
-            country: businessData?.country,
-            state: businessData?.state,
-            businessAddresss: businessData?.businessAddress,
-            estimatedMonthly: businessData?.estimatedMonthly,
-            businessAvatar: businessImage,
-            businessDescription: businessData?.businessDescription,
+        const newPersonnalData = {
+            businessVerificationType: personnalData?.businessVerificationType,
+            businessVerificationNumber: personnalData?.businessVerificationNumber,
+            businessVerificationImage: personnalData?.businessVerificationImage,
+            businessUtilityBill: personnalData?.businessUtilityBill,
         };
 
-
-        let savedBusiness = await Business.findByIdAndUpdate(
-            { _id: businessData.id },
+        let savedPersonnal = await Personnal.findByIdAndUpdate(
+            { _id: personnalData.id },
             {
-                newBusinessData
+                newPersonnalData
             },
             { 
                 new: true,
@@ -141,24 +158,26 @@ export class BusinessRepository implements IBusinessRepository {
             } // Return the updated document
         )
 
-        return savedBusiness;
+        return savedPersonnal;
     }
 
-    async deleteBusiness(businessId: string): Promise<void> {
+    async deletePersonnal(personnalId: string): Promise<void> {
 
-        const business: IBusinessInterface | any = await Business.findById(businessId).exec();
-        if (!business) {
+        const personnal: IPersonnalInterface | any = await Personnal.findById(personnalId).exec();
+        if (!personnal) {
             throw new AppError({ 
                 httpCode: HttpCode.NOT_FOUND, 
-                description: 'Business not found!'
+                description: 'personnal not found!'
             });
         }
+
+        const verificationImage = personnal?.businessVerificationImage?.public_id;
+        await CloudinaryService.destroyImage(verificationImage);
+
+        const utilityImage = personnal?.businessVerificationImage?.public_id;
+        await CloudinaryService.destroyImage(utilityImage);
         
-        const businessImageId = business?.avatar?.public_id
-
-        await cloudinary.v2.uploader.destroy(businessImageId);
-
         //CHECK IF USER IS FOUND 
-        await Business.findByIdAndDelete(businessId)
+        await Personnal.findByIdAndDelete(personnalId)
     }
 }

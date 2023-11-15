@@ -1,14 +1,14 @@
 import IAuthRepository from "../../../repositories/People/users/authRepositories";
 import { Document, model, Schema, Types } from "mongoose";
-import { User, getUserByEmail } from "../../../models/People/user";
+import { User } from "../../../models/People/user";
 import { IUserInterface } from "../../../interfaces/People/userInterface";
 import { AppError, HttpCode } from "../../../exceptions/appError";
 // import Role from "../../../models/People/roles";
-import { RoleType } from "../../../utils/Enums";
+// import { RoleType } from "../../../utils/Enums";
 import { generateHashPassword, comparePassword, compareEmail } from "../../../utils/password-manager";
 import Otp from "../../../models/Utility/otp";
-import cloudinary from 'cloudinary';
-import { validateUser } from "../../../validator/user/userValidator";
+// import cloudinary from 'cloudinary';
+// import { validateUser } from "../../../validator/user/userValidator";
 import { HelpFunction } from "../../../Helpers/helpFunction";
 import UAParser from 'ua-parser-js';
 import { encrypt, decrypt, hashToken, createRandomToken } from "../../../utils/password-manager";
@@ -17,6 +17,9 @@ import { generateOtp } from "../../../utils/otp-service";
 import IOtp from "../../../interfaces/Utility/otpInterface";
 import { OAuth2Client } from 'google-auth-library';
 import { validateCreateUser, validateLoginUser } from "../../../validator/user/AuthValidator";
+
+import { CloudinaryService } from "../../../utils/Cloudinary";
+
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -43,8 +46,6 @@ export class AuthRepository implements IAuthRepository {
             const { firstName, email, picture, sub } = payload;
 
             const password = Date.now() + sub;
-
-
 
             // Get User Device Details
             const parser = new UAParser();
@@ -91,8 +92,6 @@ export class AuthRepository implements IAuthRepository {
             console.error('Error creating using Google:', error); 
         }
     }
-
-    
 
     async createUser(req: any): Promise<any> {
         
@@ -145,11 +144,7 @@ export class AuthRepository implements IAuthRepository {
             }
 
             // Creating a user image which would be uploaded in cloudinary
-            const userImage = await cloudinary.v2.uploader.upload(req.file.buffer.toString('base64'), {
-                folder: "users",
-                width: 150,
-                crop: "scale",
-            });
+            const userImage = await CloudinaryService.uploadImage(req.file.buffer.toString('base64'), "users");
 
             //GENEARTE ENCRYPTION PASSWORD
             const hashPassword = generateHashPassword(password);
@@ -171,7 +166,7 @@ export class AuthRepository implements IAuthRepository {
                 email,
                 phone,
                 password: hashPassword,
-                avatar: userImage.secure_url,
+                avatar: userImage,
                 roles,
                 code: userCode,
                 ipAddress: ipAddressData,
@@ -544,7 +539,3 @@ export class AuthRepository implements IAuthRepository {
 
 }
 
-
-// http://localhost:6565/api/session/oauth/google
-
-// export default loginWithGoogle;

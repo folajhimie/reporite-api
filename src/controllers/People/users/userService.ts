@@ -2,7 +2,8 @@ import { IUserInterface } from "../../../interfaces/People/userInterface";
 import IUserRepository from "../../../repositories/People/users/userRepositories";
 import { User } from "../../../models/People/user";
 import { AppError, HttpCode } from "../../../exceptions/appError";
-import cloudinary from 'cloudinary';
+// import cloudinary from 'cloudinary';
+import { CloudinaryService } from "../../../utils/Cloudinary";
 
 export class UserRepository implements IUserRepository {
     async getUser(userId: string): Promise<IUserInterface> {
@@ -57,13 +58,10 @@ export class UserRepository implements IUserRepository {
 
         const imageId = foundUser?.avatar?.public_id
 
-        await cloudinary.v2.uploader.destroy(imageId);
+        // await cloudinary.v2.uploader.destroy(imageId);
+        await CloudinaryService.destroyImage(imageId);
 
-        const myCloud = await cloudinary.v2.uploader.upload(foundUser.avatar, {
-            folder: "users",
-            width: 150,
-            crop: "scale",
-        });
+        const myCloud = await CloudinaryService.uploadImage(foundUser.avatar, "users");
 
         const foundImage = foundUser.avatar = {
             public_id: myCloud.public_id,
@@ -81,7 +79,6 @@ export class UserRepository implements IUserRepository {
             code: user?.code,
             active: user?.active
         };
-
 
         let savedUser = await User.findByIdAndUpdate(
             { _id: payload.user.id },
@@ -104,7 +101,7 @@ export class UserRepository implements IUserRepository {
         
         const imageId = user?.avatar?.public_id
 
-        await cloudinary.v2.uploader.destroy(imageId);
+        await CloudinaryService.destroyImage(imageId);
 
         //CHECK IF USER IS FOUND 
         if (!user) {

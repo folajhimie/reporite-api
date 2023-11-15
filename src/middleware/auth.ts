@@ -4,7 +4,6 @@ import { User } from '../models/People/user';
 import { AppError, HttpCode } from '../exceptions/appError';
 import asyncMiddleware from './catchAsyncErrors';
 import Shop from '../models/Production/Shop/shop';
-import { UserInterface } from '../interfaces/People/userInterface';
 
 interface UserPayload {
     _id: string;
