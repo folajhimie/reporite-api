@@ -6,9 +6,11 @@ import dotenv from 'dotenv';
 import { dbConnect } from './src/database/connect';
 import './src/exceptions/process'
 
+import app from './src/app';
+
 dotenv.config();
 
-const app: Application = express();
+// const app: Application = express();
 const PORT: number = process.env.PORT ? parseInt(process.env.PORT) : 8080;
 export const server = http.createServer(app);
 export const httpTerminator = createHttpTerminator({
