@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
-import { UserInterface } from '../../People/userInterface';
+import { IUserInterface } from '../../People/userInterface';
 import { IProductInterface } from '../Product/productInterface';
 import { IShopInterface } from '../Shop/shopInterface';
 
@@ -31,7 +31,7 @@ interface IPaymentInfo {
 interface IOrderInterface extends Document {
   orderItems: Types.ObjectId[] | IOrderItemInterface[];
   shippingAddress: IShippingAddress;
-  createdBy: Types.ObjectId | UserInterface; // Define your user type here, replace 'any' with the actual type
+  createdBy: Types.ObjectId | IUserInterface; // Define your user type here, replace 'any' with the actual type
   totalPrice: number;
   status: string;
   paymentInfo: IPaymentInfo;

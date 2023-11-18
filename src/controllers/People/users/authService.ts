@@ -93,7 +93,7 @@ export class AuthRepository implements IAuthRepository {
         }
     }
 
-    async createUser(req: any): Promise<any> {
+    async createUser(req: any): Promise<IUserInterface | void> {
         
         try {
             // Validate user input

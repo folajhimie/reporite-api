@@ -8,7 +8,7 @@ import { IUserInterface } from "../../../interfaces/People/userInterface";
 
 export default interface IAuthRepository {
   // createUser(user: User): Promise<User>;
-  createUser(req: any): Promise<void>;
+  createUser(req: any): Promise<IUserInterface | void>;
   loginUser(user: Pick<IUserInterface, 'email' | 'password'>, req: any): Promise<any>;
   sendLoginCode(user: Pick<IUserInterface, 'email'>): Promise<Record<string, string | any>>;
   loginWithCode(req: any): Promise<Record<string, any>>;
@@ -16,12 +16,7 @@ export default interface IAuthRepository {
   resetPassword(req: any): Promise<any>;
   verifyUserWithOTP(req: any): Promise<any>;
   resendOTP(req: any): Promise<any>;
-  loginWithGoogle(req: any): Promise<any>;
-
-  // logoutUser(): Promise<boolean>;
-  // loginUser(user: UserInterface): Promise<UserInterface>;
-  // resetPassword(email: string): Promise<boolean>;
-  // updatePassword(oldPassword: string, newPassword: string): Promise<boolean>;  
+  loginWithGoogle(req: any): Promise<any>;  
 }
 
   

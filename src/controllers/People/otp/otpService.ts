@@ -4,7 +4,7 @@ import { IUserInterface } from "../../../interfaces/People/userInterface";
 import { OtpType } from "../../../utils/Enums";
 import { HttpCode, AppError } from "../../../exceptions/appError";
 // import IOtp from "../../../interfaces /People/otpInterface";
-// import { UserInterface } from "../../../interfaces /People/userInterface";
+
 
 
 export class OtpController {

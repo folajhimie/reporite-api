@@ -2,7 +2,7 @@ import { User } from "../../../models/People/user";
 import { AuthRepository } from "./authService";
 import { OtpController } from "../otp/otpService";
 import { Request, Response, NextFunction } from "express";
-import verifyEmail from "../../../templates/verifyEmailTemplate";
+import verifyEmail from "../../../views/verifyEmailTemplate";
 import MailService from "../../../utils/MailService";
 import { jsonOne, jsonAll } from "../../../utils/Reponse";
 import { IUserInterface } from "../../../interfaces/People/userInterface";
@@ -11,17 +11,17 @@ import { OtpType } from "../../../utils/Enums";
 import { MailController } from "../../Utility/mailControllers";
 import { verifyOtp } from "../../../utils/otp-service";
 import { AppError, HttpCode } from "../../../exceptions/appError";
-import generateResetPasswordTemplate from "../../../templates/resetPasswordTemplate";
+import generateResetPasswordTemplate from "../../../views/resetPasswordTemplate";
 import { generateHashPassword } from "../../../utils/password-manager";
 import { generateAuthToken } from "../../../utils/token-generator";
 import Otp from "../../../models/Utility/otp";
 import sendToken from "../../../utils/sendToken";
-import loginCode from "../../../templates/loginWithCode";
-import resendOTPUser from "../../../templates/resendOtpTemplate";
+import loginCode from "../../../views/loginWithCode";
+import resendOTPUser from "../../../views/resendOtpTemplate";
 // import { AuthRepository } from "./authService";
 import IAuthRepository from "../../../repositories/People/users/authRepositories";
 
-// type TodoPreview = Pick<UserInterface, "email" | "password">;
+
 
 export class AuthController {
     async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
@@ -48,7 +48,7 @@ export class AuthController {
 
             //CREATE USER  
             const authRepository: IAuthRepository = new AuthRepository();
-            let resultAuth = await authRepository.createUser(
+            let resultAuth : IUserInterface | any = await authRepository.createUser(
                 req
             );
 

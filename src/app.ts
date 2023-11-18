@@ -1,18 +1,26 @@
 // import express from 'express';
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Application, Express, Request, Response } from 'express';
+// import express, { Request, Response, NextFunction } from 'express';
 // import { Request, Response, NextFunction } from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import { router as userRouter } from "./routes/People/userRoutes";
-import { router as authRouter } from "./routes/People/authRoutes";
+// import { router as userRouter } from "./routes/People/userRoutes";
+// import { router as authRouter } from "./routes/People/authRoutes";
+
+import routes from './routes';
 import path from 'path';
 import { logger } from './middleware/Logger';
 
-const app = express();
+// const app = express();
+
+const app: Application = express();
 
 const corsOptions = {
-    origin: ["http://localhost:7050", "http://localhost:4545"],
+    origin: [
+        "http://localhost:7050", 
+        "http://localhost:4545"
+    ],
     credentials: true,
 }
 
@@ -25,13 +33,15 @@ app.use(logger)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes Middleware
-app.use("/api/v1/users", userRouter);
-app.use("/api/v1/auth", authRouter);
+// app.use("/api/v1/users", userRouter);
+// app.use("/api/v1/auth", authRouter);
+
+// app.use("/", routes());
 
 // Routes
-app.get("/", (req, res) => {
+app.get("/welcome", (req: Request, res: Response) => {
     res.send("Home Page");
-});
+  });
 
 // This code snippet is a part of a Node.js application. It defines a route handler for all routes in the application using the app.all() method. The route handler is responsible for handling requests that do not match any other routes defined in the application.
 

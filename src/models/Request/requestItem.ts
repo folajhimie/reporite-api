@@ -3,7 +3,7 @@ import mongoose, { Document, Schema, Model, Types, model } from 'mongoose';
 import { RequestItemInterface } from '../../interfaces/Request/requestItemInterface';
 
 interface RequestItem extends RequestItemInterface, Document {}
-// const userSchema: Schema = new Schema<UserInterface>(
+
 
 const requestItemSchema: Schema = new Schema<RequestItemInterface>({
   name: { type: String, required: true },

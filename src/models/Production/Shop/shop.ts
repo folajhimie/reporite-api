@@ -30,7 +30,7 @@ const shopSchema: Schema = new Schema<IShopInterface>(
         role: {
             type: String,
             enum: Object.values(RoleType),
-            default: RoleType.VENDOR,
+            default: RoleType.Owner,
         },
         avatar: {
             type: String,

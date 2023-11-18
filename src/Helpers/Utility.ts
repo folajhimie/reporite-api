@@ -63,7 +63,7 @@ export class Utility {
         }
     }
 
-    async updateSellerInfo(request: Request, amount: number): Promise<void> {
+    async updateSellerInfo(request: Request | any, amount: number): Promise<void> {
         try {
             const seller: IShopInterface | null = await Shop.findById(request.seller.id);
 

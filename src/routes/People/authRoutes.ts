@@ -1,43 +1,67 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
 // import { authMiddleware, isAdmin } from '../../middleware/auth';
 import loginLimiter from '../../middleware/loginLimiter';
 import { AuthController } from '../../controllers/People/users/authControllers';
 
 const authController = new AuthController()
 
-const router = Router();
+export default (router: Router) => {
+  // Registration User 
+  router.post("/api/v1/auth/register", 
+    loginLimiter, 
+    authController.registerUser
+  );
 
-// Registration User 
-router.post("/register", loginLimiter, authController.registerUser);
+  // Login User 
+  router.post("/api/v1/auth/login", 
+    loginLimiter, 
+    authController.login
+  );
 
-// Login User 
-router.post("/login", loginLimiter, authController.login);
+  // Logout User 
+  router.get("/api/v1/auth/logout", 
+    authController.logoutUser
+  );
 
-// Logout User 
-router.get("/logout", authController.logoutUser);
+  // Forgot Password
+  router.post("/api/v1/auth/forgotpassword", 
+    authController.forgotPassword
+  );
 
-// Forgot Password
-router.post("/forgotpassword", authController.forgotPassword);
+  // Reset Password
+  router.post("/api/v1/auth/resetPassword/:resetToken", 
+    authController.resetPassword
+  );
 
-// Reset Password
-router.post("/resetPassword/:resetToken", authController.resetPassword);
+  // Reset Password
+  router.post("/api/v1/auth/resetPassword/:resetToken", 
+    authController.resetPassword
+  );
 
-// Reset Password
-router.post("/resetPassword/:resetToken", authController.resetPassword);
+  // Verify User with OTP
+  router.post("/api/v1/auth/verifyUser/:verificationToken", 
+    authController.verifyUserWithOTP
+  );
 
-// Verify User with OTP
-router.post("/verifyUser/:verificationToken", authController.verifyUserWithOTP);
+  // Resend OTP to the user
+  router.post("/api/v1/auth/resendOtpToUser/:resendOtp", 
+    authController.resendOTP
+  );
 
-// Resend OTP to the user
-router.post("/resendOtpToUser/:resendOtp", authController.resendOTP);
+  // send Login Code
+  router.post("/api/v1/auth/sendLoginCode/:email", 
+    loginLimiter, 
+    authController.sendLoginCode
+  );
 
-// send Login Code
-router.post("/sendLoginCode/:email", loginLimiter, authController.sendLoginCode);
+  // Login with Code
+  router.post("/api/v1/auth/loginWithCode/:email", 
+    loginLimiter, 
+    authController.LoginWithCode
+  );
 
-// Login with Code
-router.post("/loginWithCode/:email", loginLimiter, authController.LoginWithCode);
-
-// Login With Google
-router.post("/google/callback", authController.loginWithGoogle);
-
-export { router };
+  // Login With Google
+  router.post("/api/v1/auth/google/callback", 
+    authController.loginWithGoogle
+  );
+};

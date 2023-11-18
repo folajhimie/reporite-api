@@ -1,4 +1,4 @@
-import { UserInterface } from "../interfaces/People/userInterface";
+import { IUserInterface } from "../interfaces/People/userInterface";
 interface IResponse<T> {
     data: T[];
     meta: {
@@ -9,9 +9,8 @@ interface IResponse<T> {
     };
 }
 
-// type fieldsToUpdate: Partial<UserInterface>
 
-type UserPreview = Partial<UserInterface>
+type UserPreview = Partial<IUserInterface>
 
 //SEND RESPONSE FOR LIST
 export const jsonAll = function <T>(

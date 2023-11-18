@@ -4,9 +4,12 @@ import { createHttpTerminator } from 'http-terminator';
 import express, { Application, Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import { dbConnect } from './src/database/connect';
-import './src/exceptions/process'
-
+import './src/exceptions/process';
+// import applicationSetting from "./src/app"
 import app from './src/app';
+
+// import app from './src/app';
+
 
 dotenv.config();
 
@@ -19,10 +22,13 @@ export const httpTerminator = createHttpTerminator({
 
 
 app.use(express.json());
+// applicationSetting.use(applicationSetting);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server');
 });
+
+
 
 const start = async () => {
   try {
@@ -38,6 +44,8 @@ const start = async () => {
     }
   }
 }
+
+
 
 
 start();

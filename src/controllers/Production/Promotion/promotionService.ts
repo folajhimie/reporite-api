@@ -1,5 +1,6 @@
 import IPromotionRepository from "../../../repositories/Production/Promotion/promotionRepositories";
-import Product from "../../../models/Production/Product/product";
+// import Product from "../../../models/Production/Product/product";
+import { Product } from "../../../models/Production/Product/product";
 import Promotion from "../../../models/Production/Promotion/promotion";
 import { HttpCode, AppError } from "../../../exceptions/appError";
 import { IPromotionInterface } from "../../../interfaces/Production/Promotion/promotionInterface";

@@ -1,4 +1,4 @@
-const departmentUserAdd = function (resetPasswordUrl, firstName, departmentName) {
+const departmentUserAdd = function (resetPasswordUrl: string, firstName: string, departmentName: string) {
   const html = `
     <!DOCTYPE html>
 <html lang="en" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">

@@ -180,7 +180,7 @@ userSchema.statics.scopeByUser = function ({ business, user , query }) {
 
 const User: Model<IUserInterface> = mongoose.model<IUserInterface>("User", userSchema);
 
-// const UserModel: Model<UserInterface> = mongoose.model<UserInterface>('User', UserSchema);
+// const UserModel: Model<IUserInterface> = mongoose.model<IUserInterface>('User', UserSchema);
 
 
 

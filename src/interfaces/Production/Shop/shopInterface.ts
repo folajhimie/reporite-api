@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema, Model, Types} from "mongoose";
 // import { IRole } from "../../People/roleInterface";
 import { RoleType } from "../../../utils/Enums";
-import { UserInterface } from "../../People/userInterface";
+import { IUserInterface } from "../../People/userInterface";
 import { IProductInterface } from "../Product/productInterface";
 
 
@@ -30,7 +30,7 @@ interface IShopInterface extends Document {
   active: boolean;
   withdrawMethod?: IWithdrawMethod;
   availableBalance: number;
-  user: Types.ObjectId | UserInterface; // User relationship
+  user: Types.ObjectId | IUserInterface; // User relationship
   products: Types.ObjectId[] | IProductInterface; // Product relationship (one-to-many)
   transactions: ITransaction[]; // Transaction relationship (one-to-many)
   createdAt: Date;
