@@ -24,9 +24,9 @@ export const httpTerminator = createHttpTerminator({
 app.use(express.json());
 // applicationSetting.use(applicationSetting);
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Express + TypeScript Server');
-});
+// app.get('/', (req: Request, res: Response) => {
+//   res.send('Express + TypeScript Server');
+// });
 
 
 

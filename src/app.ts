@@ -36,12 +36,16 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // app.use("/api/v1/users", userRouter);
 // app.use("/api/v1/auth", authRouter);
 
-// app.use("/", routes());
+app.use("/", routes());
 
 // Routes
 app.get("/welcome", (req: Request, res: Response) => {
     res.send("Home Page");
-  });
+});
+
+app.get('/', (req: Request, res: Response) => {
+    res.send('Express + TypeScript Server');
+});
 
 // This code snippet is a part of a Node.js application. It defines a route handler for all routes in the application using the app.all() method. The route handler is responsible for handling requests that do not match any other routes defined in the application.
 

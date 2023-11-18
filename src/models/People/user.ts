@@ -62,15 +62,13 @@ const userSchema: Schema = new Schema<IUserInterface>(
         avatar: {
             public_id: {
                 type: String,
+                default: 'default_public_id',
                 required: true,
             },
             secure_url: {
                 type: String,
+                default: "https://i.ibb.co/4pDNDk1/avatar.png",  
                 required: true,
-            },
-            default: {
-                public_id: 'default_public_id',
-                secure_url: "https://i.ibb.co/4pDNDk1/avatar.png",
             },
         },
         roles: { 
