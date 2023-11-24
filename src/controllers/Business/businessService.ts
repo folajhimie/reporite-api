@@ -4,23 +4,39 @@ import { IBusinessInterface } from "../../interfaces/Business/BusinessInterface"
 import IBusinessRepository from "../../repositories/Business/BusinessRepositories";
 // import cloudinary from 'cloudinary';
 import { Request } from 'express';
-import { validateCreateBusiness } from "../../validator/business/BusinessValidator";
+// import { validateCreateBusiness } from "../../validator/business/BusinessValidator";
 import { CloudinaryService } from "../../utils/Cloudinary";
+import { HelpFunction } from "../../Helpers/helpFunction";
 
 export class BusinessRepository implements IBusinessRepository {
 
     async createBusiness(req: Request | any ): Promise<IBusinessInterface | any> {
         try {
 
-            await validateCreateBusiness(req)
+            console.log("object..", req.body);
+            const { 
+                businessname,
+                businesstype,
+                businessaccount,
+                businesscategory,
+                country,
+                state,
+                businessaddress,
+                estimatedmonthly, 
+            }= req.body as IBusinessInterface; // Assuming the request body contains the necessary data
 
-            const businessData = req.body as IBusinessInterface; // Assuming the request body contains the necessary data
+            const businesses: IBusinessInterface | any = await Business.find();
+            
+            let businesscode: string;
+            
+            const getBusinessCode: string | number = HelpFunction.addZeroToSingleDigit(businesses.length)
 
-            const { businessName } = businessData
-
+            businesscode = `CRT/BUS/${getBusinessCode}`;
+            console.log("user code..", businesscode, businesses);
+            
             // Check if the business already exists
             const existingBusiness = await Business.findOne({
-                businessName
+                businessname
             });
 
             if (existingBusiness) {
@@ -30,7 +46,21 @@ export class BusinessRepository implements IBusinessRepository {
                 });
             }
 
-            const createdBusiness: IBusinessInterface | any = await Business.create(businessData);
+            let newBusiness = new Business({
+                businessname,
+                businesstype,
+                businessaccount,
+                businesscategory,
+                businesscode,
+                country,
+                state,
+                businessaddress,
+                estimatedmonthly, 
+            });
+
+            console.log("new business...", newBusiness);
+
+            let createdBusiness = await newBusiness.save();
 
             return createdBusiness
 

@@ -11,63 +11,47 @@ import { IBusinessInterface } from "../../interfaces/Business/BusinessInterface"
 export interface Business extends IBusinessInterface, Document { }
 
 const businessSchema: Schema = new Schema<IBusinessInterface>({
-    businessName: {
+    businessname: {
         type: String,
         required: [true, 'Business Name is required'],
         maxlength: 50,
         minlength: 3,
         trim: true
     },
-    businessType: {
+    businesstype: {
         type: String,
         required: [true, 'Business Type is required'],
-        maxlength: 100,
-        minlength: 10,
         trim: true
     },
-    businessAccount: {
+    businessaccount: {
         type: Boolean,
+        required: true
     },
-    businessCategory: {
+    businesscategory: {
         type: String,
         required: [true, 'Business Category is required'],
-        maxlength: 150,
-        minlength: 50,
-        trim: true
     },
-    businessCode: {
+    businesscode: {
         type: String,
         required: [true, 'Business Code is required'],
     },
     country: {
         type: String,
         required: [true, 'Country is required'],
-        maxlength: 200,
-        minlength: 50,
-        trim: true
     },
     state: {
         type: String,
         required: [true, 'State is required'],
-        maxlength: 200,
-        minlength: 50,
-        trim: true
     },
-    businessAddress: {
+    businessaddress: {
         type: String,
         required: [true, 'Business Address is required'],
-        maxlength: 200,
-        minlength: 50,
-        trim: true
     },
-    estimatedMonthly: {
+    estimatedmonthly: {
         type: String,
         required: [true, 'Estimated Monthly is required'],
-        maxlength: 100,
-        minlength: 20,
-        trim: true
     },
-    businessAvatar: {
+    businessavatar: {
         public_id: {
             type: String,
             default: 'default_public_id',
@@ -80,28 +64,25 @@ const businessSchema: Schema = new Schema<IBusinessInterface>({
         },
         
     },
-    businessDescription: {
+    businessdescription: {
         type: String,
-        required: [true, 'Business Description is required'],
-        maxlength: 100,
-        minlength: 20,
-        trim: true
+        // required: [true, 'Business Description is required'],
     },
-    user: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-    personnal: {
-        type: Schema.Types.ObjectId,
-        ref: 'Personnal',
-        required: true
-    },
-    products: {
-        type: Schema.Types.ObjectId,
-        ref: 'Business',
-        required: true
-    },
+    // user: {
+    //     type: Schema.Types.ObjectId,
+    //     ref: 'User',
+    //     required: true
+    // },
+    // personnal: {
+    //     type: Schema.Types.ObjectId,
+    //     ref: 'Personnal',
+    //     required: true
+    // },
+    // products: {
+    //     type: Schema.Types.ObjectId,
+    //     ref: 'Business',
+    //     required: true
+    // },
 },
     { timestamps: true }
 );

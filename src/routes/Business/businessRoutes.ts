@@ -2,13 +2,14 @@ import { Router } from 'express';
 // import { authMiddleware, isAdmin } from '../../middleware/auth';
 import loginLimiter from '../../middleware/loginLimiter';
 import { BusinessController } from '../../controllers/Business/businessControllers';
-
+import { validateCreateBusiness } from '../../validator/business/BusinessValidator';
 
 const businessController = new BusinessController() 
 
 export default (router: Router) => {
   // creating Business 
   router.post("/api/v1/create-business", 
+    validateCreateBusiness,
     loginLimiter, 
     businessController.createBusinnessUser
   );

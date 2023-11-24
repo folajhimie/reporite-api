@@ -5,22 +5,22 @@ import { IUserInterface } from '../People/userInterface';
 
 // Define the Business Schema
 export interface IBusinessInterface {
-  businessName: string;
-  businessType: string; // individual or corporate business
-  businessAccount: boolean;
-  businessCategory: string;
-  businessCode: string;
+  businessname: string;
+  businesstype: string; // individual or corporate business
+  businessaccount: boolean;
+  businesscategory: string;
+  businesscode: string;
   country: string;
   state: string;
-  businessAddress: string;
-  estimatedMonthly: string;
-  businessAvatar: {
+  businessaddress: string;
+  estimatedmonthly: string;
+  businessavatar: {
     public_id: string;
     secure_url: string;
   };
-  businessDescription: string;
-  user: Types.ObjectId | IUserInterface | null;
-  personnal: Types.ObjectId | IPersonnalInterface | null;
-  products: Types.ObjectId[] | IProductInterface[] | null;
+  businessdescription?: string;
+  // user: Types.ObjectId | IUserInterface | null;
+  // personnal: Types.ObjectId | IPersonnalInterface | null;
+  // products: Types.ObjectId[] | IProductInterface[] | null;
 }
 

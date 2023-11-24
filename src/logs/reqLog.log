@@ -70,3 +70,11 @@
 20231124	10:41:54	8ccb2dda-a391-403c-bdc5-7f89b3067543	POST	/api/v1/auth/register	http://127.0.0.1:7050
 20231124	11:03:22	9c4d79cf-d045-4158-af77-e72ab2404eb4	POST	/api/v1/auth/register	http://127.0.0.1:7050
 20231124	14:36:05	21c4b3b8-3ad7-4106-ac40-67a05ba5e2a8	POST	/api/v1/auth/register	http://127.0.0.1:7050
+20231124	20:35:55	a27386e3-325f-4ee5-87c6-135b6618376e	POST	/create-business	http://127.0.0.1:7050
+20231124	20:42:06	927c4112-62fe-4397-947e-df5ff7208ad5	POST	/create-business	http://127.0.0.1:7050
+20231124	20:54:43	f12e0b9e-6f18-42e6-a370-efb430c72799	POST	/create-business	http://127.0.0.1:7050
+20231124	21:33:09	1337f66e-fa05-467e-a0ae-fb86b356a596	POST	/create-business	http://127.0.0.1:7050
+20231124	21:36:11	00fe1234-88fa-40a9-8999-b507045a2ee0	POST	/api/v1/create-business	http://127.0.0.1:7050
+20231124	21:42:38	3eb6bd1e-9545-404b-adce-11b650300593	POST	/api/v1/create-business	http://127.0.0.1:7050
+20231124	21:47:22	9a7c659d-bda2-4522-8b4e-eb6a1ff7b52c	POST	/api/v1/create-business	http://127.0.0.1:7050
+20231124	23:11:16	68042c70-0721-4d24-8d88-cac686c6d4d6	GET	/users	https://reporite.netlify.app
