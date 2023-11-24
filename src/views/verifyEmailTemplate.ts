@@ -104,7 +104,7 @@ Use this link to confirm your account and log in</div>
 
                           <p style="margin: 0 0 24px;">
                             A request to create your node-typescript-boilerplate account was received.
-Use this link to confirm your account and log in
+                            Use this link to confirm your account and log in
                           </p>
                           <label style="display: block; font-size: 24px; line-height: 100%; margin-bottom: 24px; --text-opacity: 1; color: #000000; text-decoration: none;">${sendOtpLink}</label>
 

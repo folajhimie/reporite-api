@@ -8,31 +8,31 @@ const businessController = new BusinessController()
 
 export default (router: Router) => {
   // creating Business 
-  router.post("/api/v1/business", 
+  router.post("/api/v1/create-business", 
     loginLimiter, 
     businessController.createBusinnessUser
   );
 
   // get all Business
-  router.get("/api/v1/getAllBusiness", 
+  router.get("/api/v1/get-all-business", 
     loginLimiter, 
     businessController.getAllBusinesses
   );
 
   // get an individual business
-  router.get("/api/v1/getBusiness/:businessId", 
+  router.get("/api/v1/get-business/:businessId", 
     loginLimiter, 
     businessController.getBusinessUser
   );
 
   // updating an individual Business
-  router.put("/api/v1/updateBusiness/:businessId", 
+  router.put("/api/v1/update-business/:businessId", 
     loginLimiter, 
     businessController.updateBusiness
   );
 
   // Deleting an Individual Business
-  router.delete("/api/v1/updateBusiness/:businessId", 
+  router.delete("/api/v1/delete-business/:businessId", 
     businessController.deleteBusiness
   );
 

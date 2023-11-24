@@ -35,7 +35,7 @@ export class HelpFunction {
 
     static addZeroToSingleDigit(number: number): string | number {
         if (number >= 0 && number <= 9) {
-            return `0${number}`;
+            return `0${number + 1}`;
         } else {
             return number.toString();
         }

@@ -69,8 +69,8 @@ export class UserRepository implements IUserRepository {
         };
 
         const newUserData = {
-            firstName: user?.firstName,
-            lastName: user?.lastName,
+            firstname: user?.firstname,
+            lastname: user?.lastname,
             email: user?.email,
             phone: user?.phone,
             role: user?.roles,

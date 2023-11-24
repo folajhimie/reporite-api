@@ -3,6 +3,7 @@ import { AuthRepository } from "./authService";
 import { OtpController } from "../otp/otpService";
 import { Request, Response, NextFunction } from "express";
 import verifyEmail from "../../../views/verifyEmailTemplate";
+import createAccount from "../../../views/createAcccount";
 import MailService from "../../../utils/MailService";
 import { jsonOne, jsonAll } from "../../../utils/Reponse";
 import { IUserInterface } from "../../../interfaces/People/userInterface";
@@ -52,8 +53,12 @@ export class AuthController {
                 req
             );
 
+            console.log("the way of the user...", resultAuth);
+
             // Send HTTP-only cookie and Then hash the user details
             let tokenAuth = sendToken(resultAuth, res)
+
+            console.log("token in the result..", tokenAuth)
 
             //GENERATE OTP CODE FOR USER
             const otpController = new OtpController();
@@ -63,14 +68,18 @@ export class AuthController {
             let tokenExpiration = new TokenController();
             let tokenExp = await tokenExpiration.createUniqueToken(resultAuth)
 
-            const { tokenData, sendOtpLink } = tokenExp
+            let { tokenData, sendOtpLink } = tokenExp
 
             let otpCode = await otpController.createOtp(resultAuth, otpType)
 
+            console.log("all in the middle..", otpCode);
+
             //SEND VERIFICATION MAIL TO USER 
             const mailController = new MailController();
-            const text = 'Account Verification';
-            let emailStructure = verifyEmail(otpCode, sendOtpLink)
+            const text = 'Welcome To CarTtel';
+            let userFirstName = resultAuth?.firstname;
+            let userLastName = resultAuth?.lastname;
+            let emailStructure = createAccount(otpCode, sendOtpLink, userFirstName, userLastName)
             await mailController.createMail(emailStructure, resultAuth, req, text)
 
             //SEND MESSAGE TO USER 
@@ -81,6 +90,8 @@ export class AuthController {
                 accessToken: tokenAuth,
                 otpLink: tokenData
             };
+
+            console.log("finished all..", responseAuth);
 
             return jsonOne<object>(res, 200, responseAuth);
         } catch (error) {

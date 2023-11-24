@@ -10,11 +10,12 @@ import { HttpCode, AppError } from "../../../exceptions/appError";
 export class OtpController {
 
     async createOtp (savedUser: IUserInterface | any, OtpType: string): Promise<string> {
-        // //GENERATE OTP FOR MAIL VERIFICATION
+        //GENERATE OTP FOR MAIL VERIFICATION
         // let tokenExpiration: any = new Date();
         // tokenExpiration = tokenExpiration.setMinutes(
         //     tokenExpiration.getMinutes() + 10
         // );
+        console.log("save in the middle...", savedUser, OtpType);
         const otp: string = generateOtp(4);
 
         let newOtp = new Otp({

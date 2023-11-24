@@ -22,7 +22,7 @@ export default class MailService {
     // private constructor(transporter: any) {
     //     this.transporter = transporter;
     // }
-    
+
     //INSTANCE CREATE FOR MAIL
     static getInstance() {
         if (!MailService.instance) {
@@ -58,20 +58,28 @@ export default class MailService {
     }
     //SEND MAIL
     async sendMail(
-        requestId: string | number | string[] | object = {},
-        options: MailInterface
+        requestId: string | number | string[] | any,
+        options: MailInterface | any
     ) {
-        return await MailService.transporter
-            .sendMail({
-                from: `"carTtel" ${process.env.SMTP_SENDER || options.from}`,
-                to: options.to,
-                cc: options.cc,
-                bcc: options.bcc,
-                subject: options.subject,
-                text: options.text,
-                html: options.html,
-            })
-            .then((info) => {
+        console.log("request in the mail...", requestId, options, process.env.SMTP_SENDER, options.from);
+        const transporter = nodemailer.createTransport({
+            host: process.env.SMTP_HOST as string, // SMTP server address (usually mail.your-domain.com)
+            port: 465, // Port for SMTP (usually 465)
+            secure: true, // Usually true if connecting to port 465
+            auth: {
+                user: process.env.MAIL_USERNAME as string,
+                pass: process.env.MAIL_PASSWORD as string,
+            },
+            tls: {
+                rejectUnauthorized: false,
+            },
+        });
+
+        transporter.sendMail(options, function (err, info) {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(info);
                 Logging.info(`${requestId} - Mail sent successfully!!`);
                 Logging.info(`${requestId} - [MailResponse]=${info.response} [MessageID]=${info.messageId}`);
                 if (process.env.NODE_ENV === 'local') {
@@ -80,7 +88,29 @@ export default class MailService {
                     )}`);
                 }
                 return info;
-            });
+            }
+        });
+
+        // return await MailService.transporter
+        //     .sendMail({
+        //         from: `"carTtel" ${process.env.SMTP_SENDER || options.from}`,
+        //         to: options.to,
+        //         cc: options.cc,
+        //         bcc: options.bcc,
+        //         subject: options.subject,
+        //         text: options.text,
+        //         html: options.html,
+        //     })
+        //     .then((info) => {
+        //         Logging.info(`${requestId} - Mail sent successfully!!`);
+        //         Logging.info(`${requestId} - [MailResponse]=${info.response} [MessageID]=${info.messageId}`);
+        //         if (process.env.NODE_ENV === 'local') {
+        //             Logging.info(`${requestId} - Nodemailer ethereal URL: ${nodemailer.getTestMessageUrl(
+        //                 info
+        //             )}`);
+        //         }
+        //         return info;
+        //     });
     }
     //VERIFY CONNECTION
     async verifyConnection() {
@@ -91,3 +121,6 @@ export default class MailService {
         return MailService.transporter;
     }
 }
+
+
+

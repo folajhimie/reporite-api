@@ -11,14 +11,14 @@ interface User extends IUserInterface, Document { }
 // 2. Create a Schema corresponding to the document interface.
 const userSchema: Schema = new Schema<IUserInterface>(
     {
-        firstName: {
+        firstname: {
             type: String,
             required: [true, "Please provide name"],
             maxlength: 20,
             minlength: [3, "Minimum firstname length is 6 characters"],
             trim: true,
         },
-        lastName: {
+        lastname: {
             type: String,
             required: [true, "Please provide name"],
             maxlength: 20,
@@ -71,9 +71,14 @@ const userSchema: Schema = new Schema<IUserInterface>(
                 required: true,
             },
         },
+        // roles: { 
+        //     type: mongoose.Schema.Types.ObjectId, 
+        //     ref: 'Roles',
+        //     default: "Owner",
+        // },
         roles: { 
-            type: mongoose.Schema.Types.ObjectId, 
-            ref: 'Roles',
+            type: String, 
+            required: true,
             default: "Owner",
         },
         
@@ -114,11 +119,11 @@ const userSchema: Schema = new Schema<IUserInterface>(
             type: String,
             required: true,
         },
-        business: {
-            type: Schema.Types.ObjectId,
-            ref: 'Business',
-            required: true
-        },
+        // business: {
+        //     type: Schema.Types.ObjectId,
+        //     ref: 'Business',
+        //     required: true
+        // },
     },
     {
         timestamps: true,

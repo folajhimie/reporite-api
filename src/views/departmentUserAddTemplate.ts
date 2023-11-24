@@ -1,4 +1,4 @@
-const departmentUserAdd = function (resetPasswordUrl: string, firstName: string, departmentName: string) {
+const departmentUserAdd = function (resetPasswordUrl: string, firstname: string, departmentName: string) {
   const html = `
     <!DOCTYPE html>
 <html lang="en" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -99,7 +99,7 @@ const departmentUserAdd = function (resetPasswordUrl: string, firstName: string,
                   style="--bg-opacity: 1; background-color: #ffffff; border-radius: 4px; font-family: Montserrat, -apple-system, 'Segoe UI', sans-serif; font-size: 14px; line-height: 24px; padding: 48px; text-align: left; --text-opacity: 1; color: #626262;"
                   align="left">
                   
-                      <p style="font-weight: 600; font-size: 18px; margin-bottom: 10px; margin-top: 10px">Hey ${firstName},</p>
+                      <p style="font-weight: 600; font-size: 18px; margin-bottom: 10px; margin-top: 10px">Hey ${firstname},</p>
 
                       <p style="margin: 0 0 4px;">
                         You have been added to the CIVIX digital signage dashboard for ${departmentName}.

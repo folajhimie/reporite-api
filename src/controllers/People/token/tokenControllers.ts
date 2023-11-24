@@ -3,7 +3,11 @@ import { JwtPayload } from "jsonwebtoken";
 import { generateAuthToken, decodeAuthToken } from "../../../utils/token-generator";
 import { Token } from "../../../models/Utility/token";
 import { IUserInterface } from "../../../interfaces/People/userInterface";
-import { uuid } from 'uuidv4';
+// import { uuid } from 'uuidv4';
+import { v4 as uuidv4 } from 'uuid';
+
+const uuid = uuidv4();
+
 // import crypto from 'crypto';
 import { encrypt } from "../../../utils/password-manager";
 import dotenv from "dotenv";
@@ -41,16 +45,20 @@ export class TokenController {
         return expiryDate;
     }
 
-    async createUniqueToken (user: IUserInterface| any): Promise<string | any> {
+    async createUniqueToken (user: IUserInterface | any): Promise< object | any> {
         try {
+            const uuid: string = uuidv4();
 
-            const uniqueString = uuid() + user._id;
+            const uniqueString: string = uuid + user?._id;
+            console.log("all the unique string...", uniqueString)
 
             // Hash token before saving to DB
-            const encryptedUniqueToken = encrypt(uniqueString.toString());
+            const encryptedUniqueToken: string = encrypt(uniqueString.toString());
+
+            console.log("all the hash..", encryptedUniqueToken)
 
             // Construct Reset Url
-            const sendOtpLink = `${process.env.FRONTEND_URL}/send-otp/${uniqueString}`;
+            const sendOtpLink: string = `${process.env.FRONTEND_URL}/send-otp/${uniqueString}`;
 
             // Delete token if it exists in DB
             let userToken = await Token.findOne({ userId: user._id });
@@ -62,16 +70,18 @@ export class TokenController {
 
             // Save Access Token to DB
             const tokenData = await new Token({
-                userId: user._id,
+                userId: user?._id,
                 uniqueToken: encryptedUniqueToken,
                 createdAt: Date.now(),
-                expiresAt: Date.now() + 60 * (60 * 1000), // Thirty minutes
+                expiredAt: Date.now() + 60 * (60 * 1000), // Thirty minutes
             }).save();
 
             const sendOtp = {
                 tokenData,
                 sendOtpLink
             }
+
+            console.log("token in the middle..", sendOtp);
 
             return sendOtp;
             

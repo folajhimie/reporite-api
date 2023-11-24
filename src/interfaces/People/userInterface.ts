@@ -6,8 +6,8 @@ import { IRoleInterface } from "./roleInterface";
 import { IBusinessInterface } from '../Business/BusinessInterface';
 
 export interface IUserInterface {
-    firstName: string;
-    lastName: string;
+    firstname: string;
+    lastname: string;
     password: string;
     email: string;
     phone: string;
@@ -17,7 +17,8 @@ export interface IUserInterface {
         secure_url: string;
     };
     code: string;
-    roles: Types.ObjectId | IRoleInterface | null;
+    // roles: Types.ObjectId | IRoleInterface | null;
+    roles: String;
     isVerified: Boolean; // This is where you send your SECURITY CODE to the user account
     isLocked: Boolean; // This is to restrict your account from functioning normally
     securityCode: string;
@@ -26,7 +27,7 @@ export interface IUserInterface {
     userAgent: string[],
     ipAddress: string,
     isCompleted: boolean; // This is to checked if you filled all your required Business information..  
-    business: Types.ObjectId | IBusinessInterface | null;
+    // business?: Types.ObjectId | IBusinessInterface | null;
     // getJwtToken: () => string;
     // comparePassword(password: string, hash: string): Promise<boolean>;
 }

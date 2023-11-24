@@ -1,7 +1,7 @@
 
 export interface TokenInterface<T> {
     userId: T;
-    token: string;
+    token?: string;
     uniqueToken: string;
     loginToken: string;
     createdAt: Date;

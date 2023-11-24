@@ -43,7 +43,7 @@ export class AuthRepository implements IAuthRepository {
 
             const payload: any = ticket.getPayload();
 
-            const { firstName, email, picture, sub } = payload;
+            const { firstname, email, picture, sub } = payload;
 
             const password = Date.now() + sub;
 
@@ -75,7 +75,7 @@ export class AuthRepository implements IAuthRepository {
             if (!user) {
                 // Create a new user
                 user = await User.create({
-                    firstName,
+                    firstname,
                     email,
                     password,
                     isVerified: true,
@@ -96,19 +96,32 @@ export class AuthRepository implements IAuthRepository {
     async createUser(req: any): Promise<IUserInterface | void> {
         
         try {
+            console.log("request in the bag...");
             // Validate user input
-            await validateCreateUser(req);
+            // await validateCreateUser(req);
+
+            console.log("grace in the Lord");
             
             const { 
-                firstName, 
-                lastName, 
+                firstname, 
+                lastname, 
                 email, 
                 phone, 
                 password, 
                 confirmPassword, 
-                avatar, 
-                roles 
+                // avatar, 
+                // roles 
             } = req.body as IUserInterface;
+
+            console.log("all the object..", firstname, 
+            lastname, 
+            email, 
+            phone, 
+            password, 
+            confirmPassword, 
+            // avatar, 
+            // roles
+            );
 
             //compare password to see if they match
             if (password !== confirmPassword) {
@@ -121,10 +134,22 @@ export class AuthRepository implements IAuthRepository {
             //  Query to get all users 
             const users: IUserInterface | any = await User.find();
 
-            // The function for getting the user code number
+            let userCode: string;
+
+            // if (!users || users.length < 0) {
+            //     console.log("object");
+            //     userCode = `CRT/USR/01`; 
+            // } else {
+            //     console.log("false for the bank..");
+            //     // The function for getting the user code number
+                
+            // }
+            
             const getUserCode: string | number = HelpFunction.addZeroToSingleDigit(users.length)
 
-            const userCode: string = `CRT/USR/${getUserCode}`;
+            userCode = `CRT/USR/${getUserCode}`;
+            console.log("user code..", userCode, users);
+
 
             // Check if user with email already exists
             const existingUser = await User.findOne({ email }).exec();
@@ -136,18 +161,19 @@ export class AuthRepository implements IAuthRepository {
                 });
             }
 
-            if (!req.file) {
-                throw new AppError({ 
-                    httpCode: HttpCode.NOT_FOUND, 
-                    description: 'No File Uploaded!' 
-                });
-            }
+            // if (!req.file) {
+            //     throw new AppError({ 
+            //         httpCode: HttpCode.NOT_FOUND, 
+            //         description: 'No File Uploaded!' 
+            //     });
+            // }
 
             // Creating a user image which would be uploaded in cloudinary
-            const userImage = await CloudinaryService.uploadImage(req.file.buffer.toString('base64'), "users");
+            // const userImage = await CloudinaryService.uploadImage(req.file.buffer.toString('base64'), "users");
 
             //GENEARTE ENCRYPTION PASSWORD
-            const hashPassword = generateHashPassword(password);
+            const hashPassword = await generateHashPassword(password);
+            console.log("password is the way..", hashPassword);
             // (await hashPassword).toString
 
             // Get the user's IP address from the request object
@@ -159,19 +185,23 @@ export class AuthRepository implements IAuthRepository {
             const ua = parser.setUA(uaString).getResult();
             const userAgentData: string[] = [ua.ua];
 
+            console.log("all the IP Address..", userAgentData, ipAddressData);
+
             // Create a new shop with the image URL and IP Address 
             let newUser = new User({
-                firstName,
-                lastName,
+                firstname,
+                lastname,
                 email,
                 phone,
                 password: hashPassword,
-                avatar: userImage,
-                roles,
+                // avatar: userImage,
+                // roles,
                 code: userCode,
                 ipAddress: ipAddressData,
                 userAgent: userAgentData
             })
+
+            console.log("new user...", newUser);
 
             let savedUser = await newUser.save();
             // this.users.push(newUser);

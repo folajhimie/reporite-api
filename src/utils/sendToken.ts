@@ -5,6 +5,7 @@ import { IUserInterface } from '../interfaces/People/userInterface';
 
 const sendToken = (user: any, res: Response): string => {
     const token = generateAuthToken(user?._id)
+    // console.log("token in the mud...", token)
 
     // const token = generateToken(user.username);
 

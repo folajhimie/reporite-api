@@ -17,9 +17,13 @@ const otpSchema: Schema = new Schema<IOtp<Types.ObjectId>>(
         //     type: String,
         //     enum: Object.values(OtpType),
         // },
+        // type: {
+        //     type: Schema.Types.ObjectId,
+        //     ref: 'OtpCode',
+        // },
         type: {
-            type: Schema.Types.ObjectId,
-            ref: 'OtpCode',
+            type: String,
+            required: true,
         },
         // uniqueString: {
         //     type: String,

@@ -2,12 +2,15 @@ import { Router } from 'express';
 // import { authMiddleware, isAdmin } from '../../middleware/auth';
 import loginLimiter from '../../middleware/loginLimiter';
 import { AuthController } from '../../controllers/People/users/authControllers';
-
+import { validateCreateUser } from '../../validator/user/AuthValidator';
+import { body as bodyValidator, ResultFactory, validationResult } from 'express-validator';
 const authController = new AuthController()
 
 export default (router: Router) => {
   // Registration User 
   router.post("/api/v1/auth/register", 
+  
+    validateCreateUser,
     loginLimiter, 
     authController.registerUser
   );

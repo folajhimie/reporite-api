@@ -9,7 +9,7 @@ const userController = new UserController()
 
 export default (router: Router) => {
     // Get All Users 
-    router.get("/api/v1/users/getAllUsers",
+    router.get("/api/v1/users/get-all-users",
         loginLimiter,
         authMiddleware,
         verifiedOnly,
@@ -18,21 +18,21 @@ export default (router: Router) => {
     );
 
     // Get User 
-    router.get("/api/v1/users/getUser",
+    router.get("/api/v1/users/get-user",
         loginLimiter,
         authMiddleware,
         userController.getUser
     );
 
     // Update User 
-    router.put("/api/v1/users/updateUser/:userId",
+    router.put("/api/v1/users/update-user/:userId",
         loginLimiter,
         authMiddleware,
         userController.updateUser
     );
 
     // Delete User
-    router.delete("/api/v1/users/deleteUser/:userId",
+    router.delete("/api/v1/users/delete-user/:userId",
         loginLimiter,
         authMiddleware,
         verifiedOnly,

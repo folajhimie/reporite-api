@@ -65,7 +65,6 @@ const tokenSchema = new Schema<TokenInterface<mongoose.Schema.Types.ObjectId>>({
   },
   token: {
     type: String,
-    required: true,
   },
   uniqueToken: {
     type: String,
