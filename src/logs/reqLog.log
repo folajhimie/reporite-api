@@ -102,3 +102,5 @@
 20231125	23:20:59	01857187-eb31-48de-b258-158e13436da2	POST	/api/v1/auth/register	http://127.0.0.1:7050
 20231126	06:08:39	be8545af-05fa-4884-9708-e3393f79e4d2	POST	/api/v1/create-business	http://127.0.0.1:7050
 20231126	06:08:39	10112e1c-ac6a-4e58-85d7-9651d101c09b	POST	/api/v1/auth/register	http://127.0.0.1:7050
+20231126	06:25:38	4465d309-0188-4468-90b4-e3ccd2ea9094	POST	/api/v1/create-business	http://127.0.0.1:7050
+20231126	06:25:38	792ec2e8-ad6f-46da-b17a-d527917f13d0	POST	/api/v1/auth/register	http://127.0.0.1:7050

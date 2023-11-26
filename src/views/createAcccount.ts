@@ -269,7 +269,7 @@ const createAccount = function (otp: string, sendOtpLink: string, userFirstName:
                                                         <p style="font-size: 16px; font-weight: 500; line-height: 1.5;">Congratulations on creating an account with us! We are delighted to have you as a new member of our community. To ensure the security of your account, we have generated a unique security code for you.</p>
                                                         <p style="font-size: 16px; font-weight: 500; line-height: 1.5;">This is your New security code <b>${otp}</b>.</p>
                                                         <p style="font-size: 16px; font-weight: 500; line-height: 1.5;">Please keep this code safe and do not share it with anyone, This code will be required to verify your account. To verify your account, please click on the link below and enter your security code when prompted:</p>
-                                                        <p style="font-size: 16px; font-weight: 500; line-height: 1.5;">Press this Link to verify your account <a href=${sendOtpLink}></a></p>
+                                                        <p style="font-size: 16px; font-weight: 500; line-height: 1.5;">Press this Link to verify your account <a href=${sendOtpLink}>Press here</a></p>
                                             
                                                         <p style="font-size: 16px; font-weight: 500; line-height: 1.5;">If you have any questions or need assistance, please don't hesitate to reach out to our support team. We are here to help! Thank you again for choosing to be a part of our platform. We look forward to serving you.</p>
                                                         
