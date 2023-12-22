@@ -1,4 +1,5 @@
 import { IUserInterface } from "../interfaces/People/userInterface";
+import { Request } from "express";
 interface IResponse<T> {
     data: T[];
     meta: {
@@ -35,6 +36,17 @@ export const jsonOne = function <T>(
 ): IResponse<T> {
     return res.status(status).json({
         data,
+    });
+};
+
+export const jsonErrorResponse = function <T>(
+    res: Request | any, 
+    status: number, 
+    message: string 
+): IResponse<T> {
+    return res.status(status).json({
+        status: false,
+        message: message,
     });
 };
 

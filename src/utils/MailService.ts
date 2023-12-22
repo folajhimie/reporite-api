@@ -61,7 +61,7 @@ export default class MailService {
         requestId: string | number | string[] | any,
         options: MailInterface | any
     ) {
-        console.log("request in the mail...", requestId, options, process.env.SMTP_SENDER, options.from);
+        // console.log("request in the mail...", requestId, options, process.env.SMTP_SENDER, options.from);
         const transporter = nodemailer.createTransport({
             host: process.env.SMTP_HOST as string, // SMTP server address (usually mail.your-domain.com)
             port: 465, // Port for SMTP (usually 465)

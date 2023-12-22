@@ -1,5 +1,5 @@
 import IAuthRepository from "../../../repositories/People/users/authRepositories";
-import { Document, model, Schema, Types } from "mongoose";
+// import { Document, model, Schema, Types } from "mongoose";
 import { User } from "../../../models/People/user";
 import { IUserInterface } from "../../../interfaces/People/userInterface";
 import { AppError, HttpCode } from "../../../exceptions/appError";
@@ -16,9 +16,12 @@ import { Token } from "../../../models/Utility/token";
 import { generateOtp } from "../../../utils/otp-service";
 import IOtp from "../../../interfaces/Utility/otpInterface";
 import { OAuth2Client } from 'google-auth-library';
-import { validateCreateUser, validateLoginUser } from "../../../validator/user/AuthValidator";
+// import { validateCreateUser, validateLoginUser } from "../../../validator/user/AuthValidator";
 
+import { decodeAuthToken } from "../../../utils/token-generator";
 import { CloudinaryService } from "../../../utils/Cloudinary";
+import { jsonErrorResponse } from "../../../utils/Reponse";
+
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -212,24 +215,29 @@ export class AuthRepository implements IAuthRepository {
         }
     }
 
-    async loginUser({ email, password }: Pick<IUserInterface, 'email' | 'password'>, req: any): Promise<any> {
+    async loginUser({ email, password }: Pick<IUserInterface, 'email' | 'password'>, req: any, res: any): Promise<any> {
         try {
             //verifying if content exist
             if (!email || !password) {
-                throw new AppError({ httpCode: HttpCode.NO_CONTENT, description: 'Input form is empty' });
+                return jsonErrorResponse<object>(res, 404, 'Input form is empty');
+                // throw new AppError({ httpCode: HttpCode.NO_CONTENT, description: 'Input form is empty' });
             }
 
             // const existingUser = await getUserByEmail(email);
 
             const user = await User.findOne({ email }).exec();
+            console.log("all the in the database..", user)
 
             if (!user) {
-                throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'User with email already existsAuthentication failed' });
+                return jsonErrorResponse<object>(res, 401, 'User with email already exists');
+                // throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'User with email already existsAuthentication failed' });
             }
 
             const isValidUser = await comparePassword(password, user.password);
 
             const isValidEmail = compareEmail(email, user.email);
+
+            console.log("is the password correct..", isValidEmail, isValidUser);
 
             // Check if user with email already exists
             // if (!isValidEmail || !isValidUser) {
@@ -246,14 +254,19 @@ export class AuthRepository implements IAuthRepository {
             const allowedDevice = user.userAgent.includes(thisUserAgent);
 
             if (!allowedDevice) {
+                console.log("all the user allowed..", allowedDevice);
                 // const loginCode: number = Math.floor(100000 + Math.random() * 900000);
                 const loginCode: string = generateOtp(4);
+                console.log("login code...", loginCode);
 
                 // Hash token before saving to DB
                 const encryptedLoginCode = encrypt(loginCode.toString());
+                console.log("object in the token..", encryptedLoginCode);
 
                 // Delete token if it exists in DB
                 let userToken = await Token.findOne({ userId: user._id });
+
+                console.log("user The Token..", userToken);
 
                 if (userToken) {
                     await userToken.deleteOne();
@@ -264,48 +277,66 @@ export class AuthRepository implements IAuthRepository {
                     userId: user._id,
                     loginToken: encryptedLoginCode,
                     createdAt: Date.now(),
-                    expiresAt: Date.now() + 60 * (60 * 1000), // Thirty minutes
+                    expiredAt: Date.now() + 60 * (60 * 1000), // Thirty minutes
                 }).save();
 
-                throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Check your email for login code' });
+                // return jsonErrorResponse<object>(res, 500, 'Check your email for login code');
+
+                // throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Check your email for login code' });
             }
 
             // const userAgentData: string[] = [ua.ua];
 
             //CHECK IF USER IS ACTIVE
             if (!user.active) {
-                throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'Please User has been deactivated' });
+                return jsonErrorResponse<object>(res, 403, 'Please User has been deactivated');
+                // throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'Please User has been deactivated' });
             }
 
             //CHECK FOR USER VERIFIED AND EXISTING 
-            if (!user.isVerified) {
-                throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'Please confirm your account by confirmation email OTP and try again' });
-            }
+            // if (!user.isVerified) {
+            //     throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'Please confirm your account by confirmation email OTP and try again' });
+            // }
 
             // Check if the user account is locked
             if (user.isLocked === true) {
-                throw new AppError({ httpCode: HttpCode.FORBIDDEN, description: 'Account is locked' });
+                return jsonErrorResponse<object>(res, 403, 'This has been Account locked');
+                // throw new AppError({ httpCode: HttpCode.FORBIDDEN, description: 'Account is locked' });
             }
 
             // Perform your authentication logic here (e.g., checking the password)
 
             // If authentication fails, increment the failedLoginAttempts
-            if (!isValidEmail || !isValidUser) {
+
+            
+            if (!isValidUser) {
+                var numberOfAttempt: number;
                 user.failedLoginAttempts++;
+
+                let failedAuthentication: number = user.failedLoginAttempts;
+
+                numberOfAttempt = 6 - failedAuthentication;
+
+                console.log("all the number..", numberOfAttempt);
 
                 // Check if the user has reached the maximum failed login attempts
                 if (user.failedLoginAttempts >= 6) {
                     user.isLocked = true;
                     user.failedLoginAttempts = 0; // Reset the failed login attempts
 
-                    await user.save();
+                    
 
-                    throw new AppError({ httpCode: HttpCode.FORBIDDEN, description: 'Account is locked due to too many failed login attempts' });
+                    await user.save();
+                    
+                    return jsonErrorResponse<object>(res, 403, 'Account is locked due to too many failed login attempts');
+                    // throw new AppError({ httpCode: HttpCode.FORBIDDEN, description: 'Account is locked due to too many failed login attempts' });
                 }
 
                 await user.save();
 
-                throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'Authentication failed' });
+                console.log("failed attempt..", user.failedLoginAttempts);
+                return jsonErrorResponse<object>(res, 404, `Authentication failed You have ${numberOfAttempt} Attempt Left`);
+                // throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'Authentication failed' });
             }
 
             // If authentication succeeds, reset the failed login attempts
@@ -317,6 +348,38 @@ export class AuthRepository implements IAuthRepository {
         } catch (error) {
             console.error('Error Login user:', error);
         }
+    }
+
+    logout(req: any, res: any): any {
+        const cookies = req?.cookies;
+        console.log("all the cookies cleared...", cookies);
+
+        if (!cookies?.jwt) {
+            return jsonErrorResponse<object>(res, 204, 'No Content');
+        }
+        
+        res.clearCookie('refreshToken', {
+            httpOnly: true, 
+            path: '/api/v1/auth/refresh',
+            sameSite: 'None', 
+            secure: true 
+        })
+    }
+
+    refreshToken(req: any, res: any): any {
+        const rf_token = req.cookies.refreshtoken;
+        console.log("refresh token called...", rf_token);
+
+        if (!rf_token) {
+            return jsonErrorResponse<object>(res, 401, 'Unauthorized');
+        }
+
+        // const refreshToken = cookies.jwt
+
+        const refreshCollection = decodeAuthToken(res, rf_token)
+
+        return refreshCollection
+        
     }
 
     async sendLoginCode(user: Pick<IUserInterface, "email">): Promise<Record<string, any>> {
@@ -566,6 +629,8 @@ export class AuthRepository implements IAuthRepository {
             console.error('Error in re-sending OTP code:', error); 
         }
     }
+
+    
 
 }
 

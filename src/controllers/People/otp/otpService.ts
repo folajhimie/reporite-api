@@ -15,7 +15,7 @@ export class OtpController {
         // tokenExpiration = tokenExpiration.setMinutes(
         //     tokenExpiration.getMinutes() + 10
         // );
-        console.log("save in the middle...", savedUser, OtpType);
+        // console.log("save in the middle...", savedUser, OtpType);
         const otp: string = generateOtp(4);
 
         let newOtp = new Otp({

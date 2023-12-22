@@ -15,17 +15,17 @@ dotenv.config();
 
 export class TokenController {
 
-    async generateToken (user: any): Promise<string> {
+    async generateToken (res: any , user: any): Promise<string> {
         //GENERATE TOKEN FOR USER
-        const token = generateAuthToken(user._id)
+        const token = generateAuthToken(res, user)
         return token 
     }
 
-    decodedToken (token:string): string | JwtPayload {
-        //VERIFYING TOKEN
-        const tokenHolder = decodeAuthToken(token)
-        return tokenHolder;
-    }
+    // decodedToken (token:string): string | JwtPayload {
+    //     //VERIFYING TOKEN
+    //     const tokenHolder = decodeAuthToken(token)
+    //     return tokenHolder;
+    // }
 
     // async tokenExpiration(){
     //     let tokenExpiration: any = new Date();
@@ -50,12 +50,12 @@ export class TokenController {
             const uuid: string = uuidv4();
 
             const uniqueString: string = uuid + user?._id;
-            console.log("all the unique string...", uniqueString)
+            // console.log("all the unique string...", uniqueString)
 
             // Hash token before saving to DB
             const encryptedUniqueToken: string = encrypt(uniqueString.toString());
 
-            console.log("all the hash..", encryptedUniqueToken)
+            // console.log("all the hash..", encryptedUniqueToken)
 
             // Construct Reset Url
             const sendOtpLink: string = `${process.env.FRONTEND_URL}/send-otp/${uniqueString}`;

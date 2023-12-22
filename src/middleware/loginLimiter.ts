@@ -5,7 +5,7 @@ import { logEvents } from './Logger';
 
 const loginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 10,
+    max: 400,
     message: 'Too many login attempts from this IP, please try again after a 60 second pause',
     handler: (req: Request, res: Response, next: NextFunction, options: any) => {
         logEvents(`Too Many Requests: ${options.message}\t${req.method}\t${req.url}\t${req.headers.origin}`, 'errLog.log');

@@ -13,7 +13,7 @@ export class MailController {
         // const mailService  = new MailService();
         const mailService = MailService.getInstance();
 
-        console.log("mail servive...", mailService, req.headers['X-Request-Id']);
+        // console.log("mail servive...", mailService, req.headers['X-Request-Id']);
         const sent_from = `CarTtel 🏬 <${process.env.MAIL_USERNAME}>`;
 
         await mailService.sendMail(req.headers, {

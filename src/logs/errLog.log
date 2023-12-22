@@ -1,0 +1,8 @@
+20231128	19:02:57	c99eb389-7f63-4bed-bb39-af69a4821ae6	Too Many Requests: Too many login attempts from this IP, please try again after a 60 second pause	GET	/api/v1/users/get-all-users	http://127.0.0.1:7050
+20231128	19:03:45	a0a1627b-3f02-4f0d-8b2a-6383c84a287d	Too Many Requests: Too many login attempts from this IP, please try again after a 60 second pause	POST	/api/v1/auth/login	http://127.0.0.1:7050
+20231128	19:09:37	3e073791-35b4-48ab-829b-aae4ea91d833	Too Many Requests: Too many login attempts from this IP, please try again after a 60 second pause	GET	/api/v1/users/get-all-users	http://127.0.0.1:7050
+20231128	19:09:37	40e7617f-7108-4484-9eb9-f120e696a9df	Too Many Requests: Too many login attempts from this IP, please try again after a 60 second pause	GET	/api/v1/users/get-all-users	http://127.0.0.1:7050
+20231130	04:54:33	e1c84fe4-5777-4728-9b85-5931b0e763d6	Too Many Requests: Too many login attempts from this IP, please try again after a 60 second pause	GET	/api/v1/users/get-all-users	http://127.0.0.1:7050
+20231130	04:54:33	37988aa4-6899-4a62-98ea-9527503f076f	Too Many Requests: Too many login attempts from this IP, please try again after a 60 second pause	GET	/api/v1/users/get-all-users	http://127.0.0.1:7050
+20231130	04:54:44	bde1e888-d4cf-4d2a-b219-e812f8ffc6ee	Too Many Requests: Too many login attempts from this IP, please try again after a 60 second pause	POST	/api/v1/auth/login	http://127.0.0.1:7050
+20231130	04:54:44	ed9e3b72-bde6-4c86-a7dd-ad0925fc24bd	Too Many Requests: Too many login attempts from this IP, please try again after a 60 second pause	GET	/api/v1/users/get-user/undefined	http://127.0.0.1:7050

@@ -26,8 +26,10 @@ declare global {
 
 
 export const authMiddleware = asyncMiddleware(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    console.log("refreash token..", req.headers, req, req.cookies);
     try {
         const authHeader = req.headers.authorization || req.headers.authorization;
+
 
         if (!authHeader?.startsWith('Bearer') || !authHeader) {
             return next(new AppError({

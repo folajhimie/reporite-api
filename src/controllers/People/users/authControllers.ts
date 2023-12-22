@@ -5,7 +5,7 @@ import { Request, Response, NextFunction } from "express";
 import verifyEmail from "../../../views/verifyEmailTemplate";
 import createAccount from "../../../views/createAcccount";
 import MailService from "../../../utils/MailService";
-import { jsonOne, jsonAll } from "../../../utils/Reponse";
+import { jsonOne, jsonAll, jsonErrorResponse } from "../../../utils/Reponse";
 import { IUserInterface } from "../../../interfaces/People/userInterface";
 import { TokenController } from "../token/tokenControllers";
 import { OtpType } from "../../../utils/Enums";
@@ -14,7 +14,7 @@ import { verifyOtp } from "../../../utils/otp-service";
 import { AppError, HttpCode } from "../../../exceptions/appError";
 import generateResetPasswordTemplate from "../../../views/resetPasswordTemplate";
 import { generateHashPassword } from "../../../utils/password-manager";
-import { generateAuthToken } from "../../../utils/token-generator";
+import { refreshAuthToken, generateAuthToken } from "../../../utils/token-generator";
 import Otp from "../../../models/Utility/otp";
 import sendToken from "../../../utils/sendToken";
 import loginCode from "../../../views/loginWithCode";
@@ -53,12 +53,25 @@ export class AuthController {
                 req
             );
 
-            console.log("the way of the user...", resultAuth);
-
             // Send HTTP-only cookie and Then hash the user details
-            let tokenAuth = sendToken(resultAuth, res)
+            // console.log("the way of the user...", resultAuth);
+            // sendToken(resultAuth, res)
 
-            console.log("token in the result..", tokenAuth)
+            // let tokenAuth = sendToken(resultAuth, res)
+
+            // const accesstokenUser = generateAuthToken(resultAuth)
+            const refreshtokenUser = refreshAuthToken(res, resultAuth)
+
+            res.cookie('refreshtoken', refreshtokenUser, {
+                httpOnly: true,
+                path: '/api/v1/auth/refresh',
+                maxAge: 7 * 24 * 60 * 60 * 1000 // 7d
+            })
+
+            // res.json({accesstoken})
+            
+
+            // console.log("token in the result..", tokenAuth)
 
             //GENERATE OTP CODE FOR USER
             const otpController = new OtpController();
@@ -87,7 +100,7 @@ export class AuthController {
 
             let responseAuth = {
                 resultAuth,
-                accessToken: tokenAuth,
+                // accessToken: tokenAuth,
                 otpLink: tokenData
             };
 
@@ -104,18 +117,36 @@ export class AuthController {
         try {
             const authRepository: IAuthRepository = new AuthRepository();
             let resultAuth = await authRepository.loginUser(
-                req.body, req
+                req.body, req, res
             );
 
+            const accessToken = sendToken(resultAuth, res)
+            // sendToken(resultAuth, res)
+
+            // refreshAuthToken(res, resultAuth)
+            // console.log("requesting..", res);
+            // console.log("moves like jagger..", req.cookies, req.headers, req.header);
+
             // Send HTTP-only cookie
-            let tokenAuth = sendToken(resultAuth, res)
 
-            let responseAuth = {
-                resultAuth,
-                accessToken: tokenAuth,
-            };
+            // let tokenAuth = sendToken(resultAuth, res)
 
-            return jsonOne<object>(res, 200, responseAuth);
+            // const accesstokenUser = generateAuthToken(resultAuth)
+            const refreshtokenUser = refreshAuthToken(res, resultAuth)
+
+            res.status(200).cookie('refreshtoken', refreshtokenUser, {
+                secure: true,
+                httpOnly: true,
+                path: '/api/v1/auth/refresh',
+                maxAge: 7 * 24 * 60 * 60 * 1000 // 7d
+            })
+
+            // let responseAuth = {
+            //     resultAuth,
+            //     accessToken: tokenAuth,
+            // };
+
+            return jsonOne<string>(res, 200, accessToken);
 
         } catch (error) {
             next(error);
@@ -281,19 +312,35 @@ export class AuthController {
         }
     }
 
-    logoutUser(req: Request, res: Response, next: NextFunction) {
+    logoutUser(req: Request, res: Response) {
         try {
-            res.cookie("token", "", {
-                path: "/",
-                httpOnly: true,
-                expires: new Date(0),
-                sameSite: "none",
-                secure: true,
-            });
+            // res.cookie("token", "", {
+            //     path: "/",
+            //     httpOnly: true,
+            //     expires: new Date(0),
+            //     sameSite: "none",
+            //     secure: true,
+            // });
+            const authRepository: IAuthRepository = new AuthRepository();
+            authRepository.logout(req, res);
+            
+    
+            return jsonErrorResponse<object>(res, 200, 'Cookies Cleared');
 
-            return jsonOne<string>(res, 201, 'Log out successful!');
         } catch (error) {
-            next(error)
+            console.log("all the cookies is getting an error..", error);
+        }
+    }
+
+    refresh(req: Request, res: Response){
+        try {
+            const authRepository: IAuthRepository = new AuthRepository();
+            let refreshUser =  authRepository.refreshToken(req, res);
+
+            return jsonOne<object | string>(res, 200, refreshUser);
+            
+        } catch (error) {
+            console.log("refresh Token in the code..", error); 
         }
     }
 }

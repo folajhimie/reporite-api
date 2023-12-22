@@ -6,14 +6,22 @@ import { AppError, HttpCode } from "../../../exceptions/appError";
 import { CloudinaryService } from "../../../utils/Cloudinary";
 
 export class UserRepository implements IUserRepository {
-    async getUser(userId: string): Promise<IUserInterface> {
+    async getUser(req: any): Promise<IUserInterface | any> {
 
-        let user = await User.findById(userId).populate('role').exec();
-        if (!user) {
-            throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'User not Found' });
+        try {
+            console.log("all the user", req, req.user);
+            // let user = await User.findById(userId).populate('role').exec();
+            let user = await User.findById(req.user.id).select('-password');
+            if (!user) {
+                throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'User not Found' });
+            }
+    
+            return user
+            
+        } catch (error) {
+           console.log("error in getting user: ", error); 
         }
-
-        return user
+        
     }
 
     async getAllUsers(requestQuery: any): Promise<any> {
@@ -26,7 +34,7 @@ export class UserRepository implements IUserRepository {
 
         //GETTING DATA FORM TABLE
         let users = await User.find()
-            .populate('role')
+            // .populate('role')
             .limit(pageOptions.limit * 1)
             .skip((pageOptions.page - 1) * pageOptions.limit)
             .sort({ createdAt: 1 });

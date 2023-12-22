@@ -67,4 +67,14 @@ export default (router: Router) => {
   router.post("/api/v1/auth/google/callback", 
     authController.loginWithGoogle
   );
+
+  // Login With Google
+  router.post("/api/v1/auth/logout", 
+    authController.logoutUser
+  );
+  
+  // Login With Google
+  router.get("/api/v1/auth/refresh", 
+    authController.refresh
+  );
 };

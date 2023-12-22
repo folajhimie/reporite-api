@@ -17,13 +17,18 @@ import { logger } from './middleware/Logger';
 const app: Application = express();
 
 const corsOptions = {
-    origin: [
+    "origin": [
         "http://127.0.0.1:7050", 
         "http://localhost:4545", 
         "https://reporite.netlify.app"
     ],
-    credentials: true,
+    "methods": ["GET", "PUT", "POST", "PATCH", "DELETE"],
+    "allowedHeaders": ["Content-Type", "AgentId", "Accept"],
+    "exposedHeaders": ["Content-Type", "AgentId", "Accept"],
+    "credentials": true,
+    // credentials: true,
 }
+
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());

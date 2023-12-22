@@ -61,19 +61,19 @@ export const decrypt = (encryptedText: string): string => {
 
 
 export const encrypt = (text: string): string => {
-  console.log("all this error token..", text, key, iv, encryptionAlgorithm);
+  // console.log("all this error token..", text, key, iv, encryptionAlgorithm);
   
   // const cipher = crypto.createCipheriv(encryptionAlgorithm, Buffer.from(key, 'hex'), Buffer.from(iv, 'hex'));
   const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(key), iv);
   console.log("cipher...", cipher);
 
   let encryptedData = cipher.update(text, 'utf-8', 'hex');
-  console.log("hello hash..", encryptedData);
+  // console.log("hello hash..", encryptedData);
 
   encryptedData += cipher.final('hex');
+  // console.log('Encrypted Data:', encryptedData);
   
   // Print the encrypted data and IV
-  console.log('Encrypted Data:', encryptedData);
   // console.log('Initialization Vector (IV):', Buffer.from(iv, 'hex').toString('hex'));
   
   return encryptedData;
