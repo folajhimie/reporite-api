@@ -11,7 +11,7 @@ export class UserRepository implements IUserRepository {
         try {
             console.log("all the user", req, req.user);
             // let user = await User.findById(userId).populate('role').exec();
-            let user = await User.findById(req.user.id).select('-password');
+            let user = await User.findById(req.user._id).select('-password');
             if (!user) {
                 throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'User not Found' });
             }
