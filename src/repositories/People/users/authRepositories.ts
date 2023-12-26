@@ -19,6 +19,7 @@ export default interface IAuthRepository {
   loginWithGoogle(req: any): Promise<any>; 
   logout(req: any, res: any): any;
   refreshToken(req: any, res: any): any;
+  userLoginToken(req: any, res: any): any;
 }
 
   

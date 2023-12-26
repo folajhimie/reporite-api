@@ -10,15 +10,10 @@ export class UserController {
 
     async getUser(req: Request, res: Response, next: NextFunction) {
         try {
-            console.log("first", req)
-            console.log("fresh all the matter..")
-            console.log("all the request..", req.cookies, req.header);
 
             const userRepository: IUserRepository = new UserRepository();
             let resultAuth = await userRepository.getUser(
                 req
-                // req.params.id
-                // req?.user?._id
             )
             return jsonOne<IUserInterface>(res, 200, resultAuth);
         } catch (error) {

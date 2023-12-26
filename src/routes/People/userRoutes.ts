@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { authMiddleware, isAdmin, verifiedOnly } from '../../middleware/auth';
 import loginLimiter from '../../middleware/loginLimiter';
 import { UserController } from '../../controllers/People/users/userControllers';
+import upload from '../../utils/Multer';
 
 const userController = new UserController()
 
@@ -11,9 +12,9 @@ export default (router: Router) => {
     // Get All Users 
     router.get("/api/v1/users/get-all-users",
         loginLimiter,
-        // authMiddleware,
-        // verifiedOnly,
-        // isAdmin("Admin"),
+        authMiddleware,
+        verifiedOnly,
+        isAdmin("Admin"),
         userController.getAllUsers
     );
 
@@ -21,6 +22,7 @@ export default (router: Router) => {
     router.get("/api/v1/users/get-user",
         loginLimiter,
         authMiddleware,
+        verifiedOnly,
         userController.getUser
     );
 
@@ -28,6 +30,8 @@ export default (router: Router) => {
     router.put("/api/v1/users/update-user/:userId",
         loginLimiter,
         authMiddleware,
+        verifiedOnly,
+        upload.single('image'),
         userController.updateUser
     );
 
@@ -37,6 +41,7 @@ export default (router: Router) => {
         authMiddleware,
         verifiedOnly,
         isAdmin("Admin"),
+        upload.single('image'),
         userController.deleteUser
     );
 };

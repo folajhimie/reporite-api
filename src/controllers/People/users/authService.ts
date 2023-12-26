@@ -14,12 +14,12 @@ import UAParser from 'ua-parser-js';
 import { encrypt, decrypt, hashToken, createRandomToken } from "../../../utils/password-manager";
 import { Token } from "../../../models/Utility/token";
 import { generateOtp } from "../../../utils/otp-service";
-import IOtp from "../../../interfaces/Utility/otpInterface";
+// import IOtp from "../../../interfaces/Utility/otpInterface";
 import { OAuth2Client } from 'google-auth-library';
 // import { validateCreateUser, validateLoginUser } from "../../../validator/user/AuthValidator";
 
 import { decodeAuthToken } from "../../../utils/token-generator";
-import { CloudinaryService } from "../../../utils/Cloudinary";
+// import { CloudinaryService } from "../../../utils/Cloudinary";
 import { jsonErrorResponse } from "../../../utils/Reponse";
 
 
@@ -32,7 +32,8 @@ dotenv.config();
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 export class AuthRepository implements IAuthRepository {
-    async loginWithGoogle(req: any): Promise<any>{
+    // LOGIN WITH GOOGLE
+    async loginWithGoogle(req: any): Promise<any> {
         try {
             const { userToken } = req.body;
 
@@ -90,47 +91,48 @@ export class AuthRepository implements IAuthRepository {
             }
 
             return user
-            
+
         } catch (error) {
-            console.error('Error creating using Google:', error); 
+            console.error('Error creating using Google:', error);
         }
     }
 
+    // CREATE USER
     async createUser(req: any): Promise<IUserInterface | void> {
-        
+
         try {
             console.log("request in the bag...");
             // Validate user input
             // await validateCreateUser(req);
 
             console.log("grace in the Lord");
-            
-            const { 
-                firstname, 
-                lastname, 
-                email, 
-                phone, 
-                password, 
-                confirmPassword, 
+
+            const {
+                firstname,
+                lastname,
+                email,
+                phone,
+                password,
+                confirmPassword,
                 // avatar, 
                 // roles 
             } = req.body as IUserInterface;
 
-            console.log("all the object..", firstname, 
-            lastname, 
-            email, 
-            phone, 
-            password, 
-            confirmPassword, 
-            // avatar, 
-            // roles
+            console.log("all the object..", firstname,
+                lastname,
+                email,
+                phone,
+                password,
+                confirmPassword,
+                // avatar, 
+                // roles
             );
 
             //compare password to see if they match
             if (password !== confirmPassword) {
-                throw new AppError({ 
-                    httpCode: HttpCode.FORBIDDEN, 
-                    description: 'password and confirmPassword do not match!' 
+                throw new AppError({
+                    httpCode: HttpCode.FORBIDDEN,
+                    description: 'password and confirmPassword do not match!'
                 });
             }
 
@@ -145,9 +147,9 @@ export class AuthRepository implements IAuthRepository {
             // } else {
             //     console.log("false for the bank..");
             //     // The function for getting the user code number
-                
+
             // }
-            
+
             const getUserCode: string | number = HelpFunction.addZeroToSingleDigit(users.length)
 
             userCode = `CRT/USR/${getUserCode}`;
@@ -158,9 +160,9 @@ export class AuthRepository implements IAuthRepository {
             const existingUser = await User.findOne({ email }).exec();
 
             if (existingUser) {
-                throw new AppError({ 
-                    httpCode: HttpCode.UNAUTHORIZED, 
-                    description: 'User with email already exists.. Authentication failed' 
+                throw new AppError({
+                    httpCode: HttpCode.UNAUTHORIZED,
+                    description: 'User with email already exists.. Authentication failed'
                 });
             }
 
@@ -215,6 +217,7 @@ export class AuthRepository implements IAuthRepository {
         }
     }
 
+    // LOGIN THE USER
     async loginUser({ email, password }: Pick<IUserInterface, 'email' | 'password'>, req: any, res: any): Promise<any> {
         try {
             //verifying if content exist
@@ -308,7 +311,6 @@ export class AuthRepository implements IAuthRepository {
 
             // If authentication fails, increment the failedLoginAttempts
 
-            
             if (!isValidUser) {
                 var numberOfAttempt: number;
                 user.failedLoginAttempts++;
@@ -324,10 +326,10 @@ export class AuthRepository implements IAuthRepository {
                     user.isLocked = true;
                     user.failedLoginAttempts = 0; // Reset the failed login attempts
 
-                    
+
 
                     await user.save();
-                    
+
                     return jsonErrorResponse<object>(res, 403, 'Account is locked due to too many failed login attempts');
                     // throw new AppError({ httpCode: HttpCode.FORBIDDEN, description: 'Account is locked due to too many failed login attempts' });
                 }
@@ -350,41 +352,159 @@ export class AuthRepository implements IAuthRepository {
         }
     }
 
+    // LOGOUT 
     logout(req: any, res: any): any {
-        const cookies = req?.cookies;
-        console.log("all the cookies cleared...", cookies);
+        // const cookies = req?.cookies;
+        // console.log("all the cookies cleared...", cookies);
 
-        if (!cookies?.jwt) {
-            return jsonErrorResponse<object>(res, 204, 'No Content');
+        // if (!cookies?.jwt) {
+        //     return jsonErrorResponse<object>(res, 204, 'No Content');
+        // }
+
+        // res.clearCookie('refreshToken', {
+        //     httpOnly: true,
+        //     path: '/api/v1/auth/refresh',
+        //     sameSite: 'None',
+        //     secure: true
+        // })
+
+        try {
+            res.cookie("token", null, {
+                expires: new Date(Date.now()),
+                httpOnly: true,
+                sameSite: "none",
+                secure: true,
+            });
+            res.status(200).json({
+                success: true,
+                message: "Log out successful!",
+            });
+        } catch (error) {
+            // return next(new ErrorHandler(error.message, 500));
+            console.log('Error Logout user:', error);
         }
-        
-        res.clearCookie('refreshToken', {
-            httpOnly: true, 
-            path: '/api/v1/auth/refresh',
-            sameSite: 'None', 
-            secure: true 
-        })
     }
 
+    // FORGOT PASSWORD
+    async forgotPassword({ email }: IUserInterface): Promise<any> {
+
+        try {
+            const user = await User.findOne({ email }).exec();
+
+            if (!user) {
+                throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'User not found!' });
+            }
+
+            // Delete token if it exists in DB
+            let token = await Token.findOne({ userId: user._id });
+
+            if (token) {
+                await token.deleteOne();
+            }
+
+            // create reset Token 
+            const resetToken = createRandomToken(user._id);
+
+            // Hash token before saving to DB
+            const hashedTokenData = hashToken(resetToken)
+
+            // Save Token to DB
+            await new Token({
+                userId: user._id,
+                token: hashedTokenData,
+                createdAt: Date.now(),
+                expiresAt: Date.now() + 30 * (60 * 1000), // Thirty minutes
+            }).save();
+
+            // Construct Reset Url
+            const resetUrl = `${process.env.FRONTEND_URL}/resetPassword/${resetToken}`;
+
+            // const resetPasswordUrl = `${req.protocol}://${req.get(
+            //     "host"
+            // )}/password/reset/${resetToken}`;
+
+            console.log(resetUrl);
+
+            const resultAuth = {
+                user,
+                resetUrl
+            }
+
+            return resultAuth
+
+        } catch (error) {
+            console.error('Error in Forgot password code:', error);
+            // throw error; 
+        }
+
+    }
+
+    // RESET PASSWORD
+    async resetPassword(req: any): Promise<any> {
+        try {
+            const { password, confirmPassword } = req.body;
+            const { resetToken } = req.params;
+
+            // Hash token, then compare to Token in DB
+            const hashedToken = hashToken(resetToken);
+
+            // Find Token in DB
+            const userToken = await Token.findOne({
+                token: hashedToken,
+                expiresAt: { $gt: Date.now() },
+            });
+
+            if (!userToken) {
+                throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Reset password url is invalid or has been expired!' });
+            }
+
+            if (password !== confirmPassword) {
+                throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'Password is not matched with the new password!' });
+            }
+
+            // Find user and reset password
+            let user: IUserInterface | any = await User.findOne({ _id: userToken.userId })
+
+            user.password = password;
+
+            await user.save();
+
+        } catch (error) {
+            console.error('Error in Reset password code:', error);
+        }
+    }
+
+    // REFRESH USER
     refreshToken(req: any, res: any): any {
-        const rf_token = req.cookies.refreshtoken;
+        // const rf_token = req.cookies.refreshtoken;
+        const rf_token = req.cookies
         console.log("refresh token called...", rf_token);
 
         if (!rf_token) {
             return jsonErrorResponse<object>(res, 401, 'Unauthorized');
         }
-
         // const refreshToken = cookies.jwt
 
         const refreshCollection = decodeAuthToken(res, rf_token)
-
         return refreshCollection
-        
+    }
+
+    // LOGIN TOKEN
+    userLoginToken(req: any, res: any) {
+        try {
+            let userRequest = req.user
+            return userRequest;
+
+        } catch (error) {
+            console.error('Getting the error in the code:', error);
+
+        }
     }
 
     async sendLoginCode(user: Pick<IUserInterface, "email">): Promise<Record<string, any>> {
         try {
             const { email } = user;
+            // const { email } = req.params;
 
             const userData = await User.findOne({ email }).exec();
 
@@ -464,96 +584,6 @@ export class AuthRepository implements IAuthRepository {
         }
     }
 
-    // FORGOT PASSWORD
-    async forgotPassword({ email }: IUserInterface): Promise<any> {
-
-        try {
-            const user = await User.findOne({ email }).exec();
-
-            if (!user) {
-                throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'User not found!' });
-            }
-
-            // Delete token if it exists in DB
-            let token = await Token.findOne({ userId: user._id });
-
-            if (token) {
-                await token.deleteOne();
-            }
-
-            // create reset Token 
-            const resetToken = createRandomToken(user._id);
-
-            // Hash token before saving to DB
-            const hashedTokenData = hashToken(resetToken)
-
-            // Save Token to DB
-            await new Token({
-                userId: user._id,
-                token: hashedTokenData,
-                createdAt: Date.now(),
-                expiresAt: Date.now() + 30 * (60 * 1000), // Thirty minutes
-            }).save();
-
-            // Construct Reset Url
-            const resetUrl = `${process.env.FRONTEND_URL}/resetPassword/${resetToken}`;
-
-            // const resetPasswordUrl = `${req.protocol}://${req.get(
-            //     "host"
-            // )}/password/reset/${resetToken}`;
-
-            console.log(resetUrl);
-
-            const resultAuth = {
-                user,
-                resetUrl
-            }
-
-            return resultAuth
-
-        } catch (error) {
-            console.error('Error in Forgot password code:', error);
-            // throw error; 
-        }
-
-    }
-
-    async resetPassword(req: any): Promise<any> {
-        try {
-            const { password, confirmPassword } = req.body;
-            const { resetToken } = req.params;
-
-            // Hash token, then compare to Token in DB
-            const hashedToken = hashToken(resetToken);
-
-            // Find Token in DB
-            const userToken = await Token.findOne({
-                token: hashedToken,
-                expiresAt: { $gt: Date.now() },
-            });
-
-            if (!userToken) {
-                throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Reset password url is invalid or has been expired!' });
-            }
-
-            if (password !== confirmPassword) {
-                throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'Password is not matched with the new password!' });
-            }
-
-            // Find user and reset password
-            let user: IUserInterface | any = await User.findOne({ _id: userToken.userId })
-
-            user.password = password;
-
-            await user.save();
-
-        } catch (error) {
-            console.error('Error in Reset password code:', error);
-        }
-
-
-    }
-
     async verifyUserWithOTP(req: any): Promise<any> {
         try {
 
@@ -580,16 +610,11 @@ export class AuthRepository implements IAuthRepository {
             // const otpCode = await Otp.findOne({ _id: findToken.userId }).exec();
 
             const otpResult = {
-                user, 
+                user,
                 otp
             }
 
             return otpResult;
-
-           
-
-            
-
         } catch (error) {
             console.error('Error in verifying user with OTP code:', error);
         }
@@ -624,13 +649,15 @@ export class AuthRepository implements IAuthRepository {
             }
 
             return user;
-            
+
         } catch (error) {
-            console.error('Error in re-sending OTP code:', error); 
+            console.error('Error in re-sending OTP code:', error);
         }
     }
 
     
+
+
 
 }
 

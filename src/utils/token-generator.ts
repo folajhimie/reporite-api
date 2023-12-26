@@ -20,17 +20,17 @@ export const generateAuthToken = (res: any, user: object | any) => {
     },
     secret,
     {
-      expiresIn: "30m",
+      expiresIn: "15m",
     }
   );
 
-  res.cookie('accessToken', accessToken, {
-    httpOnly: true, //accessible only by web server 
-    secure: true, //https
-    path: '/api/v1/auth/refresh',
-    sameSite: 'None', //cross-site cookie 
-    maxAge: 7 * 24 * 60 * 60 * 1000 //cookie expiry: set to match rT
-  })
+  // res.cookie('accessToken', accessToken, {
+  //   httpOnly: true, //accessible only by web server 
+  //   secure: true, //https
+  //   path: '/',
+  //   sameSite: 'None', //cross-site cookie 
+  //   maxAge: 7 * 24 * 60 * 60 * 1000 //cookie expiry: set to match rT
+  // })
 
   return accessToken
 };
@@ -41,6 +41,7 @@ export const refreshAuthToken = (res: any, user: object | any) => {
   const refreshToken = jwt.sign(
     {
       email: user.email,
+      roles: user.roles,
     },
     secret,
     {
@@ -50,13 +51,13 @@ export const refreshAuthToken = (res: any, user: object | any) => {
   console.log('refresh User in the Code..', refreshToken);
 
   // Create secure cookie with refresh token 
-  res.cookie('refreshToken', refreshToken, {
-    httpOnly: true, //accessible only by web server 
-    secure: true, //https
-    path: '/api/v1/auth/refresh',
-    sameSite: 'None', //cross-site cookie 
-    maxAge: 7 * 24 * 60 * 60 * 1000 //cookie expiry: set to match rT
-  })
+  // res.cookie('jwt', refreshToken, {
+  //   httpOnly: true, //accessible only by web server 
+  //   secure: true, //https
+  //   path: '/',
+  //   sameSite: 'None', //cross-site cookie 
+  //   maxAge: 7 * 24 * 60 * 60 * 1000 //cookie expiry: set to match rT
+  // })
 };
 
 export const decodeAuthToken = (res: any, refreshToken: string) => {
@@ -85,11 +86,10 @@ export const decodeAuthToken = (res: any, refreshToken: string) => {
           lastname: foundUser.lastname,
           email: foundUser.email,
           roles: foundUser.roles,
-          phone: foundUser.phone,
         },
         process.env.ACCESS_TOKEN_SECRET as string,
         {
-          expiresIn: "30m",
+          expiresIn: "15m",
         }
       );
 
@@ -98,3 +98,39 @@ export const decodeAuthToken = (res: any, refreshToken: string) => {
     }
   );
 };
+
+export const generateAuthLoginToken = (res: any, user: object | any) => {
+
+  const accessSecret = process.env.ACCESS_TOKEN_SECRET || "your_jwt_secret";
+  console.log("all the secret..", accessSecret);
+
+  const accessToken = jwt.sign(
+    {
+      _id: user._id,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      email: user.email,
+      roles: user.roles,
+    },
+    accessSecret,
+    {
+      expiresIn: "10s",
+    }
+  );
+
+  const secretRefresh = process.env.REFRESH_TOKEN_SECRET || "your_jwt_secret";
+
+  const newRefreshToken = jwt.sign(
+    { 
+      _id: user._id,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      email: user.email,
+      roles: user.roles,
+    },
+    secretRefresh,
+    { expiresIn: '5d' }
+);
+
+  
+}; 

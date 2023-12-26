@@ -23,12 +23,12 @@ declare global {
 }
 
 
-
-
 export const authMiddleware = asyncMiddleware(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    console.log("refreash token..", req.headers, req, req.cookies);
+    console.log("refresh token..", req.headers);
     try {
-        const authHeader = req.headers.authorization || req.headers.authorization;
+        // const authHeader = req.headers.authorization || req.headers.authorization;
+
+        const authHeader: string | any = req.headers.authorization || req.headers.Authorization;
 
 
         if (!authHeader?.startsWith('Bearer') || !authHeader) {
@@ -39,9 +39,7 @@ export const authMiddleware = asyncMiddleware(async (req: Request, res: Response
         }
 
         const token = authHeader.split(' ')[1];
-
-        // const token = req.header('Authorization')?.replace('Bearer ', '');
-        // const { token } = req.cookies;
+        console.log("token in the middleware..", token);
 
         if (!token) {
             return next(new AppError({
@@ -53,7 +51,7 @@ export const authMiddleware = asyncMiddleware(async (req: Request, res: Response
         jwt.verify(
             token,
             process.env.ACCESS_TOKEN_SECRET as string,
-            (error, decoded) => {
+            (error: string | any, decoded: object | any) => {
                 if (error) {
                     throw new AppError({
                         httpCode: HttpCode.BAD_REQUEST,
@@ -83,7 +81,10 @@ export const isAdmin = (...roles: string[]) => {
             }
             next();
         } catch (error) {
-            throw new AppError({ httpCode: HttpCode.FORBIDDEN, description: '403 is Forbidden' });
+            throw new AppError({ 
+                httpCode: HttpCode.FORBIDDEN, 
+                description: '403 is Forbidden' 
+            });
             // res.status(403).send({ error: 'Unauthorized' });
         }
     };
@@ -91,7 +92,7 @@ export const isAdmin = (...roles: string[]) => {
 
 export const verifiedOnly = asyncMiddleware(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        if (req.user && req.user?.isVerified) {
+        if (req.user && req.user?.isVerified === true) {
             next()
         } else {
             throw new AppError({

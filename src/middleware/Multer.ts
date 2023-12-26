@@ -20,17 +20,21 @@ const storage = multer.diskStorage({
 });
 
 const multerFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback | any): void => {
-    if (file.mimetype.startsWith("image")) {
+    if (
+      file.mimetype === "image/png" ||
+      file.mimetype === "image/jpg" ||
+      file.mimetype === "image/jpeg"
+    ) {
         cb(null, true);
     } else {
         cb(new Error("Unsupported file format"), false);
     }
 };
 
-const upload = multer({
-    storage: storage,
-    fileFilter: multerFilter,
-    limits: { fileSize: 1000000 },
+const upload = multer({    
+  storage: multer.diskStorage({}),
+  fileFilter: multerFilter,
+  limits: { fileSize: 1024 * 1024},
 });
 
 // const upload = multer({ storage, fileFilter: multerFilter });

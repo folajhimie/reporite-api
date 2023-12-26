@@ -45,7 +45,6 @@ export class AuthController {
 
     async registerUser(req: Request, res: Response, next: NextFunction) {
         try {
-            // const { username, email, phone, password, confirmPassword } = req.body;
 
             //CREATE USER  
             const authRepository: IAuthRepository = new AuthRepository();
@@ -62,14 +61,12 @@ export class AuthController {
             // const accesstokenUser = generateAuthToken(resultAuth)
             const refreshtokenUser = refreshAuthToken(res, resultAuth)
 
-            res.cookie('refreshtoken', refreshtokenUser, {
-                httpOnly: true,
-                path: '/api/v1/auth/refresh',
-                maxAge: 7 * 24 * 60 * 60 * 1000 // 7d
+            res.cookie('jwt', refreshtokenUser, {
+                httpOnly: true, //accessible only by web server 
+                secure: true, //https
+                path: '/',
+                maxAge: 7 * 24 * 60 * 60 * 1000 //cookie expiry: set to match rT
             })
-
-            // res.json({accesstoken})
-            
 
             // console.log("token in the result..", tokenAuth)
 
@@ -121,25 +118,34 @@ export class AuthController {
             );
 
             const accessToken = sendToken(resultAuth, res)
-            // sendToken(resultAuth, res)
-
-            // refreshAuthToken(res, resultAuth)
-            // console.log("requesting..", res);
-            // console.log("moves like jagger..", req.cookies, req.headers, req.header);
 
             // Send HTTP-only cookie
-
-            // let tokenAuth = sendToken(resultAuth, res)
-
             // const accesstokenUser = generateAuthToken(resultAuth)
             const refreshtokenUser = refreshAuthToken(res, resultAuth)
 
-            res.status(200).cookie('refreshtoken', refreshtokenUser, {
-                secure: true,
+            // res.cookie('refreshtoken', refreshtokenUser, {
+            //     secure: true,
+            //     httpOnly: true,
+            //     path: '/api/v1/auth/refresh',
+            //     maxAge: 7 * 24 * 60 * 60 * 1000 // 7d
+            // })
+
+            // Create secure cookie with refresh token 
+            // res.cookie('jwt', refreshtokenUser, {
+            //     httpOnly: true, //accessible only by web server 
+            //     secure: true, //https
+            //     path: '/',
+            //     maxAge: 7 * 24 * 60 * 60 * 1000 //cookie expiry: set to match rT
+            // })
+
+            // Send HTTP-only cookie
+            res.cookie("jwt", refreshtokenUser, {
+                path: "/",
                 httpOnly: true,
-                path: '/api/v1/auth/refresh',
-                maxAge: 7 * 24 * 60 * 60 * 1000 // 7d
-            })
+                expires: new Date(Date.now() + 1000 * 86400), // 1 day
+                sameSite: "none",
+                secure: true,
+            });
 
             // let responseAuth = {
             //     resultAuth,
@@ -150,6 +156,50 @@ export class AuthController {
 
         } catch (error) {
             next(error);
+        }
+    }
+
+    logoutUser(req: Request, res: Response) {
+        try {
+            // res.cookie("token", "", {
+            //     path: "/",
+            //     httpOnly: true,
+            //     expires: new Date(0),
+            //     sameSite: "none",
+            //     secure: true,
+            // });
+            const authRepository: IAuthRepository = new AuthRepository();
+            authRepository.logout(req, res);
+            
+    
+            return jsonErrorResponse<object>(res, 200, 'Cookies Cleared');
+
+        } catch (error) {
+            console.log("all the cookies is getting an error..", error);
+        }
+    }
+
+    refresh(req: Request, res: Response){
+        try {
+            const authRepository: IAuthRepository = new AuthRepository();
+            let refreshUser =  authRepository.refreshToken(req, res);
+
+            return jsonOne<object | string>(res, 200, refreshUser);
+            
+        } catch (error) {
+            console.log("refresh Token in the code..", error); 
+        }
+    }
+
+    async userLoginToken(req: Request, res: Response){
+        try {
+            const authRepository: IAuthRepository = new AuthRepository();
+            let userToken =  authRepository.userLoginToken(req, res);
+
+            return jsonOne<object | string>(res, 200, userToken);
+            
+        } catch (error) {
+            res.status(400).send(error);
         }
     }
 
@@ -183,9 +233,18 @@ export class AuthController {
             );
 
             // Send HTTP-only cookie
-            sendToken(resultAuth, res)
+            const tokenAuth = sendToken(resultAuth, res)
 
-            return jsonOne<object>(res, 200, resultAuth);
+            // Send HTTP-only cookie
+            res.cookie("token", tokenAuth, {
+                path: "/",
+                httpOnly: true,
+                expires: new Date(Date.now() + 1000 * 86400), // 1 day
+                sameSite: "none",
+                secure: true,
+            });
+
+            return jsonOne<object | string>(res, 200, tokenAuth);
 
         } catch (error) {
             next(error);
@@ -312,35 +371,5 @@ export class AuthController {
         }
     }
 
-    logoutUser(req: Request, res: Response) {
-        try {
-            // res.cookie("token", "", {
-            //     path: "/",
-            //     httpOnly: true,
-            //     expires: new Date(0),
-            //     sameSite: "none",
-            //     secure: true,
-            // });
-            const authRepository: IAuthRepository = new AuthRepository();
-            authRepository.logout(req, res);
-            
     
-            return jsonErrorResponse<object>(res, 200, 'Cookies Cleared');
-
-        } catch (error) {
-            console.log("all the cookies is getting an error..", error);
-        }
-    }
-
-    refresh(req: Request, res: Response){
-        try {
-            const authRepository: IAuthRepository = new AuthRepository();
-            let refreshUser =  authRepository.refreshToken(req, res);
-
-            return jsonOne<object | string>(res, 200, refreshUser);
-            
-        } catch (error) {
-            console.log("refresh Token in the code..", error); 
-        }
-    }
 }

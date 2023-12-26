@@ -5,6 +5,7 @@ import { AuthController } from '../../controllers/People/users/authControllers';
 import { validateCreateUser } from '../../validator/user/AuthValidator';
 import { body as bodyValidator, ResultFactory, validationResult } from 'express-validator';
 const authController = new AuthController()
+import { authMiddleware } from '../../middleware/auth';
 
 export default (router: Router) => {
   // Registration User 
@@ -13,6 +14,11 @@ export default (router: Router) => {
     validateCreateUser,
     loginLimiter, 
     authController.registerUser
+  );
+
+  router.post("/api/v1/auth/token", 
+    authMiddleware,
+    authController.userLoginToken
   );
 
   // Login User 
