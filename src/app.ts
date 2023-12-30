@@ -31,13 +31,13 @@ const app: Application = express();
 const allowedOrigins = ["http://127.0.0.1:7050", "http://localhost:4545", "https://reporite.netlify.app", "*"];
 app.use(cors({
     origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
     },
-  
+
 }));
 
 

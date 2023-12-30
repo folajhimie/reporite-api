@@ -3,6 +3,7 @@ import { generateOtp, verifyOtp } from "../../../utils/otp-service";
 import { IUserInterface } from "../../../interfaces/People/userInterface";
 import { OtpType } from "../../../utils/Enums";
 import { HttpCode, AppError } from "../../../exceptions/appError";
+import { User } from "../../../models/People/user";
 // import IOtp from "../../../interfaces /People/otpInterface";
 
 
@@ -24,6 +25,18 @@ export class OtpController {
             otp,
             otpExpiration: Date.now() + 60 * (60 * 1000), // Thirty minutes
         });
+
+        var userData: IUserInterface | any = await User.findById(savedUser?._id).exec();
+
+        // userData?.securityCode = otp;
+        userData.securityCode = otp;
+
+        console.log("all the otp user ...", userData, otp)
+
+        // const loginCode: string = generateOtp(4);
+
+        await userData.save();
+
 
         await newOtp.save();
 
