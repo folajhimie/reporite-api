@@ -42,11 +42,6 @@ export default (router: Router) => {
     authController.resetPassword
   );
 
-  // Reset Password
-  router.post("/api/v1/auth/resetPassword/:resetToken", 
-    authController.resetPassword
-  );
-
   // Verify User with OTP
   router.post("/api/v1/auth/verifyUser/:verificationToken", 
     authController.verifyUserWithOTP

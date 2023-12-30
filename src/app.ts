@@ -16,23 +16,34 @@ import { logger } from './middleware/Logger';
 
 const app: Application = express();
 
-const corsOptions = {
-    "origin": [
-        "http://127.0.0.1:7050", 
-        "http://localhost:4545", 
-        "https://reporite.netlify.app"
-    ],
-    "methods": ["GET", "PUT", "POST", "PATCH", "DELETE"],
-    "allowedHeaders": ["Content-Type", "AgentId", "Accept"],
-    "exposedHeaders": ["Content-Type", "AgentId", "Accept"],
-    "credentials": true,
-    // credentials: true,
-}
+// const corsOptions = {
+//     "origin": [
+//         "http://127.0.0.1:7050",   
+//         "http://localhost:4545", 
+//         "https://reporite.netlify.app", 
+//     ],
+//     "methods": ["GET", "PUT", "POST", "PATCH", "DELETE"],
+//     "allowedHeaders": ["Content-Type", "AgentId", "Accept"],
+//     "exposedHeaders": ["Content-Type", "AgentId", "Accept"],
+//     "credentials": true,
+// }
+
+const allowedOrigins = ["http://127.0.0.1:7050", "http://localhost:4545", "https://reporite.netlify.app", "*"];
+app.use(cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+  
+}));
 
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(logger)
 

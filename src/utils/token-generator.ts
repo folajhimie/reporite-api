@@ -16,7 +16,9 @@ export const generateAuthToken = (res: any, user: object | any) => {
       lastname: user.lastname,
       email: user.email,
       roles: user.roles,
+      isVerified: user.isVerified
       // phone: user.phone,
+
     },
     secret,
     {
@@ -31,6 +33,13 @@ export const generateAuthToken = (res: any, user: object | any) => {
   //   sameSite: 'None', //cross-site cookie 
   //   maxAge: 7 * 24 * 60 * 60 * 1000 //cookie expiry: set to match rT
   // })
+  res.cookie("jwt", accessToken, {
+    path: "/",
+    httpOnly: true,
+    expires: new Date(Date.now() + 1000 * 86400), // 1 day
+    sameSite: "none",
+    secure: true,
+  });
 
   return accessToken
 };
@@ -40,8 +49,12 @@ export const refreshAuthToken = (res: any, user: object | any) => {
   console.log("all the refresh secret..", secret);
   const refreshToken = jwt.sign(
     {
+      _id: user._id,
+      firstname: user.firstname,
+      lastname: user.lastname,
       email: user.email,
       roles: user.roles,
+      isVerified: user.isVerified
     },
     secret,
     {
@@ -61,7 +74,7 @@ export const refreshAuthToken = (res: any, user: object | any) => {
 };
 
 export const decodeAuthToken = (res: any, refreshToken: string) => {
-  const secret = process.env.ACCESS_TOKEN_SECRET || "your_jwt_secret";
+  const secret = process.env.REFRESH_TOKEN_SECRET || "your_jwt_secret";
 
   return jwt.verify(
     refreshToken,
@@ -86,6 +99,7 @@ export const decodeAuthToken = (res: any, refreshToken: string) => {
           lastname: foundUser.lastname,
           email: foundUser.email,
           roles: foundUser.roles,
+          isVerified: foundUser.isVerified,
         },
         process.env.ACCESS_TOKEN_SECRET as string,
         {

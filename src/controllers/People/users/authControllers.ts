@@ -139,13 +139,13 @@ export class AuthController {
             // })
 
             // Send HTTP-only cookie
-            res.cookie("jwt", refreshtokenUser, {
-                path: "/",
-                httpOnly: true,
-                expires: new Date(Date.now() + 1000 * 86400), // 1 day
-                sameSite: "none",
-                secure: true,
-            });
+            // res.cookie("jwt", refreshtokenUser, {
+            //     path: "/",
+            //     httpOnly: true,
+            //     expires: new Date(Date.now() + 1000 * 86400), // 1 day
+            //     sameSite: "none",
+            //     secure: true,
+            // });
 
             // let responseAuth = {
             //     resultAuth,

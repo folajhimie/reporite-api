@@ -476,19 +476,17 @@ export class AuthRepository implements IAuthRepository {
 
     // REFRESH USER
     refreshToken(req: any, res: any): any {
-        // const rf_token = req.cookies.refreshtoken;
-        const rf_token = req.cookies
-        console.log("refresh token called...", rf_token);
+        const cookies = req.cookies;
+        console.log("refresh token called...", cookies);
 
-        if (!rf_token) {
-            return jsonErrorResponse<object>(res, 401, 'Unauthorized');
-        }
-        // const refreshToken = cookies.jwt
+        if (!cookies?.jwt) return jsonErrorResponse<object>(res, 401, 'Unauthorized');
 
-        const refreshCollection = decodeAuthToken(res, rf_token)
+        const refreshToken = cookies.jwt
+
+        const refreshCollection = decodeAuthToken(res, refreshToken)
         return refreshCollection
     }
-
+    
     // LOGIN TOKEN
     userLoginToken(req: any, res: any) {
         try {
@@ -655,7 +653,7 @@ export class AuthRepository implements IAuthRepository {
         }
     }
 
-    
+
 
 
 

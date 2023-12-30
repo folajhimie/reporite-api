@@ -24,9 +24,9 @@ declare global {
 
 
 export const authMiddleware = asyncMiddleware(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    console.log("refresh token..", req.headers);
+    console.log("refresh token..", req.headers, req.headers.authorization,"all the header...", req.headers.Authorization);
     try {
-        // const authHeader = req.headers.authorization || req.headers.authorization;
+        // const authHeader = req.headers.authorization || req.headers.Authorization;
 
         const authHeader: string | any = req.headers.authorization || req.headers.Authorization;
 
@@ -58,6 +58,7 @@ export const authMiddleware = asyncMiddleware(async (req: Request, res: Response
                         description: 'Token is not valid'
                     });
                 } else {
+                    // req.user = User.findById(decoded.id).select('-password')
                     req.user = decoded;
                     next();
                 }
@@ -108,23 +109,7 @@ export const verifiedOnly = asyncMiddleware(async (req: Request, res: Response, 
     }
 });
 
-// export const authorOnly = asyncMiddleware(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-//     try {
-//         if (req.user.role === "author" || req.user.role === "admin") {
-//             next()
-//         } else {
-//             throw new AppError({
-//                 httpCode: HttpCode.UNAUTHORIZED,
-//                 description: 'Not authorized, account not verified'
-//             });
-//         }
-//     } catch (error) {
-//         throw new AppError({
-//             httpCode: HttpCode.BAD_REQUEST,
-//             description: 'Problem occured while trying to authorize!'
-//         });
-//     }
-// });
+
 
 
 
