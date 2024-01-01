@@ -325,9 +325,6 @@ export class AuthRepository implements IAuthRepository {
                 if (user.failedLoginAttempts >= 6) {
                     user.isLocked = true;
                     user.failedLoginAttempts = 0; // Reset the failed login attempts
-
-
-
                     await user.save();
 
                     return jsonErrorResponse<object>(res, 403, 'Account is locked due to too many failed login attempts');
@@ -486,7 +483,7 @@ export class AuthRepository implements IAuthRepository {
         const refreshCollection = decodeAuthToken(res, refreshToken)
         return refreshCollection
     }
-    
+
     // LOGIN TOKEN
     userLoginToken(req: any, res: any) {
         try {

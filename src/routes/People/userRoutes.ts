@@ -11,10 +11,10 @@ const userController = new UserController()
 export default (router: Router) => {
     // Get All Users 
     router.get("/api/v1/users/get-all-users",
-        // loginLimiter,
-        // authMiddleware,
+        loginLimiter,
+        authMiddleware,
         // verifiedOnly,
-        // isAdmin("Admin"),
+        isAdmin("Owner", "Admin"),
         userController.getAllUsers
     );
 
@@ -22,7 +22,8 @@ export default (router: Router) => {
     router.get("/api/v1/users/get-user",
         loginLimiter,
         authMiddleware,
-        verifiedOnly,
+        // verifiedOnly,
+        isAdmin("Owner", "Admin", "Manager"),
         userController.getUser
     );
 

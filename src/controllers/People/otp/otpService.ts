@@ -33,10 +33,7 @@ export class OtpController {
 
         console.log("all the otp user ...", userData, otp)
 
-        // const loginCode: string = generateOtp(4);
-
         await userData.save();
-
 
         await newOtp.save();
 

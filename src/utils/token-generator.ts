@@ -7,7 +7,7 @@ dotenv.config();
 
 // JWT TOKEN
 export const generateAuthToken = (res: any, user: object | any) => {
-  const secret = process.env.ACCESS_TOKEN_SECRET || "your_jwt_secret";
+  const secret = process.env.ACCESS_TOKEN_SECRET as string;
   console.log("all the secret..", secret);
   const accessToken = jwt.sign(
     {
@@ -20,9 +20,9 @@ export const generateAuthToken = (res: any, user: object | any) => {
       // phone: user.phone,
 
     },
-    secret,
+    process.env.ACCESS_TOKEN_SECRET as string,
     {
-      expiresIn: "15m",
+      expiresIn: "1d",
     }
   );
 
@@ -36,7 +36,7 @@ export const generateAuthToken = (res: any, user: object | any) => {
   res.cookie("jwt", accessToken, {
     path: "/",
     httpOnly: true,
-    expires: new Date(Date.now() + 1000 * 86400), // 1 day
+    expires: new Date(Date.now() + 86400000), // 1 day
     sameSite: "none",
     secure: true,
   });
@@ -45,7 +45,7 @@ export const generateAuthToken = (res: any, user: object | any) => {
 };
 
 export const refreshAuthToken = (res: any, user: object | any) => {
-  const secret = process.env.REFRESH_TOKEN_SECRET || "your_jwt_secret";
+  const secret = process.env.REFRESH_TOKEN_SECRET as string;
   console.log("all the refresh secret..", secret);
   const refreshToken = jwt.sign(
     {
@@ -74,7 +74,7 @@ export const refreshAuthToken = (res: any, user: object | any) => {
 };
 
 export const decodeAuthToken = (res: any, refreshToken: string) => {
-  const secret = process.env.REFRESH_TOKEN_SECRET || "your_jwt_secret";
+  const secret = process.env.REFRESH_TOKEN_SECRET as string;
 
   return jwt.verify(
     refreshToken,
@@ -115,7 +115,7 @@ export const decodeAuthToken = (res: any, refreshToken: string) => {
 
 export const generateAuthLoginToken = (res: any, user: object | any) => {
 
-  const accessSecret = process.env.ACCESS_TOKEN_SECRET || "your_jwt_secret";
+  const accessSecret = process.env.ACCESS_TOKEN_SECRET as string;
   console.log("all the secret..", accessSecret);
 
   const accessToken = jwt.sign(

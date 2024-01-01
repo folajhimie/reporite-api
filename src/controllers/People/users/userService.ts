@@ -9,9 +9,11 @@ export class UserRepository implements IUserRepository {
     async getUser(req: any): Promise<IUserInterface | any> {
 
         try {
-            console.log("all the user", req, req.user);
+            console.log("all the user", req.params , req.user);
             // let user = await User.findById(userId).populate('role').exec();
             let user = await User.findById(req.user._id).select('-password');
+
+            console.log("single user..", user)
             if (!user) {
                 throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'User not Found' });
             }

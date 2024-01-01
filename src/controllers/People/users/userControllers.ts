@@ -15,7 +15,7 @@ export class UserController {
             let resultAuth = await userRepository.getUser(
                 req
             )
-            console.log("all the users ..", resultAuth)
+            console.log("controllers in the code ..", resultAuth)
             return jsonOne<IUserInterface>(res, 200, resultAuth);
         } catch (error) {
             next(error)
