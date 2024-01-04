@@ -14,6 +14,55 @@ export class HelpFunction {
         return parseFloat(value.toString()) * timeValues[unit];
     }
 
+    static getFormattedDay(date: any): any {
+        if (date > 3 && date < 21) return date + 'th';
+        switch (date % 10) {
+            case 1:  return date + 'st';
+            case 2:  return date + 'nd';
+            case 3:  return date + 'rd';
+            default: return date + 'th';
+        }
+    }
+
+    static getFullDateForUser(): any {
+
+        let options = { 
+            weekday: 'long', 
+            month: 'long', 
+            day: 'numeric', 
+            year: 'numeric' 
+        };
+
+        let dayOfUser = this.getFormattedDay(new Date().getDate());
+
+        // let today = new Date().toLocaleDateString('en-US', options);
+
+        // let today = new Date().toLocaleDateString('en-US', options);
+        let dayOfWeek = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+        let dayOfMonth = new Date().toLocaleDateString('en-US', { month: 'long' });
+        let dayOfYear = new Date().toLocaleDateString('en-US', { year: 'numeric' });
+        
+        let fullDate = `${dayOfWeek} ${dayOfUser}, ${dayOfMonth} ${dayOfYear}`;
+        return fullDate;
+    }
+
+    static getFullTimeForUser(): any {
+
+        let options = { 
+            weekday: 'long', 
+            month: 'long', 
+            day: 'numeric', 
+            year: 'numeric' 
+        };
+
+        // let today = new Date().toLocaleDateString('en-US', options);
+        let time = new Date().toLocaleTimeString('en-US');
+
+        return time;
+        
+        // console.log(dayOfWeek + " " + dayOfUser + ", " + dayOfMonth + " " + dayOfYear + " " + time)
+    }
+
     static multiplyDate(value: number) {
         let converted_date = value * 1000;
         return converted_date.toString()

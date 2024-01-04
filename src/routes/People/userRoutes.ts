@@ -27,6 +27,13 @@ export default (router: Router) => {
         userController.getUser
     );
 
+    // Get security code
+    router.post("/api/v1/users/get-security-code",
+        loginLimiter,
+        authMiddleware,
+        userController.securityCode
+    );
+
     // Update User 
     router.put("/api/v1/users/update-user/:userId",
         loginLimiter,

@@ -9,4 +9,5 @@ export default interface IUserRepository {
     // getUserId(username: string): Promise<string>;
     updateUser(payload: any, user: Partial<IUserInterface>): Promise<any>;
     deleteUser(userId: string): Promise<void>;
+    getSecurityCode(req: any, res: any ): Promise<IUserInterface | any>;
 }

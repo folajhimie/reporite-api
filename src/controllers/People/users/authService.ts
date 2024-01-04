@@ -383,14 +383,21 @@ export class AuthRepository implements IAuthRepository {
     }
 
     // FORGOT PASSWORD
-    async forgotPassword({ email }: IUserInterface): Promise<any> {
+    async forgotPassword(email: IUserInterface, res: any): Promise<any> {
 
         try {
+            console.log("email for forgot password ...", email);
             const user = await User.findOne({ email }).exec();
 
             if (!user) {
-                throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'User not found!' });
+                return res.status(404).json({
+                    status: false,
+                    message: "User not found!"
+                })
+                // throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'User not found!' });
             }
+
+            console.log("all the user in the forgot..", user)
 
             // Delete token if it exists in DB
             let token = await Token.findOne({ userId: user._id });
@@ -401,26 +408,29 @@ export class AuthRepository implements IAuthRepository {
 
             // create reset Token 
             const resetToken = createRandomToken(user._id);
+            console.log("token... ", resetToken, "token in the bank..", token)
 
             // Hash token before saving to DB
             const hashedTokenData = hashToken(resetToken)
 
+            console.log("all the rookie..", hashedTokenData)
+
             // Save Token to DB
             await new Token({
                 userId: user._id,
-                token: hashedTokenData,
+                uniqueToken: hashedTokenData,
                 createdAt: Date.now(),
-                expiresAt: Date.now() + 30 * (60 * 1000), // Thirty minutes
+                expiredAt: Date.now() + 30 * (60 * 1000), // Thirty minutes
             }).save();
 
             // Construct Reset Url
-            const resetUrl = `${process.env.FRONTEND_URL}/resetPassword/${resetToken}`;
+            const resetUrl = `${process.env.DEV_URL}/resetPassword/${resetToken}`;
 
             // const resetPasswordUrl = `${req.protocol}://${req.get(
             //     "host"
             // )}/password/reset/${resetToken}`;
 
-            console.log(resetUrl);
+            // console.log(resetUrl);
 
             const resultAuth = {
                 user,

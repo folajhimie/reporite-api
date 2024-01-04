@@ -12,7 +12,7 @@ export default interface IAuthRepository {
   loginUser(user: Pick<IUserInterface, 'email' | 'password'>, req: any, res: any): Promise<any>;
   sendLoginCode(user: Pick<IUserInterface, 'email'>): Promise<Record<string, string | any>>;
   loginWithCode(req: any): Promise<Record<string, any>>;
-  forgotPassword(user: IUserInterface): Promise<any>;
+  forgotPassword(email: IUserInterface, res:any): Promise<any>;
   resetPassword(req: any): Promise<any>;
   verifyUserWithOTP(req: any): Promise<any>;
   resendOTP(req: any): Promise<any>;

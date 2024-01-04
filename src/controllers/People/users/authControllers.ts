@@ -253,11 +253,13 @@ export class AuthController {
 
     async forgotPassword(req: Request, res: Response, next: NextFunction) {
         try {
+            
             const { email } = req.body;
+            // console.log("request in the body..", req.body, "email now..", email)
 
             //VERIFYING EMAIL
             const authRepository: IAuthRepository = new AuthRepository();
-            let resultAuth = await authRepository.forgotPassword(email)
+            let resultAuth = await authRepository.forgotPassword(email, res)
 
             const { user, resetUrl } = resultAuth
 
@@ -271,13 +273,17 @@ export class AuthController {
             // let otpCode = await otpController.createOtp(resultAuth, otpType)
 
             //SEND VERIFICATION MAIL TO USER 
+
             const mailController = new MailController();
             const text = 'Reset Password';
+
             // let emailStructure = verifyEmail(otpCode)
+
             //GENERATE OTP AND SEND ON MAIL
             const emailStructure = generateResetPasswordTemplate(
                 resetUrl,
-                user.username
+                user?.firstname, 
+                user?.lastname
             );
 
             mailController.createMail(emailStructure, user, req, text)

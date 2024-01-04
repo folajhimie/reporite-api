@@ -26,6 +26,40 @@ export class UserRepository implements IUserRepository {
         
     }
 
+    async getSecurityCode(req: any, res:any): Promise<IUserInterface | any> {
+        try {
+            console.log("all the user", req.user, req.body);
+
+            const {
+                securityCode,
+            } = req.body as IUserInterface;
+
+            // let user = await User.findById(userId).populate('role').exec();
+            let user = await User.findById(req.user._id).select('-password');
+
+            console.log("security code for the user..", user)
+            if (!user) {
+                throw new AppError({ httpCode: HttpCode.UNAUTHORIZED, description: 'User not Found' });
+            }
+
+            console.log("used code ...", securityCode, user.securityCode);
+
+            if (securityCode !== user.securityCode) {
+                return res.status(404).json({
+                    status: false,
+                    message: "security code does not match"
+                })
+            }
+
+            return user as IUserInterface
+            
+        } catch (error) {
+            
+        }
+        
+    }
+
+
     async getAllUsers(requestQuery: any): Promise<any> {
         let pageOptions: { page: number; limit: number } = {
             page: Number(requestQuery.query.page) || 1,
