@@ -194,14 +194,14 @@ const resetPassword = function (resetUrl: string, firstname: string, lastname: s
                                                                                         <!-- <button 
                                                                                         onclick="window.location.href='https://www.example.com'"
                                                                                         type="button" 
-                                                                                        style="display: flex; justify-content: center; color: white; padding: 10px 40px; border: none; border-radius: 6px; background-color: #f97316; font-size: 16px; font-weight: 800; line-height: 1.5; cursor: pointer;">
+                                                                                        style="display: flex; justify-content: center; color: white; padding: 10px 40px; border: none; border-radius: 6px; background-color: #f97316; font-size: 12px; font-weight: 800; line-height: 1.5; cursor: pointer;">
                                                                                             Update Account Password
                                                                                         </button> -->
                                                                                         <a 
                                                                                         
                                                                                         href=${resetUrl}
                                                                                          
-                                                                                        style="text-decoration: none; display: flex; justify-content: center; color: white; padding: 10px 40px; border: none; border-radius: 6px; background-color: #f97316; font-size: 16px; font-weight: 800; line-height: 1.5; cursor: pointer;"
+                                                                                        style="text-decoration: none; display: flex; justify-content: center; color: white; padding: 10px 40px; border: none; border-radius: 6px; background-color: #f97316; font-size: 12px; font-weight: 800; line-height: 1.5; cursor: pointer;"
                                                                                         target="_blank">Update Account Password</a>
                                                                                     </div>
                                                                                     <p

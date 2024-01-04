@@ -94,6 +94,13 @@ export const comparePassword = async (
   return await bcrypt.compare(password, hashPassword);
 };
 
+export const usercomparePassword = async (
+  userpassword: string,
+  LoginPassword: string,
+) => {
+  return  userpassword === LoginPassword;
+};
+
 export const compareEmail =  (
   email: string,
   userEmail: string,

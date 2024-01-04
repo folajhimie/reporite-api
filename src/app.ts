@@ -28,7 +28,7 @@ const app: Application = express();
 //     "credentials": true,
 // }
 
-const allowedOrigins = ["http://127.0.0.1:7050", "http://localhost:4545", "https://reporite.netlify.app", "*"];
+const allowedOrigins = ["http://localhost:7050", "http://127.0.0.1:7050", "http://localhost:4545", "https://reporite.netlify.app", "*"];
 app.use(cors({
     origin: function (origin, callback) {
         if (!origin || allowedOrigins.includes(origin)) {

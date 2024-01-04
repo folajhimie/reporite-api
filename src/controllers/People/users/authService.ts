@@ -226,8 +226,8 @@ export class AuthRepository implements IAuthRepository {
 
             // const existingUser = await getUserByEmail(email);
 
-            const user = await User.findOne({ email }).exec();
-            console.log("all the in the database..", user)
+            const user: IUserInterface | any = await User.findOne({ email }).exec();
+            console.log("all the in the database..", user, "password..", password, user?.password)
 
             if (!user) {
                 return jsonErrorResponse<object>(res, 401, 'User with email already exists');
@@ -474,11 +474,13 @@ export class AuthRepository implements IAuthRepository {
             // Find user and reset password
             let user: IUserInterface | any = await User.findOne({ _id: userToken.userId })
 
-            console.log("all the user...", user)
-
-            user.password = password;
-
+            
+            const newPassword = await generateHashPassword(password)
+            
+            user.password = newPassword;
+            
             await user.save();
+            console.log("all the user...", user)
 
         } catch (error) {
             console.error('Error in Reset password code:', error);
