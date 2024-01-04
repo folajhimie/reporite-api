@@ -306,7 +306,7 @@ export class AuthController {
             const authRepository: IAuthRepository = new AuthRepository();
             await authRepository.resetPassword(req);
 
-            return jsonOne<string>(res, 200, 'Password updated successfully');
+            return jsonOne<string>(res, 200, "Password Reset Successful, Please Login");
 
             // const { user } = resultAuth
 

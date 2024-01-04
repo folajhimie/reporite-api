@@ -979,3 +979,4 @@
 20240103	17:59:45	f24d97f4-55fc-4fff-9f76-74bfc2682f4d	POST	/api/v1/auth/forgotPassword	http://127.0.0.1:7050
 20240103	18:33:12	93f5b6c2-f781-49e3-970c-cdabfb0f6768	POST	/api/v1/auth/forgotPassword	http://127.0.0.1:7050
 20240104	07:10:57	49f5a1ca-9d28-4205-bde1-eab6d5a89147	POST	/api/v1/auth/forgotPassword	http://127.0.0.1:7050
+20240104	13:33:11	56db8739-4c5f-4903-b4f1-ec5a5133491d	GET	/api/v1/auth/login	undefined

@@ -26,8 +26,6 @@ import { jsonErrorResponse } from "../../../utils/Reponse";
 import dotenv from "dotenv";
 dotenv.config();
 
-
-
 // import parser from 'ua-parser-js';
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -397,7 +395,7 @@ export class AuthRepository implements IAuthRepository {
                 // throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'User not found!' });
             }
 
-            console.log("all the user in the forgot..", user)
+            // console.log("all the user in the forgot..", user)
 
             // Delete token if it exists in DB
             let token = await Token.findOne({ userId: user._id });
@@ -408,12 +406,12 @@ export class AuthRepository implements IAuthRepository {
 
             // create reset Token 
             const resetToken = createRandomToken(user._id);
-            console.log("token... ", resetToken, "token in the bank..", token)
+            // console.log("token... ", resetToken, "token in the bank..", token)
 
             // Hash token before saving to DB
             const hashedTokenData = hashToken(resetToken)
 
-            console.log("all the rookie..", hashedTokenData)
+            // console.log("all the rookie..", hashedTokenData)
 
             // Save Token to DB
             await new Token({
@@ -424,7 +422,7 @@ export class AuthRepository implements IAuthRepository {
             }).save();
 
             // Construct Reset Url
-            const resetUrl = `${process.env.DEV_URL}/resetPassword/${resetToken}`;
+            const resetUrl = `${process.env.DEV_URL}/auth/resetPassword/${resetToken}`;
 
             // const resetPasswordUrl = `${req.protocol}://${req.get(
             //     "host"
@@ -455,11 +453,15 @@ export class AuthRepository implements IAuthRepository {
             // Hash token, then compare to Token in DB
             const hashedToken = hashToken(resetToken);
 
+            console.log("hash token...", hashedToken, resetToken, "other password..", password, confirmPassword)
+
             // Find Token in DB
             const userToken = await Token.findOne({
-                token: hashedToken,
-                expiresAt: { $gt: Date.now() },
+                uniqueToken: hashedToken,
+                expiredAt: { $gt: Date.now() },
             });
+
+            console.log("unique token ..", userToken)
 
             if (!userToken) {
                 throw new AppError({ httpCode: HttpCode.BAD_REQUEST, description: 'Reset password url is invalid or has been expired!' });
@@ -471,6 +473,8 @@ export class AuthRepository implements IAuthRepository {
 
             // Find user and reset password
             let user: IUserInterface | any = await User.findOne({ _id: userToken.userId })
+
+            console.log("all the user...", user)
 
             user.password = password;
 
